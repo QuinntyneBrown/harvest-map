@@ -21,15 +21,17 @@ const DEPTHS = [
   ["deep", "Deep", "about 20 minutes · more sources"],
 ] as const;
 
-const RunResearchContext = createContext<(question?: number) => void>(() => {});
+type Preset = { question: number; custom?: string };
 
-/** Opens the Ask the web dialog, optionally with a core question preselected. */
+const RunResearchContext = createContext<(question?: number, custom?: string) => void>(() => {});
+
+/** Opens the Ask the web dialog, optionally with a core question preselected or a custom question written. */
 export function useRunResearch() {
   return useContext(RunResearchContext);
 }
 
 export function RunResearchProvider({ children }: { children: React.ReactNode }) {
-  const [openWith, setOpenWith] = useState<number | null>(null);
+  const [openWith, setOpenWith] = useState<Preset | null>(null);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -37,25 +39,25 @@ export function RunResearchProvider({ children }: { children: React.ReactNode })
       if (e.key !== "r" || e.ctrlKey || e.metaKey || e.altKey) return;
       if (target.closest("input, textarea, select, [contenteditable], [role=dialog]")) return;
       e.preventDefault();
-      setOpenWith((current) => current ?? 1);
+      setOpenWith((current) => current ?? { question: 1 });
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, []);
 
   return (
-    <RunResearchContext.Provider value={(question = 1) => setOpenWith(question)}>
+    <RunResearchContext.Provider value={(question = 1, custom) => setOpenWith({ question, custom })}>
       {children}
-      {openWith !== null && <RunResearchDialog question={openWith} onClose={() => setOpenWith(null)} />}
+      {openWith !== null && <RunResearchDialog preset={openWith} onClose={() => setOpenWith(null)} />}
     </RunResearchContext.Provider>
   );
 }
 
-function RunResearchDialog({ question, onClose }: { question: number; onClose: () => void }) {
-  const [choice, setChoice] = useState<string>(`q${question}`);
+function RunResearchDialog({ preset, onClose }: { preset: Preset; onClose: () => void }) {
+  const [choice, setChoice] = useState<string>(preset.custom ? "custom" : `q${preset.question}`);
   const [lookFor, setLookFor] = useState<string[]>(LOOK_FOR.map(([v]) => v));
   const [depth, setDepth] = useState<Depth>("standard");
-  const [custom, setCustom] = useState("");
+  const [custom, setCustom] = useState(preset.custom ?? "");
   const [invalid, setInvalid] = useState(false);
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);

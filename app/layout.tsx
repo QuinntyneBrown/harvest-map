@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import "./styles/tokens.css";
 import "./styles/components.css";
+import "./styles/app.css";
 import { RunResearchProvider } from "@/components/RunResearch";
+import { ToastProvider } from "@/components/Toasts";
 import { TopBar } from "@/components/TopBar";
 
 export const metadata: Metadata = {
@@ -19,10 +21,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <a className="skip-link" href="#main">
           Skip to content
         </a>
-        <RunResearchProvider>
-          <TopBar />
-          {children}
-        </RunResearchProvider>
+        <ToastProvider>
+          <RunResearchProvider>
+            <TopBar />
+            {children}
+          </RunResearchProvider>
+        </ToastProvider>
       </body>
     </html>
   );

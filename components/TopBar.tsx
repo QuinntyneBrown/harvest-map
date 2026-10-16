@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { NavSheet } from "./NavSheet";
 
 const NAV = [
   ["Field", "/"],
@@ -15,10 +17,12 @@ const NAV = [
 
 export function TopBar() {
   const pathname = usePathname();
+  const [menuOpen, setMenuOpen] = useState(false);
   return (
+    <>
     <header className="topbar">
       <span className="topbar__shadow" aria-hidden="true"></span>
-      <button type="button" className="btn btn--ghost btn--icon topbar__menu" aria-label="Open navigation">
+      <button type="button" className="btn btn--ghost btn--icon topbar__menu" aria-label="Open navigation" onClick={() => setMenuOpen(true)}>
         <svg className="icon" aria-hidden="true" viewBox="0 0 24 24">
           <path d="M4 7h16M4 12h16M4 17h16" />
         </svg>
@@ -41,5 +45,7 @@ export function TopBar() {
         NA
       </span>
     </header>
+      {menuOpen && <NavSheet userName="Naomi Achterberg" onClose={() => setMenuOpen(false)} />}
+    </>
   );
 }

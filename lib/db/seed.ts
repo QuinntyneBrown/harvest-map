@@ -4,6 +4,7 @@
  * Run: npm run db:seed [-- --demo]
  */
 import { eq } from "drizzle-orm";
+import { initials } from "@/lib/format";
 import { CURRENT_USER_ID, db } from "./index";
 import { organizationProblems, organizations, people, problems, userSettings, users } from "./schema";
 
@@ -20,11 +21,12 @@ const PROBLEMS = [
 ];
 
 const DEMO_ORGS = [
-  { name: "illumiNations", location: "Global alliance", summary: "AI-assisted translation drafting", problems: ["Scripture in every language by 2033"] },
-  { name: "OneHope", location: "Pompano Beach", summary: "Bible App for Kids · 165M installs", problems: ["God's Word for every child"] },
-  { name: "Lausanne Movement", location: "Global", summary: "Great Commission by 2050", problems: ["Great Commission by 2050"] },
-  { name: "Gloo", location: "Boulder", summary: "Flourishing AI standards · Faith Assistant", problems: ["AI that serves human flourishing"] },
-  { name: "FaithTech", location: "Waterloo", summary: "AI trauma-healing sprint · Missional Tech Trends", problems: ["AI that serves human flourishing"] },
+  { name: "illumiNations", city: "Dallas", country: "United States", website: "illuminations.bible", founded: "2017", type: "Alliance", reach: "2033 · every language", tags: ["Scripture", "Moonshot"], verified: true, location: "Global alliance", summary: "AI-assisted translation drafting", problems: ["Scripture in every language by 2033"] },
+  { name: "OneHope", city: "Pompano Beach", country: "United States", website: "onehope.net", founded: "1987", type: "Ministry", reach: "Next 2B children", tags: ["Youth", "Scripture", "Moonshot"], verified: true, location: "Pompano Beach", summary: "Bible App for Kids · 165M installs", problems: ["God's Word for every child"] },
+  { name: "Lausanne Movement", city: "Atlanta", country: "United States", website: "lausanne.org", founded: "1974", type: "Movement", reach: "Global", tags: ["Moonshot"], verified: true, location: "Global", summary: "Great Commission by 2050", problems: ["Great Commission by 2050"] },
+  { name: "Gloo", city: "Boulder", country: "United States", website: "gloo.com", founded: "2013", type: "Platform", reach: "140,000 leaders", tags: ["AI", "Youth"], verified: true, location: "Boulder", summary: "Flourishing AI standards · Faith Assistant", problems: ["AI that serves human flourishing"] },
+  { name: "FaithTech", city: "Waterloo", country: "Canada", website: "faithtech.com", founded: "2016", type: "Community", reach: "50+ cities", tags: ["AI", "Community", "Youth"], verified: true, location: "Waterloo", summary: "AI trauma-healing sprint · Missional Tech Trends", problems: ["AI that serves human flourishing"] },
+  { name: "Kingdom Code", city: "London", country: "United Kingdom", website: "kingdomcode.org", founded: "", type: "Startup", reach: "", tags: ["Digital"], verified: false, location: "London", summary: "", problems: [] as string[] },
 ];
 
 const DEMO_PEOPLE = [
@@ -39,17 +41,26 @@ async function main() {
 
   if ((await db.select().from(problems).limit(1)).length === 0) await db.insert(problems).values(PROBLEMS);
 
-  if (process.argv.includes("--demo") && (await db.select().from(organizations).limit(1)).length === 0) {
+  if (process.argv.includes("--demo")) {
     for (const o of DEMO_ORGS) {
-      const [org] = await db.insert(organizations).values({ name: o.name, location: o.location, summary: o.summary }).returning();
+      const values = {
+        name: o.name, location: o.location, summary: o.summary, type: o.type, city: o.city, country: o.country, website: o.website,
+        founded: o.founded, reach: o.reach, tags: o.tags, verificationStatus: o.verified ? "Verified" : "Unverified", mark: initials(o.name), updatedBy: CURRENT_USER_ID,
+      };
+      const [existing] = await db.select().from(organizations).where(eq(organizations.name, o.name));
+      let orgId = existing?.id;
+      if (existing) await db.update(organizations).set(values).where(eq(organizations.id, existing.id));
+      else orgId = (await db.insert(organizations).values(values).returning())[0].id;
       for (const title of o.problems) {
         const [p] = await db.select().from(problems).where(eq(problems.title, title));
-        if (p) await db.insert(organizationProblems).values({ organizationId: org.id, problemId: p.id });
+        if (p) await db.insert(organizationProblems).values({ organizationId: orgId!, problemId: p.id }).onConflictDoNothing();
       }
     }
-    for (const p of DEMO_PEOPLE) {
-      const [org] = await db.select().from(organizations).where(eq(organizations.name, p.org));
-      await db.insert(people).values({ name: p.name, role: p.role, organizationId: org?.id, linkedinUrl: p.linkedinUrl });
+    if ((await db.select().from(people).limit(1)).length === 0) {
+      for (const p of DEMO_PEOPLE) {
+        const [org] = await db.select().from(organizations).where(eq(organizations.name, p.org));
+        await db.insert(people).values({ name: p.name, role: p.role, organizationId: org?.id, linkedinUrl: p.linkedinUrl });
+      }
     }
   }
   console.log("Seeded.");

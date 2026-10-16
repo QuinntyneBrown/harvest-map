@@ -1,0 +1,2 @@
+/* App-only styles that the design system does not cover. */
+@keyframes toast-timer { from { width: 100%; } to { width: 0; } }

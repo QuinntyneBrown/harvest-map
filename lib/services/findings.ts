@@ -1,6 +1,7 @@
 import { and, eq, ilike } from "drizzle-orm";
 import { CURRENT_USER_ID, db } from "@/lib/db";
 import { activityEntries, findings, organizations, people, users, type AppliedChange } from "@/lib/db/schema";
+import { initials } from "@/lib/format";
 import { toFindingViews } from "./research";
 
 const UNDO_WINDOW_MS = 30_000;
@@ -23,7 +24,7 @@ async function view(id: string) {
 async function findOrCreateOrganization(tx: Tx, name: string) {
   const [org] = await tx.select().from(organizations).where(ilike(organizations.name, name));
   if (org) return { id: org.id, created: false };
-  const [created] = await tx.insert(organizations).values({ name }).returning();
+  const [created] = await tx.insert(organizations).values({ name, mark: initials(name) }).returning();
   return { id: created.id, created: true };
 }
 
@@ -69,7 +70,7 @@ export async function accept(id: string, fields: Record<string, string>, userId 
           previous: { name: existing.name, location: existing.location, summary: existing.summary },
         };
       } else {
-        const [created] = await tx.insert(organizations).values(values).returning();
+        const [created] = await tx.insert(organizations).values({ ...values, mark: initials(values.name) }).returning();
         applied = { subjectId: created.id, createdSubject: true, createdOrganizationId: null, previous: {} };
       }
     }
@@ -83,6 +84,8 @@ export async function accept(id: string, fields: Record<string, string>, userId 
       actorId: userId,
       runId: f.runId,
       findingId: id,
+      subjectKind: f.subjectKind,
+      subjectId: applied.subjectId,
       text: `${user?.name ?? userId} accepted finding from run #${f.runId}`,
     });
   });

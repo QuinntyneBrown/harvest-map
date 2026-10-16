@@ -1,18 +1,18 @@
 # Estimates
 
 - Overall effort: 120 days
-- Complete: 0%
+- Complete: 22%
 
 | Subsystem | Effort | Complete |
 |---|---|---|
 | [identity](identity.md) | 9 days | 0% |
-| [shell](shell.md) | 16 days | 0% |
-| [organizations](organizations.md) | 18 days | 0% |
+| [shell](shell.md) | 16 days | 11% |
+| [organizations](organizations.md) | 18 days | 67% |
 | [people](people.md) | 11 days | 0% |
 | [problems](problems.md) | 12 days | 0% |
-| [questions](questions.md) | 3 days | 0% |
-| [notifications](notifications.md) | 14 days | 0% |
-| [research](research.md) | 9 days | 0% |
+| [questions](questions.md) | 3 days | 100% |
+| [notifications](notifications.md) | 14 days | 21% |
+| [research](research.md) | 9 days | 67% |
 | [search](search.md) | 7 days | 0% |
 | [map](map.md) | 3 days | 0% |
 | [field](field.md) | 3 days | 0% |

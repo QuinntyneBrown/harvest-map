@@ -2,4 +2,4 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| answer-core-questions | 3 days | 0% |
+| answer-core-questions | 3 days | 100% |

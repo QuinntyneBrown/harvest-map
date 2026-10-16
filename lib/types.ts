@@ -50,3 +50,41 @@ export type ResearchOverview = {
   findings: FindingView[];
   organizations: string[];
 };
+
+export type OrgStatus = "Verified" | "Unverified" | "Conflict";
+
+export type OrganizationListItem = {
+  id: string;
+  name: string;
+  mark: string | null;
+  type: string;
+  city: string;
+  reach: string;
+  tags: string[];
+  status: OrgStatus;
+};
+
+export type OrganizationList = { total: number; verified: number; unverified: number; items: OrganizationListItem[] };
+
+export type OrganizationDetail = {
+  id: string;
+  name: string;
+  mark: string | null;
+  status: OrgStatus;
+  summary: string;
+  tags: string[];
+  type: string;
+  founded: string;
+  base: string;
+  city: string;
+  country: string;
+  lastSaved: { at: string; by: string } | null;
+  reach: string;
+  website: string;
+  archived: { by: string; at: string } | null;
+  initiatives: string[];
+  people: { id: string; name: string; initials: string; role: string; linkedinUrl: string | null }[];
+  problems: { id: string; title: string; score: number; rank: number; meta: string; organizations: { name: string; mark: string }[] }[];
+  sources: { title: string; url: string; domain: string; note: string }[];
+  activity: { when: string; text: string }[];
+};

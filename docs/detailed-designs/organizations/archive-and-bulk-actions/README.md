@@ -21,9 +21,9 @@ The slice runs from the selection bar in the Next.js web app to the PostgreSQL d
 - **`SelectionBar`** — client component on `/organizations`. It shows "{n} selected" with "Tag", "Export {n}" and "Archive". Archive calls `archiveOrganizations`; Tag opens `BulkTagMenu`.
 - **`BulkTagMenu`** — client component. It lets the team member add or remove one tag for all selected organizations and calls `tagOrganizations`. No mock shows its layout; the layout is `<TO SUPPLY>`.
 - **`Toast`** — shared client component from the notifications subsystem. For an archive it shows "{name} archived — Hidden from lists and the map." with "Undo" for 8 s. A thin bar shows the remaining time. Hover and focus pause the timer.
-- **`archiveOrganizations`** — Next.js server action. It receives the selected ids, calls `OrganizationService.archive`, revalidates the list and the map, and returns the archived names for the toast.
-- **`restoreOrganizations`** — Next.js server action called by Undo. It calls `OrganizationService.restore` for each id and revalidates the list and the map.
-- **`tagOrganizations`** — Next.js server action. It receives a `BulkTagInput` and calls `OrganizationService.tag`.
+- **`archiveOrganizations`** — Next.js route handler. It receives the selected ids, calls `OrganizationService.archive`, revalidates the list and the map, and returns the archived names for the toast.
+- **`restoreOrganizations`** — Next.js route handler called by Undo. It calls `OrganizationService.restore` for each id and revalidates the list and the map.
+- **`tagOrganizations`** — Next.js route handler. It receives a `BulkTagInput` and calls `OrganizationService.tag`.
 - **`OrganizationService`** — server module in the application layer. `archive(ids, userId)` sets `archivedAt` and `archivedBy` on each organization in one transaction, then calls `NotificationService.notifyTeam`. `restore(id)` clears both fields. `tag(input)` calls `assertEditable` and adds or removes the tag on each organization in one transaction.
 - **`NotificationService`** — server module of the notifications subsystem. `notifyTeam` stores a notification "{person} archived {name}" for team members.
 - **`OrganizationRepository`** — data-access module over the `organizations` table.
@@ -50,7 +50,7 @@ A signed-in team member archives and tags organizations in Harvest Map over HTTP
 
 ### Containers
 
-The Next.js web app runs the bulk server actions. They update organizations and store notifications in the PostgreSQL database.
+The Next.js web app runs the bulk route handlers. They update organizations and store notifications in the PostgreSQL database.
 
 ![C4 container view for archive and bulk actions](diagrams/c4-container.png)
 

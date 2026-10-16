@@ -22,8 +22,8 @@ The slice runs from a React page in the Next.js web app to the PostgreSQL databa
 - **`OrganizationLoading`** and **`OrganizationError`** — Next.js `loading` and `error` boundaries for the route. The first shows a skeleton; the second shows "Couldn't load this organisation" with "Try again" and "Go back".
 - **`OrganizationActions`** — client component. For an active organization it renders Edit, Delete and Research. For an archived organization it renders only Restore.
 - **`ArchivedBanner`** — component shown above the header of an archived organization. It reads "Archived by {person} · {date}. Read-only until restored."
-- **`restoreOrganization`** — Next.js server action. It receives the organization id, calls `OrganizationService.restore` and revalidates the page, the list and the map.
-- **`OrganizationService`** — server module in the application layer. `get(id)` returns an `OrganizationDetail` or nothing. `restore(id)` clears the archive fields. `assertEditable(id)` rejects any change to an archived organization; every mutating server action of the organizations subsystem calls it first.
+- **`restoreOrganization`** — Next.js route handler. It receives the organization id, calls `OrganizationService.restore` and revalidates the page, the list and the map.
+- **`OrganizationService`** — server module in the application layer. `get(id)` returns an `OrganizationDetail` or nothing. `restore(id)` clears the archive fields. `assertEditable(id)` rejects any change to an archived organization; every mutating route handler of the organizations subsystem calls it first.
 - **`OrganizationRepository`** — data-access module over the `organizations` table and its linked people, problems, sources, initiatives and activity.
 - **`OrganizationDetail`** — typed view model: the `Organization` fields plus lists of `PersonLink`, `ProblemLink`, `Source`, `Initiative` and `ActivityEntry`.
 
@@ -57,7 +57,7 @@ The Next.js web app renders the page and runs the restore action. Both read and 
 
 ### Components
 
-`OrganizationPage` renders `ArchivedBanner` and `OrganizationActions`. `OrganizationActions` calls the `restoreOrganization` server action or opens the Run research dialog. The page and the action call `OrganizationService`, which uses `OrganizationRepository`.
+`OrganizationPage` renders `ArchivedBanner` and `OrganizationActions`. `OrganizationActions` calls the `restoreOrganization` route handler or opens the Run research dialog. The page and the action call `OrganizationService`, which uses `OrganizationRepository`.
 
 ![C4 component view for viewing an organization](diagrams/c4-component.png)
 

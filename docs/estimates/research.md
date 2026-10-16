@@ -2,6 +2,6 @@
 
 | Design | Effort | Complete |
 |---|---|---|
-| monitor-research-runs | 4 days | 0% |
-| review-findings | 3 days | 0% |
-| start-research-run | 2 days | 0% |
+| monitor-research-runs | 4 days | 25% |
+| review-findings | 3 days | 100% |
+| start-research-run | 2 days | 100% |
