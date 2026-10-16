@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Read notifications
+
+Person(member, "Invited team member", "Catches up on research and team events")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Reads notifications in", "HTTPS")
+@enduml

@@ -1,0 +1,86 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Browse organizations
+
+enum FilterChip {
+  AI
+  Youth
+  Moonshot
+  Verified
+}
+enum SortKey {
+  Impact
+  Name
+  Updated
+}
+enum VerificationStatus {
+  Verified
+  Unverified
+  Conflict
+}
+class OrganizationList {
+  -selectedIds: Set<string>
+  +toggleChip(chip: FilterChip): void
+  +setSort(sort: SortKey): void
+  +search(text: string): void
+}
+class OrganizationQuery {
+  +chips: FilterChip[]
+  +sort: SortKey
+  +search: string
+}
+class OrganizationListResult {
+  +items: OrganizationSummary[]
+  +counts: OrganizationCounts
+}
+class OrganizationSummary {
+  +id: string
+  +name: string
+  +mark: string
+  +type: string
+  +city: string
+  +reach: string
+  +tags: string[]
+  +status: VerificationStatus
+}
+class OrganizationCounts {
+  +tracked: number
+  +verified: number
+  +unverified: number
+}
+class OrganizationService {
+  +list(query: OrganizationQuery): OrganizationListResult
+}
+class OrganizationRepository {
+  +findMany(query: OrganizationQuery): Organization[]
+  +count(): OrganizationCounts
+}
+class Organization {
+  +id: string
+  +name: string
+  +status: VerificationStatus
+  +archivedAt: Date
+  +updatedAt: Date
+}
+
+OrganizationList ..> OrganizationQuery : builds
+OrganizationList ..> OrganizationListResult : renders
+OrganizationQuery --> FilterChip
+OrganizationQuery --> SortKey
+OrganizationListResult "1" *-- "*" OrganizationSummary
+OrganizationListResult "1" *-- "1" OrganizationCounts
+OrganizationSummary --> VerificationStatus
+OrganizationService ..> OrganizationRepository : uses
+OrganizationService ..> OrganizationListResult : returns
+OrganizationRepository ..> Organization : reads
+Organization --> VerificationStatus
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Theming
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(root, "RootLayout", "Next.js root layout", "Renders html with data-theme or none")
+  Component(tokens, "Theme tokens", "CSS custom properties", "Light on :root, dark on data-theme or OS dark")
+  Component(control, "Theme control", "React client component in Settings", "Match system, Light, Dark")
+  Component(shortcut, "KeyboardShortcuts", "React client component", "T toggles the theme")
+  Component(ctrl, "ThemeController", "TypeScript module", "apply and toggle")
+  Component(action, "saveThemePreference", "Next.js server action", "Stores the preference")
+  Component(prefs, "PreferencesService", "TypeScript module", "Reads and writes user preferences")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "user_preferences")
+}
+Rel(root, prefs, "Reads preference via")
+Rel(root, tokens, "Selects theme through data-theme")
+Rel(control, ctrl, "Calls apply(preference)")
+Rel(shortcut, ctrl, "Calls toggle()")
+Rel(ctrl, action, "Calls")
+Rel(action, prefs, "Calls")
+Rel(prefs, db, "Reads and writes", "SQL")
+@enduml

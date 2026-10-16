@@ -1,0 +1,50 @@
+@startuml
+title UML sequence behaviour — View organization
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "OrganizationActions" as actions
+  participant "Run research dialog" as research
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "OrganizationPage" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /organizations/:id
+page --> actor : Loading skeleton (L2-007 AC4)
+page -> service : get(id)
+service -> repo : findDetail(id)
+repo -> db : Select organization, people, problems, sources, initiatives, activity
+db --> repo : Rows
+repo --> service : OrganizationDetail or none
+service --> page : OrganizationDetail or none
+alt Id does not exist
+  page --> actor : Not-found page (L2-007 AC4)
+else Load failed
+  page --> actor : "Couldn't load this organisation" with Try again (L2-007 AC4)
+else Archived
+  page --> actor : Banner "Archived by {person} · {date}. Read-only until restored.", only Restore (L2-007 AC6)
+else Active
+  page -> actions : Render Edit, Delete, Research
+  page --> actor : Header, sections, details and Activity; empty sections show prompts (L2-007 AC1, AC5)
+end
+opt Select person or problem
+  actor -> page : Select entry
+  page --> actor : Open person or problem page (L2-007 AC2)
+end
+opt Select Research
+  actor -> actions : Research
+  actions -> research : Open with target organization id
+  research --> actor : Run research pre-targeted to this organization (L2-007 AC8)
+end
+@enduml

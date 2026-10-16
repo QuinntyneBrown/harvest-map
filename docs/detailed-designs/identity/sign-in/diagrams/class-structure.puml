@@ -1,0 +1,52 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Sign in
+
+class SignInForm {
+  -busy: boolean
+  +submit(input: SignInInput): void
+}
+class SignInInput {
+  +email: string
+  +password: string
+}
+class SignInResult {
+  +ok: boolean
+  +errors: FieldError[]
+  +redirectTo: string
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class AuthService {
+  +verifyCredentials(email: string, password: string): User
+  +createSession(userId: string): Session
+}
+class User {
+  +id: string
+  +email: string
+  +passwordHash: string
+}
+class Session {
+  +id: string
+  +userId: string
+  +createdAt: Date
+}
+
+SignInForm ..> SignInInput : builds
+SignInForm ..> SignInResult : renders
+SignInResult "1" *-- "*" FieldError
+AuthService ..> User : reads
+AuthService ..> Session : creates
+Session "*" --> "1" User
+@enduml

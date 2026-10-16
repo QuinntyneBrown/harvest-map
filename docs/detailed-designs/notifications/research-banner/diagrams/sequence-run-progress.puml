@@ -1,0 +1,41 @@
+@startuml
+title UML sequence behaviour — Report run progress
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ResearchBanner" as banner
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "GET /api/research-banner" as route
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ResearchBannerService" as svc
+  participant "Research run" as run
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+run -> db : Update done and total items
+loop While the run is in progress (transport TO SUPPLY)
+  banner -> route : Fetch current banner
+  route -> svc : current(userId)
+  svc -> db : Select running run
+  db --> svc : doneItems, totalItems
+  svc --> route : Info BannerView with progressPercent, link /research
+  route --> banner : JSON
+  banner --> actor : "Run #48 running · 62%" with View to /research (L2-035 AC4)
+end
+alt Run finishes
+  run -> svc : recordEvent(success "Run #47 finished")
+else Run slows
+  run -> svc : recordEvent(warning "Run #48 slowed")
+else Run fails
+  run -> svc : recordEvent(danger "Run #45 failed")
+end
+svc -> db : Insert banner_events row
+banner -> route : Next fetch returns the outcome banner (L2-035 AC1)
+@enduml

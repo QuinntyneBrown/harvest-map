@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Start a research run
+
+Person(member, "Team member", "Chooses question, scope and depth")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, server actions and route handlers")
+  Container(executor, "Research run executor", "<TO SUPPLY>", "Executes queued research runs in the background")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Research runs and user settings")
+}
+System_Ext(search, "Web search provider", "<TO SUPPLY>")
+System_Ext(ai, "AI provider", "<TO SUPPLY>")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads settings, inserts queued run", "SQL")
+Rel(web, executor, "Hands queued run to", "<TO SUPPLY>")
+Rel(executor, db, "Reads and updates runs", "SQL")
+Rel(executor, search, "Searches", "<TO SUPPLY>")
+Rel(executor, ai, "Extracts findings", "<TO SUPPLY>")
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Responsive layout
+
+Person(member, "Invited team member", "Resizes, rotates or zooms")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React, CSS", "Pages and the global stylesheet with layout tokens")
+}
+Rel(member, web, "Uses", "HTTPS")
+@enduml

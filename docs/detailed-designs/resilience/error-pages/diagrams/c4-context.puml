@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Error pages
+
+Person(member, "Signed-in person", "Requests pages and records")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+System_Ext(report, "Error reporting service", "Provider TO SUPPLY")
+
+Rel(member, hm, "Requests pages from", "HTTPS")
+Rel(hm, report, "Reports unhandled errors to")
+@enduml

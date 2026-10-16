@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Export records
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "OrganizationsPage", "React server component, /organizations", "Offers Export")
+  Component(bar, "SelectionBar", "React client component", "Offers Export {n}")
+  Component(dialog, "ExportDialog", "React client component", "Format, scope, people, busy and failed states")
+  Component(handler, "exportOrganizations", "Next.js route handler", "Returns the export file")
+  Component(service, "ExportService", "TypeScript module", "Resolves scope and serializes CSV or JSON")
+  Component(orgs, "OrganizationRepository", "TypeScript module", "Reads organizations")
+  Component(people, "PersonRepository", "TypeScript module, people subsystem", "Reads linked people")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, people")
+}
+Rel(page, dialog, "Opens with all and current filter scopes")
+Rel(bar, dialog, "Opens with selected rows scope")
+Rel(dialog, handler, "Requests file from", "HTTPS")
+Rel(handler, service, "Calls export(request)")
+Rel(service, orgs, "Calls findForExport(scope)")
+Rel(service, people, "Calls findByOrganizationIds(ids)")
+Rel(orgs, db, "Selects", "SQL")
+Rel(people, db, "Selects", "SQL")
+@enduml

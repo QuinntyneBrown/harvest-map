@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — Run a keyboard shortcut
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ShortcutHandler" as handler
+  participant "Next.js router" as router
+  participant "CommandPaletteProvider" as palette
+  participant "ThemeProvider" as theme
+  participant "Run-research dialog" as research
+  participant "Open dialog" as open
+end box
+actor -> handler : Press key
+alt Text input focused
+  handler -> handler : Ignore key (L2-029 AC2)
+else No text input focused
+  alt Cmd+K, Ctrl+K or /
+    handler -> palette : open() (L2-029 AC2)
+  else G then F, O, P or M
+    handler -> router : push("/", "/organizations", "/people" or "/map") (L2-029 AC2)
+  else N
+    handler -> router : Open new organization form (L2-029 AC2)
+  else E on a record page
+    handler -> router : push(record path + "/edit") (L2-029 AC2)
+  else R
+    handler -> research : Open (L2-029 AC2)
+  else T
+    handler -> theme : toggle() (L2-029 AC2)
+  else Esc
+    handler -> open : Close (L2-029 AC2)
+  end
+end
+handler --> actor : Action result shown
+@enduml

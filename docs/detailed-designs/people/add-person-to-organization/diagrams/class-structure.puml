@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Add person to organization
+
+class AddPersonDialog {
+  -busy: boolean
+  +organizationId: string
+  +organizationName: string
+  +submit(input: AddPersonInput): void
+}
+class AddPersonInput {
+  +organizationId: string
+  +name: string
+  +role: string
+  +linkedinUrl: string | null
+}
+class AddPersonResult {
+  +ok: boolean
+  +errors: FieldError[]
+  +person: Person
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class PersonService {
+  +addToOrganization(input: AddPersonInput): Person
+}
+class PersonRepository {
+  +insert(person: Person): Person
+}
+class Person {
+  +id: string
+  +name: string
+  +role: string
+  +organizationId: string
+  +linkedinUrl: string | null
+}
+class Organization {
+  +id: string
+  +name: string
+}
+
+AddPersonDialog ..> AddPersonInput : builds
+AddPersonDialog ..> AddPersonResult : renders
+AddPersonResult "1" *-- "*" FieldError
+PersonService ..> PersonRepository : uses
+PersonService ..> Person : creates
+PersonRepository ..> Person : stores
+Person "*" --> "1" Organization
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View the Field home page
+
+Person(member, "Signed-in team member", "Reads the state of the catalogue and research")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Reads the Field home page in", "HTTPS")
+@enduml

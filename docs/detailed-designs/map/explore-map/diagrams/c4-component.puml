@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Explore the map
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "MapPage", "React page, /map", "Header, states and layout")
+  Component(filters, "MapFilters", "React client component", "All, AI, Youth, Moonshot, Verified, Unverified")
+  Component(world, "WorldMap", "React client component", "Dot-matrix land and pins")
+  Component(pin, "MapPin", "React client component", "Focusable pin button")
+  Component(pop, "PinPopover", "React client component", "Anchored organization summary")
+  Component(list, "PinList", "React client component", "Same pins as a list")
+  Component(unplaced, "UnplacedList", "React client component", "Not on the map links")
+  Component(gaps, "GapsPanel", "React client component", "Where the gaps are")
+  Component(action, "getMapData", "Next.js server action", "Returns pins, unplaced and gaps")
+  Component(svc, "MapService", "TypeScript module", "Splits placed and unplaced organizations")
+  Component(gap, "GapAnalysis", "TypeScript module", "Regions with no organization")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations")
+}
+Rel(page, action, "Calls on open")
+Rel(page, filters, "Renders")
+Rel(page, world, "Renders")
+Rel(page, list, "Renders")
+Rel(page, unplaced, "Renders")
+Rel(page, gaps, "Renders")
+Rel(filters, world, "Narrows pins in")
+Rel(filters, list, "Narrows entries in")
+Rel(world, pin, "Places one per organization")
+Rel(pin, pop, "Opens")
+Rel(action, svc, "Calls")
+Rel(svc, gap, "Uses")
+Rel(svc, db, "Reads", "SQL")
+@enduml

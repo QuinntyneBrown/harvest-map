@@ -1,0 +1,54 @@
+@startuml
+title UML sequence behaviour — Save organization
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "OrganizationForm" as form
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "OrganizationEditPage" as page
+  participant "saveOrganization server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /organizations/:id/edit
+page --> actor : Skeleton form while loading (L2-008 AC1)
+page -> service : get(id)
+service -> repo : Select organization
+repo -> db : Select row
+db --> repo : Row
+repo --> service : Organization
+service --> page : OrganizationDetail
+page -> form : Render prefilled, "{name} · last saved {date} by {person}" (L2-008 AC1)
+actor -> form : Edit fields, Summary grows with text (L2-008 AC6), select Save
+alt Name empty or Website invalid
+  form --> actor : "Fix 2 things to save" with inline messages, focus summary (L2-008 AC2)
+else Values valid
+  form -> form : Set busy, ignore duplicate submit (L2-008 AC3)
+  form -> action : saveOrganization(OrganizationInput)
+  action -> action : validateOrganization(input)
+  action -> service : save(input, userId)
+  service -> service : assertEditable(id)
+  service -> repo : update(organization) or insert(organization)
+  repo -> db : Write row with updatedAt and updatedBy
+  db --> repo : Commit result
+  repo --> service : Organization
+  service --> action : Organization
+  action -> action : Revalidate organization page and list
+  action --> form : SaveOrganizationResult ok, redirect to /organizations/:id
+  form --> actor : "Saved · just now", return to organization page (L2-008 AC3)
+end
+opt Save fails
+  action --> form : Failure
+  form --> actor : Error alert, entries kept, Save enabled for retry (L2-008 AC4)
+end
+@enduml

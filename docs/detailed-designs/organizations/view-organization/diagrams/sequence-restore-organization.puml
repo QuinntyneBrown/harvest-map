@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour — Restore organization
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "OrganizationActions" as actions
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "restoreOrganization server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> actions : Select Restore
+actions -> action : restoreOrganization(id)
+action -> service : restore(id)
+service -> repo : Clear archivedAt and archivedBy
+repo -> db : Update organization
+db --> repo : Commit result
+repo --> service : Done
+service --> action : Done
+action -> action : Revalidate page, list and map
+action --> actions : Success
+actions --> actor : Editable page with Edit, Delete, Research; visible in lists and map (L2-007 AC7)
+note over action, service
+  Any other mutating server action on an archived
+  organization calls assertEditable(id) and is rejected (L2-007 AC6)
+end note
+@enduml

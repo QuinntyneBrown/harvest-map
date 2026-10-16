@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign in
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "SignInPage", "React page, /sign-in", "Renders the form, error summary and alerts")
+  Component(form, "SignInForm", "React client component", "Validates fields and submits once")
+  Component(action, "signIn", "Next.js server action", "Checks credentials and starts a session")
+  Component(auth, "AuthService", "TypeScript module", "Verifies passwords and creates sessions")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "users, sessions")
+}
+Rel(page, form, "Renders")
+Rel(form, action, "Submits credentials to")
+Rel(action, auth, "Calls")
+Rel(auth, db, "Reads user, inserts session", "SQL")
+@enduml

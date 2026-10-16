@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Keyboard shortcuts
+
+class ShortcutHandler {
+  -pendingG: boolean
+  +onKeyDown(event: KeyboardEvent): void
+  -isTextInput(target: Element): boolean
+  -perform(shortcut: Shortcut): void
+}
+class Shortcut {
+  +keys: string
+  +label: string
+}
+class SHORTCUTS <<constant>> {
+  +entries: Shortcut[]
+}
+class KeyboardShortcutsDialogProvider {
+  -isOpen: boolean
+  -previousElement: HTMLElement
+  +open(): void
+  +close(): void
+}
+class KeyboardShortcutsDialog {
+  +shortcuts: Shortcut[]
+  +onClose(): void
+}
+class CommandPaletteProvider {
+  +open(): void
+}
+class ThemeProvider {
+  +toggle(): void
+}
+
+SHORTCUTS "1" *-- "11" Shortcut
+ShortcutHandler ..> SHORTCUTS : reads
+KeyboardShortcutsDialog ..> SHORTCUTS : renders
+KeyboardShortcutsDialogProvider *-- KeyboardShortcutsDialog
+ShortcutHandler ..> KeyboardShortcutsDialogProvider : opens
+ShortcutHandler ..> CommandPaletteProvider : opens
+ShortcutHandler ..> ThemeProvider : toggles
+@enduml

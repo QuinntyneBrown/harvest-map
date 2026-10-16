@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Error pages
+
+Person(member, "Signed-in person", "Requests pages and records")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, error boundaries and status codes")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Workspace membership and catalogue records")
+}
+System_Ext(report, "Error reporting service", "Provider TO SUPPLY")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads membership and records", "SQL")
+Rel(web, report, "Reports unhandled errors to")
+@enduml

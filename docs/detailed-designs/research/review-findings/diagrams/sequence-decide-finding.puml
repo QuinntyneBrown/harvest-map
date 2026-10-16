@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Accept, reject and undo a finding
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "FindingsReviewSection" as section
+  participant "FindingCard" as card
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "acceptFinding / rejectFinding /\nundoFindingDecision server actions" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "FindingService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> section : Open findings to review
+section --> actor : Statement, subject, source domain, "Confidence {p}%", low-confidence reason, Accept, Edit, Reject (L2-024 AC1)
+alt Accept
+  actor -> card : Select Accept
+  card --> actor : "Accepted by {person} · Undo available for 30 s" with Undo, at once (L2-024 AC2)
+  card -> action : acceptFinding(id, change)
+  action -> service : accept(id, change, userId)
+  service -> db : Create or update subject record, store previous values
+  service -> db : Set state Accepted, insert activity entry with person and run number (L2-024 AC8)
+  db --> service : Commit result
+  service --> action : FindingDecisionResult
+  action --> card : Result
+else Reject
+  actor -> card : Select Reject
+  card --> actor : "Rejected by {person} · Undo available for 30 s" with Undo, at once (L2-024 AC3)
+  card -> action : rejectFinding(id)
+  action -> service : reject(id, userId)
+  service -> db : Set state Rejected, keep sources, change no record
+  db --> service : Commit result
+  service --> action : FindingDecisionResult
+  action --> card : Result
+end
+opt Server refuses the decision
+  card --> actor : Card reverts to pending; message <TO SUPPLY>
+end
+alt Undo within 30 s
+  actor -> card : Select Undo
+  card -> action : undoFindingDecision(id)
+  action -> service : undo(id, userId)
+  service -> db : Reverse the effect, set state Pending
+  db --> service : Commit result
+  service --> action : FindingDecisionResult
+  action --> card : Result
+  card --> actor : Finding pending again with Accept, Edit, Reject (L2-024 AC4)
+else 30 s pass
+  card -> card : Undo window ends
+  card --> actor : Undo no longer offered (L2-024 AC4)
+end
+@enduml

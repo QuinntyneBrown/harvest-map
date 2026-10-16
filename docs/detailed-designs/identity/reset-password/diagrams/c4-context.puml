@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Reset password
+
+Person(member, "Invited team member", "Person who followed a reset link")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Sets a new password in", "HTTPS")
+@enduml

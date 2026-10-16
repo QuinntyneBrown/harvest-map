@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Sign out
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(settings, "SettingsPage", "React page, /settings", "Holds the Sign out button in Account")
+  Component(dialog, "SignOutDialog", "React client component", "Confirms sign-out and shows busy and failed states")
+  Component(store, "EditQueue", "Browser store", "Holds unsynced offline edits")
+  Component(action, "signOut", "Next.js server action", "Revokes the session and clears the cookie")
+  Component(svc, "SessionService", "TypeScript module", "Revokes sessions")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "sessions")
+}
+Rel(settings, dialog, "Opens")
+Rel(dialog, store, "Reads unsynced count from")
+Rel(dialog, action, "Submits sign-out to")
+Rel(action, svc, "Calls")
+Rel(svc, db, "Deletes session", "SQL")
+@enduml

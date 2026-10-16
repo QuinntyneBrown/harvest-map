@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — View a problem
+
+Person(member, "Team member", "Views one problem")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, server actions and route handlers")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Problems, links, organizations, milestones, sources, activity")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads the problem and related rows", "SQL")
+@enduml

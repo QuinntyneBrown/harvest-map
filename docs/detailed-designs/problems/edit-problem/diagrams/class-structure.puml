@@ -1,0 +1,87 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Create and edit a problem
+
+enum Severity {
+  Low
+  Medium
+  High
+}
+enum Tractability {
+  Low
+  Medium
+  High
+}
+enum ProblemStatus {
+  Tracked
+  Watching
+  Archived
+}
+class ProblemForm {
+  -busy: boolean
+  -dirtyFields: string[]
+  +submit(input: ProblemInput): void
+}
+class ProblemInput {
+  +id: string | null
+  +title: string
+  +summary: string
+  +reach: string
+  +severity: Severity
+  +tractability: Tractability
+  +status: ProblemStatus
+}
+class SaveProblemResult {
+  +ok: boolean
+  +errors: FieldError[]
+  +problem: Problem
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class UnsavedChangesDialog {
+  +title: string
+  +changedFields: string[]
+  +onDiscard(): void
+  +onKeepEditing(): void
+}
+class ProblemService {
+  +save(input: ProblemInput): Problem
+  +recomputeRanking(): void
+}
+class ImpactScorer {
+  +score(problem: Problem): number
+}
+class Problem {
+  +id: string
+  +title: string
+  +summary: string
+  +reach: string
+  +severity: Severity
+  +tractability: Tractability
+  +status: ProblemStatus
+  +score: number
+  +rank: number
+}
+
+ProblemForm ..> ProblemInput : builds
+ProblemForm ..> SaveProblemResult : renders
+ProblemForm ..> UnsavedChangesDialog : opens
+SaveProblemResult "1" *-- "*" FieldError
+ProblemService ..> ProblemInput : reads
+ProblemService ..> Problem : writes
+ProblemService ..> ImpactScorer : uses
+ProblemInput --> Severity
+ProblemInput --> Tractability
+ProblemInput --> ProblemStatus
+@enduml

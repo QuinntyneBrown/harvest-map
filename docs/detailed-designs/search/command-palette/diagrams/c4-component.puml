@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Command palette
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(shortcuts, "ShortcutHandler", "React client component, keyboard-shortcuts feature", "Calls open() on Cmd+K, Ctrl+K and /")
+  Component(provider, "CommandPaletteProvider", "React client component, signed-in layout", "Open state and previous element")
+  Component(palette, "CommandPalette", "React client component", "Search input, groups, highlight, debounce")
+  Component(handler, "GET /api/search", "Next.js route handler", "Returns PaletteResults as JSON")
+  Component(service, "SearchService", "TypeScript module", "Searches every record kind")
+  Component(orgrepo, "OrganizationRepository", "TypeScript module", "Data access for organizations")
+  Component(personrepo, "PersonRepository", "TypeScript module", "Data access for people")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, people")
+}
+Rel(shortcuts, provider, "Calls open()")
+Rel(provider, palette, "Renders when open")
+Rel(palette, handler, "Requests results", "JSON/HTTPS")
+Rel(handler, service, "Calls search")
+Rel(service, orgrepo, "Calls search")
+Rel(service, personrepo, "Calls search")
+Rel(orgrepo, db, "Selects", "SQL")
+Rel(personrepo, db, "Selects", "SQL")
+@enduml

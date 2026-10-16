@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Inline alerts
+
+Person(member, "Invited team member", "Reads alerts and selects their action")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages render inline alerts in the browser")
+}
+Rel(member, web, "Uses", "HTTPS")
+@enduml

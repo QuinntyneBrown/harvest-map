@@ -1,0 +1,4 @@
+# Screenshot sweeps of the HTML mocks are regenerated, never committed.
+docs/mocks/.cache/
+__pycache__/
+docs/design-system/.cache/

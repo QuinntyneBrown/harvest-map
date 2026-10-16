@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Research banner
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(layout, "SignedInLayout", "Next.js layout", "Renders TopBar, then ResearchBanner, then the page")
+  Component(banner, "ResearchBanner", "React client component", "Shows kind, title, message, link and Dismiss")
+  Component(route, "GET /api/research-banner", "Next.js route handler", "Returns the current BannerView")
+  Component(dismiss, "dismissResearchBanner", "Next.js server action", "Records a dismissal")
+  Component(svc, "ResearchBannerService", "TypeScript module", "Builds BannerView, records banner events")
+  Component(sources, "Event sources", "Research runs, trusted-source settings", "Raise banner events")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "research_runs, banner_events, banner_dismissals")
+}
+Rel(layout, banner, "Renders")
+Rel(banner, route, "Fetches current banner", "JSON/HTTPS")
+Rel(banner, dismiss, "Calls")
+Rel(route, svc, "Calls")
+Rel(dismiss, svc, "Calls")
+Rel(sources, svc, "Record events through")
+Rel(svc, db, "Reads and writes", "SQL")
+@enduml

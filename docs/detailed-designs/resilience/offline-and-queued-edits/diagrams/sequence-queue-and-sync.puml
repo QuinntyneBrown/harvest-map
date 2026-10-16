@@ -1,0 +1,57 @@
+@startuml
+title UML sequence behaviour — Queue and sync edits
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Queueable form" as form
+  participant "submitOrQueue" as submit
+  participant "EditQueue" as queue
+  participant "ConnectivityMonitor" as monitor
+  participant "SyncRunner" as sync
+  participant "OfflineBanner" as banner
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "Save server action\n(e.g. saveOrganization)" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "Record service" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> form : Save an edit while offline
+form -> submit : submitOrQueue(actionName, payload)
+submit -> queue : append(QueuedEdit) (L2-036 AC3)
+submit --> form : Queued
+form --> actor : Edit kept, banner count rises
+monitor -> monitor : Browser fires online event
+monitor -> sync : run()
+sync -> banner : Reconnecting
+banner --> actor : "Reconnecting — Syncing {n} queued edits."
+loop Each QueuedEdit in sequence order
+  sync -> action : Call action with payload and baseVersion
+  action -> svc : Validate and save
+  svc -> db : Compare version, write record
+  alt Version matches
+    db --> svc : Saved
+    svc --> action : Ok
+    action --> sync : Ok
+    sync -> queue : remove(sequence)
+  else Record changed while offline
+    db --> svc : Version mismatch
+    svc --> action : Conflict
+    action --> sync : Conflict (changed by)
+  end
+end
+alt All edits synced
+  sync -> banner : SyncResult(synced = n)
+  banner --> actor : "Back online — {n} queued edits synced." (L2-036 AC3)
+else Conflict
+  sync -> banner : SyncResult with conflicts
+  banner --> actor : role alert "Couldn't sync 1 edit" with Review conflict
+end
+@enduml

@@ -1,0 +1,45 @@
+@startuml
+title UML sequence behaviour — Open the Research page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ResearchPage" as page
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "ResearchPage server render" as render
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ResearchService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /research
+page --> actor : Skeleton rows while loading (L2-023 AC7)
+page -> render : Request /research
+render -> service : listRuns()
+service -> db : Select runs with counts and pending findings
+alt Load fails
+  db --> service : Error
+  service --> render : Error
+  render --> page : Error state
+  page --> actor : Error block with Retry (L2-023 AC7)
+else No runs
+  db --> service : No rows
+  service --> render : Empty ResearchOverview
+  render --> page : Empty state
+  page --> actor : "No runs yet" with "Run the first research" (L2-023 AC6)
+else Runs exist
+  db --> service : Run rows
+  service --> render : ResearchOverview
+  render --> page : Rendered page
+  page --> actor : "{n} runs · {r} running · {f} findings to review", run list, "Run research" (L2-023 AC1)
+  opt A run is in progress
+    page --> actor : RunProgressPanel for that run (L2-023 AC2)
+  end
+end
+@enduml

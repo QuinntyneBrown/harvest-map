@@ -1,0 +1,86 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View organization
+
+enum VerificationStatus {
+  Verified
+  Unverified
+  Conflict
+}
+class Organization {
+  +id: string
+  +name: string
+  +mark: string
+  +type: string
+  +founded: number
+  +city: string
+  +country: string
+  +reach: string
+  +website: string
+  +summary: string
+  +tags: string[]
+  +status: VerificationStatus
+  +archivedAt: Date
+  +archivedBy: string
+}
+class OrganizationDetail {
+  +organization: Organization
+  +people: PersonLink[]
+  +problems: ProblemLink[]
+  +sources: Source[]
+  +initiatives: Initiative[]
+  +activity: ActivityEntry[]
+}
+class PersonLink {
+  +personId: string
+  +name: string
+  +role: string
+}
+class ProblemLink {
+  +problemId: string
+  +title: string
+  +rank: number
+  +score: number
+}
+class Source {
+  +title: string
+  +domain: string
+  +verifiedAt: Date
+  +addedAt: Date
+}
+class Initiative {
+  +text: string
+}
+class ActivityEntry {
+  +at: Date
+  +text: string
+}
+class OrganizationService {
+  +get(id: string): OrganizationDetail
+  +restore(id: string): void
+  +assertEditable(id: string): void
+}
+class OrganizationRepository {
+  +findDetail(id: string): OrganizationDetail
+  +update(organization: Organization): void
+}
+
+OrganizationDetail "1" *-- "1" Organization
+OrganizationDetail "1" *-- "*" PersonLink
+OrganizationDetail "1" *-- "*" ProblemLink
+OrganizationDetail "1" *-- "*" Source
+OrganizationDetail "1" *-- "*" Initiative
+OrganizationDetail "1" *-- "*" ActivityEntry
+Organization --> VerificationStatus
+OrganizationService ..> OrganizationRepository : uses
+OrganizationService ..> OrganizationDetail : returns
+@enduml

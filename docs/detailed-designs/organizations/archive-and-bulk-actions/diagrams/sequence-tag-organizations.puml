@@ -1,0 +1,37 @@
+@startuml
+title UML sequence behaviour — Tag organizations
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SelectionBar" as bar
+  participant "BulkTagMenu" as menu
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "tagOrganizations server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> bar : Select Tag
+bar -> menu : Open for selected ids
+actor -> menu : Choose tag, add or remove
+menu -> action : tagOrganizations(BulkTagInput)
+action -> service : tag(input)
+service -> service : assertEditable(id) for each id
+service -> repo : Add or remove tag on each organization
+repo -> db : Update organizations in one transaction
+db --> repo : Commit result
+repo --> service : Done
+service --> action : Done
+action -> action : Revalidate list
+action --> menu : Saved
+menu --> actor : Cards show the changed tag (L2-010 AC4)
+@enduml

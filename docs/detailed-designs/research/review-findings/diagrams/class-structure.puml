@@ -1,0 +1,92 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Review findings
+
+enum FindingState {
+  Pending
+  Accepted
+  Rejected
+}
+enum FindingSubjectKind {
+  Organization
+  Person
+}
+class Finding {
+  +id: string
+  +runId: number
+  +statement: string
+  +subjectKind: FindingSubjectKind
+  +subjectId: string
+  +sourceDomain: string
+  +confidence: number
+  +lowConfidenceReason: string
+  +state: FindingState
+  +decidedBy: string
+  +decidedAt: Date
+}
+class FindingChange {
+  +fields: Map<string, string>
+  +previousValues: Map<string, string>
+}
+class Source {
+  +id: string
+  +findingId: string
+  +title: string
+  +domain: string
+  +url: string
+  +date: Date
+}
+class ActivityEntry {
+  +id: string
+  +at: Date
+  +actorId: string
+  +runId: number
+  +text: string
+}
+class FindingDecisionResult {
+  +ok: boolean
+  +finding: Finding
+  +errors: FieldError[]
+  +message: string
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class FindingService {
+  +accept(id: string, change: FindingChange, userId: string): FindingDecisionResult
+  +reject(id: string, userId: string): FindingDecisionResult
+  +undo(id: string, userId: string): FindingDecisionResult
+}
+class Organization {
+  +id: string
+  +name: string
+}
+class Person {
+  +id: string
+  +name: string
+  +role: string
+  +since: string
+  +organizationId: string
+}
+
+Finding --> FindingState
+Finding --> FindingSubjectKind
+Finding "1" *-- "1" FindingChange
+Finding "1" o-- "*" Source
+FindingService ..> Finding : decides
+FindingService ..> Organization : creates or updates
+FindingService ..> Person : creates or updates
+FindingService ..> ActivityEntry : writes
+FindingService ..> FindingDecisionResult : returns
+FindingDecisionResult "1" *-- "*" FieldError
+@enduml

@@ -1,0 +1,75 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Offline and queued edits
+
+class ConnectivityMonitor {
+  +online: boolean
+  +offlineSince: Date
+  +onReconnect(callback): void
+}
+class QueuedEdit {
+  +sequence: number
+  +actionName: string
+  +payload: object
+  +recordId: string
+  +baseVersion: string
+  +queuedAt: Date
+}
+class EditQueue {
+  +append(edit: QueuedEdit): void
+  +list(): QueuedEdit[]
+  +remove(sequence: number): void
+  +count(): number
+}
+class SyncRunner {
+  +run(): SyncResult
+}
+class SyncResult {
+  +synced: number
+  +conflicts: SyncConflict[]
+}
+class SyncConflict {
+  +recordName: string
+  +changedBy: string
+  +edit: QueuedEdit
+}
+class QueueableActions {
+  +get(actionName: string): ServerAction
+}
+enum OfflineBannerState {
+  Offline
+  OfflineWithQueue
+  Reconnecting
+  Synced
+  Conflict
+}
+class OfflineBanner {
+  +state: OfflineBannerState
+  +offlineFor: string
+  +queuedCount: number
+}
+class PageCache {
+  +has(url: string): boolean
+  +get(url: string): Response
+  +put(url: string, response: Response): void
+}
+
+EditQueue "1" *-- "*" QueuedEdit
+SyncRunner ..> EditQueue : reads / removes
+SyncRunner ..> QueueableActions : calls
+SyncRunner ..> SyncResult : returns
+SyncResult "1" *-- "*" SyncConflict
+OfflineBanner ..> ConnectivityMonitor : observes
+OfflineBanner ..> SyncResult : renders
+OfflineBanner --> OfflineBannerState
+OfflineBanner ..> EditQueue : counts
+@enduml

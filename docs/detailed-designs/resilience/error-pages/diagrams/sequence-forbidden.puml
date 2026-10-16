@@ -1,0 +1,28 @@
+@startuml
+title UML sequence behaviour — Forbidden
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in person" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ForbiddenPage" as fb
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "SignedInLayout" as layout
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "WorkspaceAccessService" as access
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> layout : GET a signed-in page
+layout -> access : check(userId)
+access -> db : Select membership and workspace admin
+db --> access : No membership, admin name and e-mail
+access --> layout : WorkspaceAccess(allowed = false)
+layout -> fb : forbidden()
+fb --> actor : HTTP 403 "Not your field" naming the admin, Ask {admin} and Back to the field (L2-040 AC2)
+@enduml

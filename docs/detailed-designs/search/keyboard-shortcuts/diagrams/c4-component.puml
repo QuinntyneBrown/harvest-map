@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Keyboard shortcuts
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(handler, "ShortcutHandler", "React client component, signed-in layout", "Maps keys to actions, ignores keys in text inputs")
+  Component(dprovider, "KeyboardShortcutsDialogProvider", "React client component, signed-in layout", "Open state and previous element")
+  Component(dialog, "KeyboardShortcutsDialog", "React client component", "Lists SHORTCUTS, Close")
+  Component(settings, "SettingsPage", "React page, /settings", "Keyboard shortcuts button")
+  Component(router, "Next.js router", "next/navigation", "Client-side navigation")
+  Component(palette, "CommandPaletteProvider", "React client component, L2-028", "Opens the command palette")
+  Component(theme, "ThemeProvider", "React client component, L2-042", "Toggles the theme")
+  Component(research, "Run-research dialog", "React client component, research subsystem", "Starts a research run")
+}
+Rel(handler, dprovider, "Calls open() on ?")
+Rel(settings, dprovider, "Calls open()")
+Rel(dprovider, dialog, "Renders when open")
+Rel(handler, router, "Navigates on G sequences, N and E")
+Rel(handler, palette, "Calls open() on Cmd+K, Ctrl+K or /")
+Rel(handler, theme, "Calls toggle() on T")
+Rel(handler, research, "Opens on R")
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Sign out
+
+Person(member, "Signed-in team member", "Person with an active session")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Signs out of", "HTTPS")
+@enduml

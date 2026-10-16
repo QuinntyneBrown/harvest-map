@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Forgot password
+
+Person(member, "Invited team member", "Requests a reset link by e-mail")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, server actions and route handlers")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Users, reset tokens and catalogue records")
+}
+System_Ext(email, "E-mail provider", "<TO SUPPLY>", "Delivers reset e-mails")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads users, writes reset tokens", "SQL")
+Rel(web, email, "Sends reset link via", "<TO SUPPLY>")
+@enduml

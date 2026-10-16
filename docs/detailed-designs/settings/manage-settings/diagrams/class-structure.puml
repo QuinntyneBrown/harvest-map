@@ -1,0 +1,101 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Manage settings
+
+enum ResearchDepth {
+  Quick
+  Standard
+  Deep
+}
+enum Theme {
+  MatchSystem
+  Light
+  Dark
+}
+class SettingsForm {
+  -busy: boolean
+  +submit(input: SettingsInput): void
+}
+class ThemeControl {
+  +pick(theme: Theme): void
+}
+class SettingsInput {
+  +name: string
+  +email: string
+  +defaultDepth: ResearchDepth
+  +trustedSources: string[]
+  +requireTwoSources: boolean
+  +theme: Theme
+  +reduceMotion: boolean
+  +animateField: boolean
+  +notifyRunFinished: boolean
+  +notifyTeammateVerified: boolean
+  +weeklyDigest: boolean
+}
+class SaveSettingsResult {
+  +ok: boolean
+  +errors: FieldError[]
+  +savedAt: Date
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class UserSettings {
+  +signedInEmail: string
+  +user: User
+  +preferences: UserPreferences
+}
+class SettingsService {
+  +load(userId: string): UserSettings
+  +save(userId: string, input: SettingsInput): void
+}
+class User {
+  +id: string
+  +name: string
+  +email: string
+  +photoUrl: string
+}
+class UserPreferences {
+  +userId: string
+  +defaultDepth: ResearchDepth
+  +trustedSources: string[]
+  +requireTwoSources: boolean
+  +theme: Theme
+  +reduceMotion: boolean
+  +animateField: boolean
+  +notifyRunFinished: boolean
+  +notifyTeammateVerified: boolean
+  +weeklyDigest: boolean
+}
+class FindingReverificationService {
+  +countAffected(trustedSources: string[]): number
+}
+class ResearchBannerService {
+  +recordEvent(message: string): void
+}
+
+SettingsForm ..> SettingsInput : builds
+SettingsForm ..> SaveSettingsResult : renders
+SettingsForm *-- ThemeControl
+SaveSettingsResult "1" *-- "*" FieldError
+SettingsService ..> UserSettings : returns
+SettingsService ..> User : reads / updates
+SettingsService ..> UserPreferences : reads / updates
+SettingsService ..> FindingReverificationService : uses
+SettingsService ..> ResearchBannerService : uses
+UserSettings --> User
+UserSettings --> UserPreferences
+UserPreferences "1" --> "1" User
+UserPreferences --> ResearchDepth
+UserPreferences --> Theme
+@enduml

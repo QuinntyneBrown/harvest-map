@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Show toasts
+
+Person(member, "Invited team member", "Acts on records and receives short feedback")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Works in and sees toasts from", "HTTPS")
+@enduml

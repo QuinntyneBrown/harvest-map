@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Follow a run in progress
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "RunProgressPanel" as panel
+  participant "Findings review list" as review
+  participant "Research banner" as banner
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "runUpdates route handler" as updates
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ResearchRunExecutor <TO SUPPLY>" as executor
+  participant "NotificationService" as notify
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+  participant "Web search provider <TO SUPPLY>" as search
+  participant "AI provider <TO SUPPLY>" as ai
+end box
+executor -> db : Set run status Running
+loop Each run item
+  executor -> db : Check stop request
+  executor -> search : Search sources for the item
+  search --> executor : Results
+  executor -> ai : Extract findings from results
+  ai --> executor : Findings with confidence
+  executor -> db : Insert run events and findings, advance itemsDone
+end
+panel -> updates : Request updates for the run (transport <TO SUPPLY>)
+updates -> db : Select new events, findings and progress
+db --> updates : Rows
+updates --> panel : RunUpdate
+panel --> actor : "Started {time} by {person} · {done} of {total} items done · about {m} minutes left", progress bar, new log lines announced politely (L2-023 AC2)
+panel -> review : Add new findings without reload
+review --> actor : New findings in the review list (L2-023 AC3)
+alt Run fails
+  executor -> db : Set status Failed with reason
+  executor -> notify : notifyRunFailed(run)
+  notify -> db : Insert notification
+  updates --> panel : RunUpdate with status Failed
+  panel --> actor : Status Failed with reason, for example "rate limited by 2 sources" (L2-023 AC5)
+else All items done
+  executor -> db : Set status Done
+  updates --> panel : RunUpdate with status Done
+end
+banner --> actor : Banner on any page reports the finished run (L2-023 AC8)
+@enduml

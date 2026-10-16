@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Navigation shell
+
+Person(member, "Invited team member", "Navigates signed-in pages")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Signed-in layout, header and navigation sheet")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Users, sessions and notifications")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads user and unread count", "SQL")
+@enduml

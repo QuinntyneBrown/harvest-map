@@ -1,0 +1,34 @@
+@startuml
+title UML sequence behaviour — Not found
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Workspace member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "NotFoundPage" as nf
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "Next.js router" as router
+  participant "Record page" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "Record service" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> router : GET a route
+alt No route matches
+  router -> nf : Render not-found.tsx inside the shell
+else Route matches a record page
+  router -> page : Render with id
+  page -> svc : Load record by id
+  svc -> db : Select by id
+  db --> svc : No row
+  svc --> page : Not found
+  page -> nf : notFound()
+end
+nf --> actor : HTTP 404 "Nothing grows here" with Back to the field and Search (L2-040 AC1)
+@enduml

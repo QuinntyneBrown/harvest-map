@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Show toasts
+
+enum ToastKind {
+  Info
+  Success
+  Warning
+  Danger
+}
+class ToastAction {
+  +label: string
+  +onSelect(): void
+}
+class ToastOptions {
+  +kind: ToastKind
+  +title: string
+  +detail: string
+  +action: ToastAction
+}
+class Toast {
+  +id: string
+  +options: ToastOptions
+  +createdAt: Date
+}
+class ToastProvider {
+  -toasts: Toast[]
+  -maxVisible: number = 3
+  +show(options: ToastOptions): string
+  +dismiss(id: string): void
+}
+class ToastRegion {
+  +politeToasts: Toast[]
+  +assertiveToasts: Toast[]
+}
+class ToastItem {
+  +toast: Toast
+  +onDismiss(): void
+}
+class ToastTimer {
+  -durationMs: number = 8000
+  -remainingMs: number
+  -paused: boolean
+  +pause(): void
+  +resume(): void
+}
+
+ToastProvider "1" *-- "0..3" Toast
+Toast --> ToastOptions
+ToastOptions --> ToastKind
+ToastOptions --> "0..1" ToastAction
+ToastProvider ..> ToastRegion : renders
+ToastRegion ..> ToastItem : renders
+ToastItem *-- "0..1" ToastTimer
+@enduml

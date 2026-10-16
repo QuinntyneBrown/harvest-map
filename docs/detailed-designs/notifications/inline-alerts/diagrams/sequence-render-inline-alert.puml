@@ -1,0 +1,32 @@
+@startuml
+title UML sequence behaviour — Render an inline alert
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Owning page" as page
+  participant "InlineAlert" as alert
+  participant "AlertIcon" as icon
+end box
+actor -> page : Open a page with a contextual message
+page -> alert : Render(kind, title, message, action?)
+alert -> icon : Render icon for kind
+alert -> alert : Show title and message text (L2-037 AC1, AC3)
+alt Kind is danger
+  alert --> actor : role alert, announced assertively (L2-037 AC2)
+else Info, success or warning
+  alert --> actor : role status, announced politely (L2-037 AC2)
+end
+opt Action given, e.g. "Retry"
+  actor -> alert : Select action button
+  alert -> page : action.onSelect() or follow href
+end
+opt Member selects Dismiss
+  actor -> alert : Select Dismiss
+  alert -> page : onDismiss()
+  page --> actor : Alert removed
+end
+@enduml

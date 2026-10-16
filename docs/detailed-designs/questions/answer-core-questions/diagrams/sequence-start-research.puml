@@ -1,0 +1,23 @@
+@startuml
+title UML sequence behaviour — Start research from a question
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "QuestionsPage" as page
+  participant "QuestionCard" as card
+  participant "RunResearchDialog" as dialog
+end box
+alt Re-run on a question
+  actor -> card : Select "Re-run"
+  card -> dialog : open(preselectedQuestion = number)
+  dialog --> actor : Run research with that question preselected (L2-025 AC5)
+else Ask the web
+  actor -> page : Select "Ask the web"
+  page -> dialog : open()
+  dialog --> actor : Run research (L2-025 AC6)
+end
+@enduml

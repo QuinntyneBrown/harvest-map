@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse people
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "PeoplePage", "React server component, /people", "Loads people and renders header, empty state")
+  Component(loading, "loading.tsx", "Next.js loading UI", "Skeleton rows")
+  Component(error, "error.tsx", "Next.js error boundary", "Couldn't load people, Try again")
+  Component(list, "PeopleList", "React client component", "Search box and name filter")
+  Component(row, "PersonRow", "React client component", "Initials, name, Role · Organization, LinkedIn link")
+  Component(service, "PersonService", "TypeScript module", "People application logic")
+  Component(repo, "PersonRepository", "TypeScript module", "Data access for people")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "people, organizations")
+}
+Rel(page, service, "Calls listPeople")
+Rel(service, repo, "Reads through")
+Rel(repo, db, "Selects people joined to organizations", "SQL")
+Rel(page, list, "Renders with PersonListItem[]")
+Rel(list, row, "Renders one per person")
+@enduml

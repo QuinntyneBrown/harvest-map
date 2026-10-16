@@ -1,0 +1,28 @@
+@startuml
+title UML sequence behaviour — Create notifications for an event
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "Event source\n(research, findings,\norganizations, problems)" as source
+  participant "NotificationService" as svc
+  participant "NotificationPreferences" as prefs
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+source -> svc : createForEvent(NotificationEvent)
+svc -> db : Select team members and their preferences
+db --> svc : Users with NotificationPreferences
+loop Each team member
+  svc -> prefs : enables(event.type)
+  prefs --> svc : true or false
+  opt Enabled (L2-033 AC2)
+    svc -> db : Insert notification row (title, detail, href)
+    db --> svc : Inserted
+  end
+end
+svc --> source : Done
+@enduml

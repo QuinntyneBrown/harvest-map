@@ -1,0 +1,611 @@
+{
+  "project": "Harvest Map",
+  "required_states": {
+    "page": [
+      "default",
+      "loading",
+      "empty",
+      "error"
+    ],
+    "dialog": [
+      "default",
+      "busy",
+      "invalid"
+    ],
+    "notification": [
+      "info",
+      "success",
+      "warning",
+      "danger"
+    ]
+  },
+  "screens": [
+    {
+      "id": "sign-in",
+      "kind": "page",
+      "title": "Sign in",
+      "route": "/sign-in",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error",
+        "success"
+      ],
+      "not_applicable": {
+        "loading": "The form renders with no request in flight; nothing to skeleton.",
+        "empty": "No collection on this page."
+      }
+    },
+    {
+      "id": "forgot-password",
+      "kind": "page",
+      "title": "Forgot password",
+      "route": "/forgot-password",
+      "states": [
+        "default",
+        "invalid",
+        "submitting",
+        "error",
+        "success"
+      ],
+      "not_applicable": {
+        "loading": "The form renders with no request in flight.",
+        "empty": "No collection on this page."
+      }
+    },
+    {
+      "id": "reset-password",
+      "kind": "page",
+      "title": "Reset password",
+      "route": "/reset-password",
+      "states": [
+        "default",
+        "loading",
+        "invalid",
+        "submitting",
+        "error",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "No collection on this page."
+      }
+    },
+    {
+      "id": "field",
+      "kind": "page",
+      "title": "Field",
+      "route": "/",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "partial"
+      ]
+    },
+    {
+      "id": "organizations",
+      "kind": "page",
+      "title": "Organizations",
+      "route": "/organizations",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results",
+        "long",
+        "selected",
+        "edge"
+      ]
+    },
+    {
+      "id": "organization",
+      "kind": "page",
+      "title": "Organization",
+      "route": "/organizations/:id",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "read-only",
+        "edge"
+      ]
+    },
+    {
+      "id": "organization-edit",
+      "kind": "page",
+      "title": "Edit organization",
+      "route": "/organizations/:id/edit",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form always has fields; creating a new organization is the default state with blank values, shown in organization-edit/default via the New organization note."
+      }
+    },
+    {
+      "id": "people",
+      "kind": "page",
+      "title": "People",
+      "route": "/people",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results",
+        "long"
+      ]
+    },
+    {
+      "id": "person",
+      "kind": "page",
+      "title": "Person",
+      "route": "/people/:id",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "edge"
+      ]
+    },
+    {
+      "id": "person-edit",
+      "kind": "page",
+      "title": "Edit person",
+      "route": "/people/:id/edit",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form always has fields."
+      }
+    },
+    {
+      "id": "problems",
+      "kind": "page",
+      "title": "Problems",
+      "route": "/problems",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "problem",
+      "kind": "page",
+      "title": "Problem",
+      "route": "/problems/:id",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error"
+      ]
+    },
+    {
+      "id": "problem-edit",
+      "kind": "page",
+      "title": "Edit problem",
+      "route": "/problems/:id/edit",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "A form always has fields."
+      }
+    },
+    {
+      "id": "questions",
+      "kind": "page",
+      "title": "Questions",
+      "route": "/questions",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "partial"
+      ]
+    },
+    {
+      "id": "research",
+      "kind": "page",
+      "title": "Research",
+      "route": "/research",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "running",
+        "review"
+      ]
+    },
+    {
+      "id": "map",
+      "kind": "page",
+      "title": "Map",
+      "route": "/map",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "search",
+      "kind": "page",
+      "title": "Search",
+      "route": "/search",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "no-results"
+      ]
+    },
+    {
+      "id": "notifications",
+      "kind": "page",
+      "title": "Notifications",
+      "route": "/notifications",
+      "states": [
+        "default",
+        "loading",
+        "empty",
+        "error",
+        "read"
+      ]
+    },
+    {
+      "id": "settings",
+      "kind": "page",
+      "title": "Settings",
+      "route": "/settings",
+      "states": [
+        "default",
+        "loading",
+        "error",
+        "invalid",
+        "submitting",
+        "success"
+      ],
+      "not_applicable": {
+        "empty": "Settings always has values."
+      }
+    },
+    {
+      "id": "not-found",
+      "kind": "page",
+      "title": "Not found",
+      "route": "/404",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "Static page.",
+        "empty": "Static page.",
+        "error": "This page is the error."
+      }
+    },
+    {
+      "id": "forbidden",
+      "kind": "page",
+      "title": "Forbidden",
+      "route": "/403",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "Static page.",
+        "empty": "Static page.",
+        "error": "This page is the error."
+      }
+    },
+    {
+      "id": "server-error",
+      "kind": "page",
+      "title": "Something went wrong",
+      "route": "/500",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "Static page.",
+        "empty": "Static page.",
+        "error": "This page is the error."
+      }
+    },
+    {
+      "id": "offline",
+      "kind": "page",
+      "title": "Offline",
+      "route": "/offline",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "Static page.",
+        "empty": "Static page.",
+        "error": "This page is the error."
+      }
+    },
+    {
+      "id": "unsupported-browser",
+      "kind": "page",
+      "title": "Unsupported browser",
+      "route": "/unsupported",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "loading": "Static page.",
+        "empty": "Static page.",
+        "error": "This page is the error."
+      }
+    },
+    {
+      "id": "nav-sheet",
+      "kind": "dialog",
+      "title": "Navigation",
+      "opens_from": "field",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "Navigation only; nothing is submitted.",
+        "invalid": "No inputs."
+      }
+    },
+    {
+      "id": "command-palette",
+      "kind": "dialog",
+      "title": "Command palette",
+      "opens_from": "field",
+      "states": [
+        "default",
+        "busy",
+        "no-results"
+      ],
+      "not_applicable": {
+        "invalid": "Free-text search cannot be invalid."
+      }
+    },
+    {
+      "id": "delete-organization",
+      "kind": "dialog",
+      "title": "Delete organization",
+      "opens_from": "organization",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed"
+      ]
+    },
+    {
+      "id": "delete-person",
+      "kind": "dialog",
+      "title": "Delete person",
+      "opens_from": "person",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "No inputs; a single danger button."
+      }
+    },
+    {
+      "id": "delete-problem",
+      "kind": "dialog",
+      "title": "Delete problem",
+      "opens_from": "problem",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "No inputs; a single danger button."
+      }
+    },
+    {
+      "id": "add-person",
+      "kind": "dialog",
+      "title": "Add person",
+      "opens_from": "organization",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "success"
+      ]
+    },
+    {
+      "id": "link-problem",
+      "kind": "dialog",
+      "title": "Link problem",
+      "opens_from": "organization",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed"
+      ]
+    },
+    {
+      "id": "run-research",
+      "kind": "dialog",
+      "title": "Run research",
+      "opens_from": "research",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed"
+      ]
+    },
+    {
+      "id": "review-finding",
+      "kind": "dialog",
+      "title": "Review finding",
+      "opens_from": "research",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "scroll"
+      ]
+    },
+    {
+      "id": "import-csv",
+      "kind": "dialog",
+      "title": "Import CSV",
+      "opens_from": "organizations",
+      "states": [
+        "default",
+        "invalid",
+        "busy",
+        "failed",
+        "success"
+      ]
+    },
+    {
+      "id": "export",
+      "kind": "dialog",
+      "title": "Export",
+      "opens_from": "organizations",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "Radio choices only; always valid."
+      }
+    },
+    {
+      "id": "sign-out",
+      "kind": "dialog",
+      "title": "Sign out",
+      "opens_from": "settings",
+      "states": [
+        "default",
+        "busy",
+        "failed"
+      ],
+      "not_applicable": {
+        "invalid": "No inputs."
+      }
+    },
+    {
+      "id": "unsaved-changes",
+      "kind": "dialog",
+      "title": "Unsaved changes",
+      "opens_from": "organization-edit",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "Discard is local and instant.",
+        "invalid": "No inputs."
+      }
+    },
+    {
+      "id": "keyboard-shortcuts",
+      "kind": "dialog",
+      "title": "Keyboard shortcuts",
+      "opens_from": "field",
+      "states": [
+        "default"
+      ],
+      "not_applicable": {
+        "busy": "Read-only reference.",
+        "invalid": "No inputs."
+      }
+    },
+    {
+      "id": "toast",
+      "kind": "notification",
+      "title": "Toast",
+      "opens_from": "organizations",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "with-action",
+        "stacked"
+      ]
+    },
+    {
+      "id": "research-banner",
+      "kind": "notification",
+      "title": "Research banner",
+      "opens_from": "research",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ]
+    },
+    {
+      "id": "offline-banner",
+      "kind": "notification",
+      "title": "Offline banner",
+      "opens_from": "organizations",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "persistent"
+      ]
+    },
+    {
+      "id": "inline-alert",
+      "kind": "notification",
+      "title": "Inline alert",
+      "opens_from": "organization",
+      "states": [
+        "info",
+        "success",
+        "warning",
+        "danger",
+        "with-action"
+      ]
+    }
+  ]
+}

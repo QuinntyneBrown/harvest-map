@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — View person
+
+Person(member, "Team member", "Signed-in invited team member")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+System_Ext(web, "Source sites and LinkedIn", "Public web pages cited or linked on a person")
+
+Rel(member, hm, "Views people in", "HTTPS")
+Rel(member, web, "Opens source and LinkedIn links in a new tab", "HTTPS")
+@enduml

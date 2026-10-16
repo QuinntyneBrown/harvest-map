@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit person
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "PersonEditPage", "React server component, /people/[id]/edit", "Loads person and organization options")
+  Component(form, "PersonForm", "React client component", "Fields, validation, busy, success and error states")
+  Component(unsaved, "UnsavedChangesDialog", "React client component, shared", "Discard changes to {name}?")
+  Component(action, "savePerson", "Next.js server action", "Validates and saves the person")
+  Component(service, "PersonService", "TypeScript module", "People application logic")
+  Component(prepo, "PersonRepository", "TypeScript module", "Data access for people")
+  Component(orepo, "OrganizationRepository", "TypeScript module", "Data access for organizations")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "people, organizations")
+}
+Rel(page, service, "Calls getPerson")
+Rel(page, orepo, "Calls listOptions")
+Rel(page, form, "Renders")
+Rel(form, action, "Submits SavePersonInput to")
+Rel(form, unsaved, "Opens on leave with unsaved changes")
+Rel(action, service, "Calls save")
+Rel(service, prepo, "Reads and writes through")
+Rel(prepo, db, "Selects, inserts, updates", "SQL")
+Rel(orepo, db, "Selects", "SQL")
+@enduml

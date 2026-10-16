@@ -1,0 +1,34 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Monitor research runs
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "ResearchPage", "React server component, /research", "Header counts, Run research, panel and run list")
+  Component(panel, "RunProgressPanel", "React client component", "Progress bar, Stop, RunLog live region")
+  Component(list, "RunList", "React component", "Earlier runs with status and reason")
+  Component(updates, "runUpdates", "Next.js route handler", "Delivers events, progress, status and findings")
+  Component(stop, "stopResearchRun", "Next.js server action", "Requests a stop")
+  Component(service, "ResearchService", "TypeScript module", "Lists runs and records stop requests")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "research_runs, run_events, findings, notifications")
+}
+Container_Boundary(exec, "Research run executor") {
+  Component(executor, "ResearchRunExecutor", "<TO SUPPLY>", "Works through run items")
+  Component(notify, "NotificationService", "TypeScript module", "Creates a notification for a failed run")
+}
+System_Ext(search, "Web search provider", "<TO SUPPLY>")
+System_Ext(ai, "AI provider", "<TO SUPPLY>")
+Rel(page, panel, "Renders")
+Rel(page, list, "Renders")
+Rel(page, service, "Calls listRuns")
+Rel(panel, updates, "Receives updates from", "<TO SUPPLY>")
+Rel(panel, stop, "Calls on Stop")
+Rel(stop, service, "Calls stop(runId)")
+Rel(updates, db, "Reads new events, findings and progress", "SQL")
+Rel(service, db, "Reads runs, writes stop request", "SQL")
+Rel(executor, search, "Searches", "<TO SUPPLY>")
+Rel(executor, ai, "Extracts findings", "<TO SUPPLY>")
+Rel(executor, db, "Writes events, findings, progress and status", "SQL")
+Rel(executor, notify, "Calls on failure")
+Rel(notify, db, "Inserts notification", "SQL")
+@enduml

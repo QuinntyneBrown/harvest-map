@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Edit organization
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "OrganizationEditPage", "React server component, /organizations/:id/edit", "Loads and prefills the form")
+  Component(form, "OrganizationForm", "React client component", "Fields, error summary, busy state, unsaved tracking")
+  Component(dialog, "UnsavedChangesDialog", "React client component", "Discard changes to {name}?")
+  Component(validate, "validateOrganization", "TypeScript function", "Shared field rules")
+  Component(action, "saveOrganization", "Next.js server action", "Validates and saves")
+  Component(service, "OrganizationService", "TypeScript module", "get, save, assertEditable")
+  Component(repo, "OrganizationRepository", "TypeScript module", "Inserts and updates organizations")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations")
+}
+Rel(page, service, "Calls get(id)")
+Rel(page, form, "Renders prefilled")
+Rel(form, dialog, "Opens on Cancel or back with unsaved changes")
+Rel(form, validate, "Calls")
+Rel(form, action, "Submits OrganizationInput to")
+Rel(action, validate, "Calls")
+Rel(action, service, "Calls save(input)")
+Rel(service, repo, "Calls")
+Rel(repo, db, "Selects, inserts and updates", "SQL")
+@enduml

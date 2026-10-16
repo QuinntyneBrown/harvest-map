@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Browse ranked problems
+
+Person(member, "Team member", "Browses and filters problems")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, server actions and route handlers")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Problems, problem links and organizations")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads ranked problems, writes scores and ranks", "SQL")
+@enduml

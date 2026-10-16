@@ -1,0 +1,11 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Show toasts
+
+Person(member, "Invited team member", "Reads, acts on and dismisses toasts")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Client components render toasts in the browser")
+}
+Rel(member, web, "Uses", "HTTPS")
+@enduml

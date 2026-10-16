@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Unsupported browser
+
+Person(member, "Invited team member", "Opens Harvest Map")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Runs feature detection and serves /unsupported")
+}
+System_Ext(chrome, "Chrome download site", "https://www.google.com/chrome/")
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, chrome, "Links to")
+@enduml

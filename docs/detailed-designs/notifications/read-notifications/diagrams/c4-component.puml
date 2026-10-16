@@ -1,0 +1,23 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Read notifications
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "NotificationsPage", "React server page, /notifications", "Loads the list and unread count")
+  Component(list, "NotificationsList", "React client component", "Renders rows, unread dots and Mark all read")
+  Component(markAll, "markAllNotificationsRead", "Next.js server action", "Marks all read and revalidates")
+  Component(open, "openNotification", "Next.js server action", "Marks one read and redirects")
+  Component(svc, "NotificationService", "TypeScript module", "Lists, counts, marks read and creates notifications")
+  Component(events, "Event sources", "Research, findings, organizations, problems", "Raise NotificationEvent values")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "notifications, user_preferences")
+}
+Rel(page, svc, "Lists notifications and counts unread")
+Rel(page, list, "Renders")
+Rel(list, markAll, "Calls")
+Rel(list, open, "Calls")
+Rel(markAll, svc, "Calls")
+Rel(open, svc, "Calls")
+Rel(events, svc, "Raise events to")
+Rel(svc, db, "Reads and writes", "SQL")
+@enduml

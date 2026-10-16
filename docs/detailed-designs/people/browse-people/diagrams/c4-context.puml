@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse people
+
+Person(member, "Team member", "Signed-in invited team member")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+System_Ext(linkedin, "LinkedIn", "Public profile pages")
+
+Rel(member, hm, "Browses people in", "HTTPS")
+Rel(member, linkedin, "Opens stored profile links in a new tab", "HTTPS")
+@enduml

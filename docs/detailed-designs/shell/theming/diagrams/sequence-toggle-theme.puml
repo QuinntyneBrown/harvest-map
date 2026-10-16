@@ -1,0 +1,34 @@
+@startuml
+title UML sequence behaviour — Toggle with the T shortcut
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "KeyboardShortcuts" as keys
+  participant "ThemeController" as ctrl
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "saveThemePreference server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PreferencesService" as prefs
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> keys : Press T
+alt Focus is in an input, textarea, select or contenteditable
+  keys --> actor : Key typed as text, no toggle
+else No input focused
+  keys -> ctrl : toggle()
+  ctrl -> ctrl : effective() from data-theme or prefers-color-scheme
+  ctrl -> ctrl : Set data-theme to the opposite theme (L2-042 AC3)
+  ctrl --> actor : Theme toggles
+  ctrl -> action : saveThemePreference(Light or Dark)
+  action -> prefs : updateTheme(userId, theme)
+  prefs -> db : Update user_preferences.theme
+end
+@enduml

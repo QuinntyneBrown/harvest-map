@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Show toasts (frontend only)
+
+Container_Boundary(web, "Harvest Map web app — browser") {
+  Component(feature, "Feature component", "React client component", "Any component that finishes an action")
+  Component(hook, "useToast", "React hook", "Returns show and dismiss")
+  Component(provider, "ToastProvider", "React context provider", "Holds up to three visible toasts")
+  Component(region, "ToastRegion", "React client component", "Polite and assertive live regions")
+  Component(item, "ToastItem", "React client component", "Icon, title, detail, action, Dismiss, timer bar")
+  Component(timer, "ToastTimer", "React hook", "8 s countdown that pauses on hover and focus")
+}
+Rel(feature, hook, "Calls show(options)")
+Rel(hook, provider, "Reads context of")
+Rel(provider, region, "Renders")
+Rel(region, item, "Renders one per toast")
+Rel(item, timer, "Uses")
+Rel(timer, provider, "Calls dismiss(id) at zero")
+@enduml

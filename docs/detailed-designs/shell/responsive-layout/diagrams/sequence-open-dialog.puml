@@ -1,0 +1,25 @@
+@startuml
+title UML sequence behaviour — Open a dialog
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Opener control" as opener
+  participant "Dialog" as dialog
+  participant "Browser CSS engine" as css
+end box
+actor -> opener : Select an action that opens a dialog
+opener -> dialog : Open
+dialog -> css : Apply .dialog styles
+alt Viewport below 40rem (640 px)
+  css --> actor : Bottom sheet, full width, rounded top, slides up (L2-041 AC2)
+else 40rem or more
+  css --> actor : Centred panel, max 32rem, scales in (L2-041 AC2)
+end
+opt Content taller than the viewport
+  css --> actor : Panel scrolls inside
+end
+@enduml

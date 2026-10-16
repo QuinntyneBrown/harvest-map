@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Start a research run
+
+Person(member, "Team member", "Signed-in person who researches organizations and problems")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+System_Ext(search, "Web search provider", "<TO SUPPLY>")
+System_Ext(ai, "AI provider", "<TO SUPPLY>")
+
+Rel(member, hm, "Starts research runs in", "HTTPS")
+Rel(hm, search, "Searches the web through", "<TO SUPPLY>")
+Rel(hm, ai, "Extracts findings through", "<TO SUPPLY>")
+@enduml

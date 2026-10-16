@@ -1,0 +1,48 @@
+@startuml
+title UML sequence behaviour — Export records
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ExportDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "exportOrganizations route handler" as handler
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ExportService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as orgs
+  participant "PersonRepository" as people
+  database "Harvest Map database" as db
+end box
+actor -> dialog : Select Export or Export {n}
+dialog --> actor : Format, Scope, "Include people · {n}", "Export {n} organisations" (L2-032 AC1)
+actor -> dialog : Choose format and scope, confirm
+dialog -> dialog : Set busy (L2-032 AC2)
+dialog -> handler : Request file with ExportRequest
+handler -> service : export(request)
+service -> orgs : findForExport(scope)
+orgs -> db : Select organizations in scope
+db --> orgs : Rows
+orgs --> service : Organizations
+opt Include people
+  service -> people : findByOrganizationIds(ids)
+  people -> db : Select linked people
+  db --> people : Rows
+  people --> service : People
+end
+service -> service : Serialize as CSV or JSON
+service --> handler : ExportFile
+alt Success
+  handler --> dialog : File with attachment disposition
+  dialog --> actor : File downloads, dialog closes (L2-032 AC2)
+else Request fails
+  handler --> dialog : Error response
+  dialog --> actor : "Couldn't build the export" with Try again (L2-032 AC3)
+end
+@enduml

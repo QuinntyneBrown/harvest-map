@@ -1,0 +1,14 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Inline alerts (frontend only)
+
+Container_Boundary(web, "Harvest Map web app — browser") {
+  Component(page, "Owning page", "React page, e.g. OrganizationPage", "Decides when an alert applies")
+  Component(alert, "InlineAlert", "React component", "Icon, title, message, optional action, Dismiss")
+  Component(icon, "AlertIcon", "React component", "Decorative icon per kind")
+}
+Rel(page, alert, "Renders with kind, message and action")
+Rel(alert, icon, "Renders")
+Rel(alert, page, "Calls action and onDismiss of")
+@enduml

@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Reduce motion
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Browser CSS engine" as css
+  participant "MotionPreference" as motion
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "RootLayout" as root
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PreferencesService" as prefs
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> root : Open any page
+root -> prefs : get(userId)
+prefs -> db : Select user_preferences
+db --> prefs : reduceMotion
+prefs --> root : Preferences
+alt Reduce motion setting on
+  root --> css : html data-motion="reduce"
+else Setting off
+  root --> css : html without data-motion
+end
+css -> motion : Check prefers-reduced-motion and data-motion
+alt Either requests reduced motion
+  motion -> css : Set --duration-* to 0.01 ms, stop hero animation
+  css --> actor : Non-essential animation removed (L2-043 AC5)
+else Neither
+  css --> actor : Standard motion
+end
+@enduml

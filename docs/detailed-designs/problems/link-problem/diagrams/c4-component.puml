@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Link a problem to an organization
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(opener, "Organization or problem detail page", "React server component", "Offers Link or Link organisation")
+  Component(dialog, "LinkProblemDialog", "React client component", "Filter, radio list, New problem, Link")
+  Component(options, "listLinkOptions", "Server function", "Problems for an organization, organizations for a problem")
+  Component(action, "linkProblem", "Next.js server action", "Creates the link and revalidates the opener")
+  Component(service, "ProblemService", "TypeScript module", "Links and recomputes the ranking")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "problems, organizations, problem_links")
+}
+Rel(opener, dialog, "Opens")
+Rel(dialog, options, "Loads options from")
+Rel(dialog, action, "Submits LinkProblemInput to")
+Rel(action, service, "Calls link and recomputeRanking")
+Rel(options, db, "Reads", "SQL")
+Rel(service, db, "Inserts link, updates scores and ranks", "SQL")
+@enduml

@@ -1,0 +1,55 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Forgot password
+
+class ForgotPasswordForm {
+  -busy: boolean
+  +submit(input: PasswordResetRequest): void
+}
+class ResetLinkSent {
+  +email: string
+  -secondsLeft: number
+  +resend(): void
+}
+class PasswordResetRequest {
+  +email: string
+}
+class PasswordResetRequestResult {
+  +ok: boolean
+  +email: string
+}
+class PasswordResetService {
+  +requestReset(email: string): void
+}
+class EmailSender {
+  +send(to: string, subject: string, body: string): void
+}
+class User {
+  +id: string
+  +email: string
+}
+class PasswordResetToken {
+  +id: string
+  +userId: string
+  +token: string
+  +expiresAt: Date
+  +usedAt: Date
+}
+
+ForgotPasswordForm ..> PasswordResetRequest : builds
+ForgotPasswordForm ..> PasswordResetRequestResult : renders
+ForgotPasswordForm ..> ResetLinkSent : shows on success
+PasswordResetService ..> User : reads
+PasswordResetService ..> PasswordResetToken : creates
+PasswordResetService --> EmailSender : uses
+PasswordResetToken "*" --> "1" User
+@enduml

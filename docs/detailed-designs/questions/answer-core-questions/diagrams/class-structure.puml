@@ -1,0 +1,72 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Answer the core questions
+
+enum AnswerStatus {
+  Open
+  Partial
+  Answered
+}
+enum AnswerItemKind {
+  Organization
+  Problem
+  Person
+}
+class QuestionsOverview {
+  +questionCount: number
+  +answeredCount: number
+  +partialCount: number
+  +isEmpty: boolean
+  +questions: QuestionHeader[]
+}
+class QuestionHeader {
+  +number: number
+  +text: string
+  +status: AnswerStatus
+  +sourceCount: number
+}
+class QuestionAnswer {
+  +number: number
+  +items: AnswerItem[]
+  +linkedInCount: number
+}
+class AnswerItem {
+  +kind: AnswerItemKind
+  +targetId: string
+  +label: string
+  +detail: string
+  +href: string
+}
+class QuestionCard {
+  -state: string
+  +load(): void
+  +retry(): void
+  +reRun(): void
+}
+class CoreQuestionsService {
+  +overview(): QuestionsOverview
+  +answer(number: number): QuestionAnswer
+}
+class RunResearchDialog {
+  +open(preselectedQuestion: number): void
+}
+
+QuestionsOverview "1" *-- "6" QuestionHeader
+QuestionHeader --> AnswerStatus
+QuestionAnswer "1" *-- "*" AnswerItem
+AnswerItem --> AnswerItemKind
+QuestionCard --> QuestionHeader
+QuestionCard ..> QuestionAnswer : renders
+QuestionCard ..> RunResearchDialog : opens
+CoreQuestionsService ..> QuestionsOverview : returns
+CoreQuestionsService ..> QuestionAnswer : returns
+@enduml

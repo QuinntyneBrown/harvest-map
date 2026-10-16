@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — View person
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Browser" as browser
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "PersonPage server component" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PersonService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "PersonRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> browser : Open /people/:id
+browser -> page : GET /people/:id
+page --> browser : loading.tsx skeleton (L2-013 AC3)
+page -> service : getPersonDetail(id)
+service -> repo : findDetailById(id)
+repo -> db : Select person, organizations, sources, activity
+alt Query fails
+  db --> repo : Error
+  repo --> service : Error
+  service --> page : Error
+  page --> browser : error.tsx "Couldn't load this person" with Try again (L2-013 AC3)
+else No person with id
+  db --> repo : No row
+  repo --> service : null
+  service --> page : null
+  page --> browser : notFound() renders the not-found page (L2-013 AC3)
+else Person found
+  db --> repo : Rows
+  repo --> service : PersonDetail
+  service --> page : PersonDetail
+  alt Only an unverified finding
+    page --> browser : "Nothing verified yet" with Research this person (L2-013 AC2)
+  else Verified facts exist
+    page --> browser : Name, "Role · Organization", Edit, Delete, About, Organisations, Sources, details, Activity (L2-013 AC1)
+  end
+end
+browser --> actor : Show person page
+@enduml

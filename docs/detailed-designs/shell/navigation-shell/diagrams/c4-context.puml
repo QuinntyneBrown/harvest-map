@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Navigation shell
+
+Person(member, "Invited team member", "Moves between sections of the catalogue")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Navigates", "HTTPS")
+@enduml

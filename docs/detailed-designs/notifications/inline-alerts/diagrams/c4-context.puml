@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Inline alerts
+
+Person(member, "Invited team member", "Reads messages about the content on screen")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Reads inline alerts in", "HTTPS")
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+title UML sequence behaviour — Navigate by keyboard
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Keyboard user" as actor
+participant "Assistive technology" as at
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SkipLink" as skip
+  participant "Interactive element" as el
+  participant "IconButton" as icon
+end box
+actor -> skip : Tab from page start
+skip --> actor : "Skip to content" with visible focus ring (L2-043 AC1)
+loop Tab or Shift+Tab
+  actor -> el : Move focus in DOM order
+  el --> actor : :focus-visible ring (L2-043 AC1)
+  actor -> el : Enter or Space operates it (L2-043 AC1)
+end
+actor -> icon : Focus an icon-only button
+icon -> at : Expose aria-label, e.g. "Dismiss"
+at --> actor : Announce accessible name (L2-043 AC7)
+@enduml

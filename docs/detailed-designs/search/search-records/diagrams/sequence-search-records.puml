@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Search records
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SearchForm" as form
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "SearchPage server component" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "SearchService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "Organization, Person, Problem and Finding repositories" as repos
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /search
+page --> actor : Empty state with focused Search input and Recent (L2-027 AC3)
+actor -> form : Enter query, submit
+form -> page : Navigate to /search?q={query}
+page --> actor : loading.tsx skeleton (L2-027 AC4)
+page -> service : search(query)
+service -> repos : search(query) per record kind
+repos -> db : Select matching rows
+alt Queries succeed
+  db --> repos : Rows
+  repos --> service : List items per kind
+  service --> page : SearchResults
+  alt total > 0
+    page --> actor : "{n} results for “{query}”", groups "Organisations · n", "People · n", "Problems · n", "Findings · n", findings with Accept, Edit, Reject (L2-027 AC1)
+  else total = 0
+    page --> actor : "No results for “{query}”", "Try fewer words, or ask the web." with Ask the web (L2-027 AC2)
+  end
+else Query fails
+  page --> actor : error.tsx "Couldn't load results" with Try again (L2-027 AC4)
+end
+@enduml

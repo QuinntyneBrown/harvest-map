@@ -1,0 +1,74 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Accessibility
+
+class Dialog {
+  -opener: HTMLElement
+  -busy: boolean
+  +initialFocus: string
+  +open(opener: HTMLElement): void
+  +onEscape(): void
+  +close(): void
+}
+class ErrorSummary {
+  +title: string
+  +errors: FieldError[]
+  +focus(): void
+}
+class FieldError {
+  +fieldId: string
+  +message: string
+}
+class FormField {
+  +id: string
+  +label: string
+  +messageId: string
+  +invalid: boolean
+}
+enum Politeness {
+  Polite
+  Assertive
+}
+class LiveRegion {
+  +role: string
+  +politeness: Politeness
+  +announce(text: string): void
+}
+enum Status {
+  Verified
+  Unverified
+  Conflict
+  Low
+  Medium
+  High
+}
+class StatusBadge {
+  +status: Status
+  +text: string
+  +icon: string
+}
+class IconButton {
+  +label: string
+  +icon: string
+}
+class MotionPreference {
+  +osReduced: boolean
+  +settingReduced: boolean
+  +reduced(): boolean
+}
+
+ErrorSummary "1" *-- "1..*" FieldError
+FieldError ..> FormField : links to
+LiveRegion --> Politeness
+StatusBadge --> Status
+Dialog ..> IconButton : Close
+@enduml

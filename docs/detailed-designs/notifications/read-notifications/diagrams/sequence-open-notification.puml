@@ -1,0 +1,29 @@
+@startuml
+title UML sequence behaviour — Open a notification
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "NotificationsList" as list
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "openNotification server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "NotificationService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> list : Select a notification row
+list -> action : openNotification(id)
+action -> svc : markRead(userId, id)
+svc -> db : Set read_at where id and user match
+db --> svc : Notification with href
+svc --> action : Notification
+action --> list : Redirect to href
+list --> actor : Related record or run opens (L2-033 AC4)
+@enduml

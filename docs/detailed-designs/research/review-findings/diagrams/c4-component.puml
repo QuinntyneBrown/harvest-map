@@ -1,0 +1,20 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Review findings
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(section, "FindingsReviewSection", "React component on /research", "Findings to review")
+  Component(card, "FindingCard", "React client component", "Accept, Edit, Reject, Undo; optimistic state")
+  Component(dialog, "ReviewFindingDialog", "React client component", "Fields for the change, sources, Reject, Cancel, Accept")
+  Component(actions, "acceptFinding, rejectFinding, undoFindingDecision", "Next.js server actions", "Decide and undo findings")
+  Component(service, "FindingService", "TypeScript module", "Applies, rejects and reverses findings")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "findings, sources, organizations, people, activity_entries")
+}
+Rel(section, card, "Renders one per finding")
+Rel(card, dialog, "Opens on Edit")
+Rel(card, actions, "Calls")
+Rel(dialog, actions, "Calls")
+Rel(actions, service, "Calls accept, reject or undo")
+Rel(service, db, "Updates finding and subject record, inserts activity", "SQL")
+@enduml

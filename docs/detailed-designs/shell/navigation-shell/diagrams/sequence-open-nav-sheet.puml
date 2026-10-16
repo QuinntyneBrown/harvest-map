@@ -1,0 +1,27 @@
+@startuml
+title UML sequence behaviour — Open the navigation sheet
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "MenuButton" as menu
+  participant "NavSheet" as sheet
+  participant "Next.js client router" as router
+end box
+actor -> menu : Select "Open navigation" (width below 768 px)
+menu -> sheet : openSheet()
+sheet -> sheet : Slide in from the left, make page behind inert, move focus inside
+sheet --> actor : Field, Organizations, People, Problems, Questions, Research, Map; Account: Settings, Notifications (L2-030 AC2)
+alt Member selects a link
+  actor -> sheet : Select a section link
+  sheet -> router : Navigate to href
+  sheet -> sheet : close()
+  router --> actor : Section page with link marked current
+else Member selects Close or presses Escape
+  actor -> sheet : Close
+  sheet -> sheet : close(), return focus to MenuButton
+end
+@enduml

@@ -1,0 +1,66 @@
+@startuml
+title UML sequence behaviour — Load the core questions
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "QuestionsPage" as page
+  participant "QuestionCard" as card
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "getQuestionsOverview server action" as overview
+  participant "getQuestionAnswer server action" as answer
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "CoreQuestionsService" as svc
+  participant "ProblemService" as rank
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /questions
+page --> actor : Skeleton (L2-025 AC4)
+page -> overview : getQuestionsOverview()
+overview -> svc : overview()
+svc -> db : Select statuses and source counts
+db --> svc : Rows
+svc --> overview : QuestionsOverview
+alt Page load fails
+  overview --> page : Failure
+  page --> actor : "Couldn't load the answers" with Try again and Go back (L2-025 AC4)
+else No data
+  overview --> page : QuestionsOverview isEmpty
+  page --> actor : "Nothing answered yet", Ask the web, each question "Open · 0 sources" (L2-025 AC4)
+else Data present
+  overview --> page : QuestionsOverview
+  page --> actor : "{n} questions · {a} answered · {p} partial", Ask the web (L2-025 AC1)
+  loop Each of the six questions
+    page -> card : Render number, status, source count, Re-run
+    card -> answer : getQuestionAnswer(number)
+    answer -> svc : answer(number)
+    opt Question 3
+      svc -> rank : Problems by impact score
+      rank -> db : Select problems
+      db --> rank : Rows
+      rank --> svc : Ranked problems
+    end
+    svc -> db : Select organizations, people, findings for the question
+    db --> svc : Rows
+    svc -> svc : Q3 problems with leading organization, Q5 people with role and organization, Q6 LinkedIn count (L2-025 AC2)
+    alt Answer loads
+      svc --> answer : QuestionAnswer
+      answer --> card : QuestionAnswer
+      card --> actor : Top answers as links (L2-025 AC1)
+    else Answer fails
+      answer --> card : Failure
+      card --> actor : "Couldn't load this answer" with Retry, in this card only (L2-025 AC3)
+      opt Retry selected
+        card -> answer : getQuestionAnswer(number)
+      end
+    end
+  end
+end
+@enduml

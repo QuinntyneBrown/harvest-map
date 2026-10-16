@@ -1,0 +1,28 @@
+@startuml
+title UML sequence behaviour — Dialog focus
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Keyboard user" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Opener button" as opener
+  participant "Dialog" as dialog
+end box
+actor -> opener : Activate
+opener -> dialog : open(opener)
+dialog -> dialog : showModal(), page behind inert
+dialog -> dialog : Focus initial target (L2-043 AC2)
+loop Tab or Shift+Tab
+  actor -> dialog : Move focus
+  dialog --> actor : Focus stays inside (L2-043 AC2)
+end
+actor -> dialog : Press Escape
+alt Dialog busy
+  dialog --> actor : Stays open (L2-043 AC2)
+else Not busy
+  dialog -> dialog : close()
+  dialog -> opener : Return focus (L2-043 AC2)
+end
+@enduml

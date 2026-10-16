@@ -1,0 +1,77 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Browse ranked problems
+
+enum Severity {
+  Low
+  Medium
+  High
+}
+enum Tractability {
+  Low
+  Medium
+  High
+}
+enum ProblemStatus {
+  Tracked
+  Watching
+  Archived
+}
+enum ProblemFilter {
+  All
+  Tracked
+  Watching
+}
+class Problem {
+  +id: string
+  +title: string
+  +summary: string
+  +reach: string
+  +severity: Severity
+  +tractability: Tractability
+  +status: ProblemStatus
+  +score: number
+  +rank: number
+}
+class ProblemLink {
+  +problemId: string
+  +organizationId: string
+}
+class Organization {
+  +id: string
+  +name: string
+  +mark: string
+}
+class RankedProblemList {
+  +count: number
+  +leaderName: string
+  +leaderScore: number
+  +items: Problem[]
+}
+class ProblemService {
+  +listRanked(filter: ProblemFilter): RankedProblemList
+  +recomputeRanking(): void
+}
+class ImpactScorer {
+  +score(problem: Problem): number
+}
+
+ProblemService ..> ProblemFilter : reads
+ProblemService ..> RankedProblemList : returns
+ProblemService ..> ImpactScorer : uses
+RankedProblemList "1" o-- "*" Problem
+Problem --> Severity
+Problem --> Tractability
+Problem --> ProblemStatus
+Problem "1" -- "*" ProblemLink
+ProblemLink "*" --> "1" Organization
+@enduml

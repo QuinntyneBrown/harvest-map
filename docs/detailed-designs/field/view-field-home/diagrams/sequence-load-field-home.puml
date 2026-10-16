@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Load the Field home page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "FieldPage" as page
+  participant "FieldHero" as hero
+  participant "FieldAnimation" as anim
+  participant "Section\n(Questions, Most impactful,\nLatest research)" as section
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "Section server actions" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "CatalogueStatsService" as stats
+  participant "CoreQuestionsService,\nProblemService,\nResearchService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /
+page --> actor : Skeleton in place of each section (L2-005 AC4)
+alt Reduce motion on, or OS requests reduced motion
+  page -> anim : Do not start; disable entrance animations (L2-005 AC7)
+else Motion allowed
+  page -> anim : Start hero particle field
+end
+par Hero summary
+  hero -> action : getFieldSummary()
+  action -> stats : Count organizations, people, problems, runs since yesterday
+  stats -> db : Select counts
+  db --> stats : Counts
+  stats --> action : FieldSummary
+  alt Catalogue has data
+    action --> hero : FieldSummary
+    hero --> actor : "The field is ripe.", counts, Ask the web, See the map (L2-005 AC1)
+  else Catalogue empty
+    action --> hero : FieldSummary isEmpty
+    hero --> actor : "The field is empty.", Ask the web, Add an organisation (L2-005 AC5)
+  else Summary fails
+    action --> hero : Failure
+    hero --> actor : "Couldn't load the field" with Try again
+  end
+else Each section
+  section -> action : getQuestionSummaries() / getTopProblems() / getLatestRuns()
+  action -> svc : Read section data
+  svc -> db : Select rows
+  db --> svc : Rows
+  alt Section loads
+    svc --> action : QuestionSummary[6] / ProblemRankItem[3] / RunSummary[3]
+    action --> section : Section result
+    section --> actor : Six questions, top 3 problems, 3 latest runs (L2-005 AC2)
+  else Section fails
+    action --> section : Failure
+    section --> actor : Inline error with Retry in this section only, others usable (L2-005 AC6)
+    opt Retry selected
+      section -> action : Reload this section only
+    end
+  end
+end
+@enduml

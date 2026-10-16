@@ -1,0 +1,49 @@
+@startuml
+title UML sequence behaviour — Sign out
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SettingsPage" as settings
+  participant "SignOutDialog" as dialog
+  participant "EditQueue" as store
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "signOut server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "SessionService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> settings : Select "Sign out" in Account
+settings -> dialog : Open
+dialog -> store : count()
+store --> dialog : Unsynced edit count
+alt No unsynced edits
+  dialog --> actor : "Sign out?", "No unsynced edits. You'll need your password to come back.", Cancel, Sign out (L2-004 AC1)
+else Unsynced edits exist
+  dialog --> actor : "Sign out?" with the number of unsynced edits that would be lost (L2-004 AC4)
+end
+opt Cancel selected
+  dialog --> actor : Close dialog, stay signed in
+end
+actor -> dialog : Select "Sign out"
+dialog -> dialog : Set busy, ignore repeat confirms (L2-004 AC2)
+dialog -> action : signOut()
+action -> svc : revoke(sessionId from cookie)
+svc -> db : Delete session
+alt Request succeeds
+  db --> svc : Deleted
+  svc --> action : Done
+  action --> dialog : Clear session cookie, redirect to /sign-in
+  dialog --> actor : Land on /sign-in (L2-004 AC2)
+else Request fails
+  action --> dialog : Failure
+  dialog --> actor : "Couldn't sign out — The server didn't respond. You're still signed in.", Sign out to retry (L2-004 AC3)
+end
+@enduml

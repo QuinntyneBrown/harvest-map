@@ -1,0 +1,31 @@
+@startuml
+title UML sequence behaviour — Open a page that is not cached
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "PageCache" as cache
+  participant "OfflinePage" as offline
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "Requested page" as page
+end box
+actor -> cache : Open a page while offline
+cache -> cache : has(url)
+alt Visited this session
+  cache --> actor : Cached page (L2-036 AC2)
+else Not cached
+  cache -> offline : Serve /offline
+  offline --> actor : "You're offline — Cached pages still open. This one isn't cached yet." with Retry (L2-036 AC4)
+  actor -> offline : Select Retry
+  alt Back online
+    offline -> page : Request the page again
+    page --> actor : Page
+  else Still offline
+    offline --> actor : /offline remains
+  end
+end
+@enduml

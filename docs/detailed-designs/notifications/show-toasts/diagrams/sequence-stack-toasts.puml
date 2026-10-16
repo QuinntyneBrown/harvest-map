@@ -1,0 +1,27 @@
+@startuml
+title UML sequence behaviour — Stack toasts
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Feature components" as feature
+  participant "ToastProvider" as provider
+  participant "ToastRegion" as region
+end box
+feature -> provider : show(success "Pat Gelsinger verified")
+feature -> provider : show(info "Run #48 started")
+feature -> provider : show(warning "Run #48 slowed")
+provider -> region : Render three toasts, oldest at top
+region --> actor : Stacked without overlap, each with own timer and Dismiss (L2-034 AC3)
+opt A fourth toast arrives
+  feature -> provider : show(options)
+  provider -> provider : Drop the oldest toast, keep three visible
+  provider -> region : Re-render stack
+end
+actor -> region : Dismiss the middle toast
+region -> provider : dismiss(id)
+provider -> region : Remove only that toast (L2-034 AC3, AC4)
+@enduml

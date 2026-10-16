@@ -1,0 +1,69 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Read notifications
+
+class NotificationsList {
+  +view: NotificationListView
+  +markAllRead(): void
+  +open(id: string): void
+}
+class NotificationListView {
+  +unreadCount: number
+  +items: Notification[]
+}
+class Notification {
+  +id: string
+  +userId: string
+  +eventType: NotificationEventType
+  +title: string
+  +detail: string
+  +href: string
+  +createdAt: Date
+  +readAt: Date
+}
+enum NotificationEventType {
+  RunFinished
+  RunFailed
+  FindingVerified
+  OrganizationArchived
+  ProblemsScored
+}
+class NotificationEvent {
+  +type: NotificationEventType
+  +actorId: string
+  +title: string
+  +detail: string
+  +href: string
+  +occurredAt: Date
+}
+class NotificationPreferences {
+  +userId: string
+  +runFinished: boolean
+  +findingVerified: boolean
+  +enables(type: NotificationEventType): boolean
+}
+class NotificationService {
+  +list(userId: string): NotificationListView
+  +countUnread(userId: string): number
+  +markAllRead(userId: string): void
+  +markRead(userId: string, id: string): Notification
+  +createForEvent(event: NotificationEvent): void
+}
+
+NotificationsList ..> NotificationListView : renders
+NotificationListView "1" *-- "*" Notification
+Notification --> NotificationEventType
+NotificationEvent --> NotificationEventType
+NotificationService ..> Notification : reads / writes
+NotificationService ..> NotificationEvent : handles
+NotificationService ..> NotificationPreferences : consults
+@enduml

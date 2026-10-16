@@ -1,0 +1,73 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Link a problem to an organization
+
+enum LinkOpenerKind {
+  Organization
+  Problem
+}
+class LinkOpener {
+  +kind: LinkOpenerKind
+  +id: string
+  +name: string
+}
+class LinkProblemDialog {
+  -busy: boolean
+  -filterText: string
+  -selectedId: string | null
+  +opener: LinkOpener
+  +options: LinkOption[]
+  +submit(): void
+}
+class LinkOption {
+  +id: string
+  +label: string
+  +score: number
+  +organizationCount: number
+}
+class LinkProblemInput {
+  +problemId: string
+  +organizationId: string
+}
+class LinkProblemResult {
+  +ok: boolean
+  +message: string
+}
+class ProblemService {
+  +link(problemId: string, organizationId: string): ProblemLink
+  +recomputeRanking(): void
+}
+class ProblemLink {
+  +problemId: string
+  +organizationId: string
+}
+class Problem {
+  +id: string
+  +title: string
+  +score: number
+  +rank: number
+}
+class Organization {
+  +id: string
+  +name: string
+}
+
+LinkProblemDialog --> LinkOpener
+LinkOpener --> LinkOpenerKind
+LinkProblemDialog "1" o-- "*" LinkOption
+LinkProblemDialog ..> LinkProblemInput : builds
+LinkProblemDialog ..> LinkProblemResult : renders
+ProblemService ..> LinkProblemInput : reads
+ProblemService ..> ProblemLink : creates
+ProblemLink "*" --> "1" Problem
+ProblemLink "*" --> "1" Organization
+@enduml

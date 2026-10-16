@@ -1,0 +1,31 @@
+@startuml
+title UML sequence behaviour — Filter and inspect pins
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "MapFilters" as filters
+  participant "WorldMap" as world
+  participant "PinList" as list
+  participant "MapPin" as pin
+  participant "PinPopover" as pop
+end box
+actor -> filters : Select All, AI, Youth, Moonshot, Verified or Unverified
+filters -> filters : Keep pins that match the filter
+alt One or more pins match
+  filters -> world : Show matching pins only (L2-026 AC2)
+  filters -> list : Show matching entries only
+else No pin matches
+  filters --> actor : "No pins match" with explanation and Clear filters (L2-026 AC2)
+end
+actor -> pin : Select pin by pointer, or focus and press Enter or Space
+pin -> pop : open(anchor = pin)
+pop -> pop : Anchor to pin, flip to stay in viewport (L2-026 AC3)
+pop --> actor : Mark, name, "City · Reach", tags, link to /organizations/:id (L2-026 AC3)
+opt Link selected
+  pop --> actor : Navigate to /organizations/:id
+end
+@enduml

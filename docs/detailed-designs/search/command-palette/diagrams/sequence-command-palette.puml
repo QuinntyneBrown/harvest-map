@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Command palette
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ShortcutHandler" as shortcuts
+  participant "CommandPaletteProvider" as provider
+  participant "CommandPalette" as palette
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "GET /api/search route handler" as handler
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "SearchService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "Organization and Person repositories" as repos
+  database "Harvest Map database" as db
+end box
+actor -> shortcuts : Press Cmd+K, Ctrl+K or /
+shortcuts -> provider : open()
+provider -> provider : Remember previous element
+provider -> palette : Render
+palette --> actor : Focused Search input, Organisations, People, Actions, footer "↑↓ move, Enter open, Esc close" (L2-028 AC1)
+actor -> palette : Type query
+palette -> palette : Restart 150 ms timer on each input (L2-028 AC2)
+palette -> handler : GET /api/search?q={query} after 150 ms without input
+opt Request pending after 300 ms
+  palette --> actor : Busy "Searching" (L2-028 AC2)
+end
+handler -> service : search(query)
+service -> repos : search(query)
+repos -> db : Select matching organizations and people
+db --> repos : Rows
+repos --> service : List items
+service --> handler : SearchResults
+handler --> palette : PaletteResults JSON
+alt Matches
+  palette --> actor : Updated groups (L2-028 AC2)
+  actor -> palette : Press ↑ or ↓, then Enter
+  palette -> palette : Open record or run action (L2-028 AC3)
+  palette -> provider : close()
+  provider --> actor : Record page, run-research dialog or new organization form
+else No matches
+  palette --> actor : "No matches for “{query}”." with Ask the web (L2-028 AC4)
+end
+opt Escape
+  actor -> palette : Press Escape
+  palette -> provider : close()
+  provider --> actor : Palette closed, focus on previous element (L2-028 AC5)
+end
+@enduml

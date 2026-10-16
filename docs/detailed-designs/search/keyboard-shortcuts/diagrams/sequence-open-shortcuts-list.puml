@@ -1,0 +1,28 @@
+@startuml
+title UML sequence behaviour — Open the keyboard shortcuts list
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ShortcutHandler" as handler
+  participant "SettingsPage" as settings
+  participant "KeyboardShortcutsDialogProvider" as provider
+  participant "KeyboardShortcutsDialog" as dialog
+end box
+alt Press ?
+  actor -> handler : Press ? with no text input focused
+  handler -> provider : open()
+else Settings page
+  actor -> settings : Select Keyboard shortcuts
+  settings -> provider : open() (L2-029 AC4)
+end
+provider -> provider : Remember previous element
+provider -> dialog : Render with SHORTCUTS
+dialog --> actor : "Keyboard shortcuts" lists all 11 shortcuts, focus on Close (L2-029 AC1)
+actor -> dialog : Select Close or press Escape
+dialog -> provider : close()
+provider --> actor : Dialog closed, focus on previous element (L2-029 AC3)
+@enduml

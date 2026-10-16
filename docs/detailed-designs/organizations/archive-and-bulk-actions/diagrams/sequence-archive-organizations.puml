@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Archive organizations
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SelectionBar" as bar
+  participant "Toast" as toast
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "archiveOrganizations server action" as archive
+  participant "restoreOrganizations server action" as restore
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+  participant "NotificationService" as notify
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> bar : Select Archive
+bar -> archive : archiveOrganizations(ids)
+archive -> service : archive(ids, userId)
+service -> repo : Set archivedAt and archivedBy
+repo -> db : Update organizations in one transaction
+db --> repo : Commit result
+service -> notify : notifyTeam("{person} archived {name}")
+notify -> db : Insert notifications (L2-010 AC5)
+service --> archive : ArchiveResult
+archive -> archive : Revalidate list and map
+archive --> bar : Archived names
+bar --> actor : Organizations hidden from list (L2-010 AC1)
+bar -> toast : Show "{name} archived — Hidden from lists and the map." with Undo
+toast -> toast : Start 8 s timer (L2-010 AC1)
+opt Hover or focus toast
+  actor -> toast : Hover or focus
+  toast -> toast : Pause timer until hover and focus end (L2-010 AC2)
+end
+alt Undo within 8 s
+  actor -> toast : Select Undo
+  toast -> restore : restoreOrganizations(ids)
+  restore -> service : restore(id) for each id
+  service -> repo : Clear archivedAt and archivedBy
+  repo -> db : Update organizations
+  db --> repo : Commit result
+  restore -> restore : Revalidate list and map
+  restore --> toast : Done
+  toast --> actor : Organizations back in the list (L2-010 AC3)
+else Timer ends
+  toast -> toast : Dismiss
+end
+@enduml

@@ -1,0 +1,65 @@
+@startuml
+title UML sequence behaviour — Link a problem to an organization
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Detail page (opener)" as page
+  participant "LinkProblemDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "listLinkOptions" as options
+  participant "linkProblem server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ProblemService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Select Link or Link organisation
+page -> dialog : Open with LinkOpener
+dialog -> options : listLinkOptions(opener)
+alt Opened from an organization
+  options -> db : Select problems with score and organization count
+  db --> options : Problem rows
+  options --> dialog : LinkOption items
+  dialog --> actor : "Link {organization} to a problem", "Filter problems", radio list, "New problem" (L2-021 AC1)
+else Opened from a problem
+  options -> db : Select organizations
+  db --> options : Organization rows
+  options --> dialog : LinkOption items
+  dialog --> actor : Radio list of organizations (L2-021 AC5)
+end
+opt Filter text entered
+  dialog -> dialog : Narrow options by text
+end
+actor -> dialog : Select Link
+alt Nothing selected
+  dialog --> actor : "Choose a problem" on the radio group (L2-021 AC2)
+else Option selected
+  dialog -> dialog : Set busy, disable inputs (L2-021 AC3)
+  dialog -> action : linkProblem(LinkProblemInput)
+  action -> service : link(problemId, organizationId)
+  service -> db : Insert problem link
+  alt Link fails
+    db --> service : Error
+    service --> action : Error
+    action --> dialog : LinkProblemResult with error
+    dialog --> actor : "Couldn't link" alert, Link available to retry (L2-021 AC4)
+  else Link succeeds
+    db --> service : ProblemLink row
+    action -> service : recomputeRanking()
+    service -> db : Update scores and ranks
+    db --> service : Commit result
+    service --> action : Done
+    action -> action : Revalidate opener page
+    action --> dialog : LinkProblemResult ok
+    dialog --> page : Close, focus returns to opener
+    page --> actor : Organization shows the problem; score and rank recomputed (L2-021 AC3)
+  end
+end
+@enduml

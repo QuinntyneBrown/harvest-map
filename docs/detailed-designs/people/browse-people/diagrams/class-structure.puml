@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Browse people
+
+class PeoplePage {
+  +people: PersonListItem[]
+  +peopleCount(): number
+  +linkedinCount(): number
+}
+class PeopleList {
+  -query: string
+  +people: PersonListItem[]
+  +visible(): PersonListItem[]
+  +clear(): void
+}
+class PersonRow {
+  +item: PersonListItem
+}
+class PersonListItem {
+  +id: string
+  +name: string
+  +initials: string
+  +role: string
+  +organizationName: string
+  +linkedinUrl: string | null
+}
+class PersonService {
+  +listPeople(): PersonListItem[]
+}
+class PersonRepository {
+  +listWithOrganization(): PersonListItem[]
+}
+
+PeoplePage ..> PersonService : calls
+PeoplePage *-- PeopleList
+PeopleList "1" *-- "*" PersonRow
+PeopleList "1" o-- "*" PersonListItem
+PersonRow --> PersonListItem
+PersonService ..> PersonRepository : uses
+PersonRepository ..> PersonListItem : returns
+@enduml

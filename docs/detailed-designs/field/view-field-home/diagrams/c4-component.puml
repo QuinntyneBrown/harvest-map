@@ -1,0 +1,37 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View the Field home page
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "FieldPage", "React page, /", "Lays out the hero and three sections")
+  Component(hero, "FieldHero", "React client component", "Headline, catalogue counts, Ask the web, See the map")
+  Component(anim, "FieldAnimation", "React client component, WebGPU", "Hero particle field, off under reduced motion")
+  Component(qs, "QuestionsSection", "React client component", "Six core questions")
+  Component(mi, "MostImpactfulSection", "React client component", "Top 3 problems")
+  Component(lr, "LatestResearchSection", "React client component", "3 most recent runs")
+  Component(actions, "getFieldSummary, getQuestionSummaries, getTopProblems, getLatestRuns", "Next.js server actions", "One read per section")
+  Component(stats, "CatalogueStatsService", "TypeScript module", "Counts records and recent runs")
+  Component(cq, "CoreQuestionsService", "TypeScript module", "Headline answers per question")
+  Component(rank, "ProblemService", "TypeScript module", "Problems by impact score")
+  Component(runs, "ResearchService", "TypeScript module", "Recent research runs")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, people, problems, findings, research_runs")
+}
+Rel(page, hero, "Renders")
+Rel(hero, anim, "Renders")
+Rel(page, qs, "Renders")
+Rel(page, mi, "Renders")
+Rel(page, lr, "Renders")
+Rel(hero, actions, "Loads summary via")
+Rel(qs, actions, "Loads questions via")
+Rel(mi, actions, "Loads top problems via")
+Rel(lr, actions, "Loads latest runs via")
+Rel(actions, stats, "Calls")
+Rel(actions, cq, "Calls")
+Rel(actions, rank, "Calls")
+Rel(actions, runs, "Calls")
+Rel(stats, db, "Reads", "SQL")
+Rel(cq, db, "Reads", "SQL")
+Rel(rank, db, "Reads", "SQL")
+Rel(runs, db, "Reads", "SQL")
+@enduml

@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Render the shell
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SkipLink" as skip
+  participant "TopBar" as top
+  participant "PrimaryNav" as nav
+  participant "NotificationsBell" as bell
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "SignedInLayout" as layout
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "NotificationService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> layout : GET a signed-in route
+layout -> svc : countUnread(userId)
+svc -> db : Count unread notifications
+db --> svc : n
+svc --> layout : n
+layout -> skip : Render first in tab order (L2-030 AC3)
+layout -> top : Render with ShellModel
+alt Width 768 px or more (CSS media query, min-width 48rem)
+  top -> nav : Render Field, Orgs, People, Problems, Questions, Research, Map
+  nav -> nav : Mark link matching pathname aria-current (L2-030 AC1)
+else Width below 768 px
+  top -> top : Render MenuButton in place of links (L2-030 AC2)
+end
+top -> bell : Render with label "Notifications, {n} unread"
+alt Route exists
+  layout --> actor : Page inside the shell
+else Route does not exist
+  layout --> actor : NotFoundPage inside the shell, HTTP 404 (L2-030 AC5)
+end
+opt Member presses Tab first, then Enter
+  actor -> skip : Activate "Skip to content"
+  skip --> actor : Focus moves to main (L2-030 AC3)
+end
+opt Member selects the bell
+  actor -> bell : Select
+  bell --> actor : /notifications opens (L2-030 AC4)
+end
+@enduml

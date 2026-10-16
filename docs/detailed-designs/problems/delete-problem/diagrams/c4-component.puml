@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Delete a problem
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "ProblemDetailPage", "React server component, /problems/[id]", "Offers the Delete action")
+  Component(dialog, "DeleteProblemDialog", "React client component", "Confirms the delete, shows busy and failed states")
+  Component(action, "deleteProblem", "Next.js server action", "Deletes and redirects to /problems")
+  Component(service, "ProblemService", "TypeScript module", "Deletes problems and recomputes the ranking")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "problems, problem_links")
+}
+Rel(page, dialog, "Opens")
+Rel(dialog, action, "Submits problem id to")
+Rel(action, service, "Calls delete and recomputeRanking")
+Rel(service, db, "Deletes rows, updates ranks", "SQL")
+@enduml

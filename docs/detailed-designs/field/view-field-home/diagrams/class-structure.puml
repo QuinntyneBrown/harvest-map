@@ -1,0 +1,78 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View the Field home page
+
+enum SectionState {
+  loading
+  loaded
+  failed
+}
+enum AnswerStatus {
+  Open
+  Partial
+  Answered
+}
+class FieldSummary {
+  +organizationCount: number
+  +peopleCount: number
+  +problemCount: number
+  +runsSinceYesterday: number
+  +isEmpty: boolean
+}
+class QuestionSummary {
+  +number: number
+  +text: string
+  +headlineValue: string
+  +headlineUnit: string
+  +status: AnswerStatus
+  +sourceCount: number
+}
+class ProblemRankItem {
+  +problemId: string
+  +rank: number
+  +score: number
+  +title: string
+  +reach: string
+  +status: string
+  +organizationMarks: string[]
+}
+class RunSummary {
+  +runId: string
+  +number: number
+  +title: string
+  +startedAt: Date
+  +personName: string
+  +findingCount: number
+  +status: string
+}
+class FieldSection {
+  -state: SectionState
+  +load(): void
+  +retry(): void
+}
+class FieldAnimation {
+  +reduceMotion: boolean
+  +start(): void
+  +stop(): void
+}
+class UserPreferences {
+  +reduceMotion: boolean
+}
+
+FieldSection --> SectionState
+FieldSection ..> FieldSummary : renders
+FieldSection ..> QuestionSummary : renders
+FieldSection ..> ProblemRankItem : renders
+FieldSection ..> RunSummary : renders
+QuestionSummary --> AnswerStatus
+FieldAnimation ..> UserPreferences : reads reduceMotion
+@enduml

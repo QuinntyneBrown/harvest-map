@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Delete a problem
+
+Person(member, "Team member", "Signed-in person who researches organizations and problems")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Deletes a problem in", "HTTPS")
+@enduml

@@ -1,0 +1,64 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Navigation shell
+
+class ShellModel {
+  +user: ShellUser
+  +unreadCount: number
+  +links: NavLink[]
+}
+class ShellUser {
+  +id: string
+  +name: string
+  +initials: string
+}
+class NavLink {
+  +href: string
+  +headerLabel: string
+  +sheetLabel: string
+  +isCurrent(pathname: string): boolean
+}
+class SignedInLayout {
+  +render(children): JSX.Element
+}
+class TopBar {
+  +model: ShellModel
+}
+class PrimaryNav {
+  +links: NavLink[]
+}
+class NavSheet {
+  -open: boolean
+  +links: NavLink[]
+  +unreadCount: number
+  +openSheet(): void
+  +close(): void
+}
+class NotificationsBell {
+  +unreadCount: number
+  +ariaLabel(): string
+}
+class NotificationService {
+  +countUnread(userId: string): number
+}
+
+SignedInLayout ..> ShellModel : builds
+SignedInLayout ..> NotificationService : calls
+ShellModel --> ShellUser
+ShellModel "1" *-- "7" NavLink
+SignedInLayout ..> TopBar : renders
+TopBar *-- PrimaryNav
+TopBar *-- NotificationsBell
+TopBar *-- NavSheet
+PrimaryNav --> NavLink
+NavSheet --> NavLink
+@enduml

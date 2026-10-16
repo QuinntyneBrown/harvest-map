@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Manage settings
+
+Person(member, "Signed-in team member", "Manages profile and preferences")
+Person(team, "Team members", "See the research banner")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Manages settings in", "HTTPS")
+Rel(hm, team, "Shows re-verification count in the research banner to")
+@enduml

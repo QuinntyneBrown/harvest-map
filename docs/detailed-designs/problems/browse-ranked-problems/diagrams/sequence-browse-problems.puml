@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Browse problems
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ProblemsPage" as page
+  participant "ProblemFilterChips" as chips
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "ProblemsPage server render" as render
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ProblemService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /problems
+page --> actor : Skeleton rows while loading (L2-017 AC5)
+page -> render : Request /problems?status=filter
+render -> service : listRanked(filter)
+service -> db : Select problems with links, order by score descending
+alt Load fails
+  db --> service : Error
+  service --> render : Error
+  render --> page : Error state
+  page --> actor : Error block with Retry (L2-017 AC5)
+else No problems
+  db --> service : No rows
+  service --> render : Empty RankedProblemList
+  render --> page : Empty state
+  page --> actor : "No problems yet" with "Add a problem" (L2-017 AC5)
+else Problems exist
+  db --> service : Problem rows with organizations
+  service --> render : RankedProblemList
+  render --> page : Rendered list
+  page --> actor : "{n} ranked · {leader} leads with {score}", formula, ranked rows (L2-017 AC1, AC3)
+end
+actor -> chips : Select All, Tracked or Watching
+chips -> render : Navigate with status search parameter
+render -> service : listRanked(filter)
+service -> db : Select problems matching the status
+db --> service : Matching rows
+service --> render : RankedProblemList
+alt No matches
+  render --> page : No-results state
+  page --> actor : "Nothing matches" with "Clear filters" (L2-017 AC2)
+else Matches
+  render --> page : Filtered list
+  page --> actor : Only matching problems (L2-017 AC2)
+end
+@enduml

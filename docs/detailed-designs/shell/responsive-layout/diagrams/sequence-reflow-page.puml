@@ -1,0 +1,33 @@
+@startuml
+title UML sequence behaviour — Reflow a page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Browser CSS engine" as css
+  participant "Layout tokens" as tokens
+  participant "TopBar" as top
+  participant "DetailLayout" as detail
+end box
+actor -> css : Open a page, resize, rotate or zoom
+css -> tokens : Evaluate min-width media queries
+tokens --> css : columns 4, 8 or 12, gutter, margin
+alt Below 48rem (768 px)
+  css -> top : Show MenuButton, hide links
+else 48rem or more
+  css -> top : Show header links (L2-041 AC1)
+end
+alt Large breakpoint or more (64rem in mocks, 992 px in L2-041; TO SUPPLY)
+  css -> detail : Main column and side column with details and activity (L2-041 AC3)
+else Narrower
+  css -> detail : Details and activity stack after main content (L2-041 AC3)
+end
+css --> actor : Content reflows without overflow or overlap (L2-041 AC1)
+opt Zoom to 200% or enlarged text
+  css -> css : rem sizes grow, narrower breakpoints apply
+  css --> actor : Readable and operable (L2-041 AC4)
+end
+@enduml

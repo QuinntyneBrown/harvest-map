@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Add person to organization
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(section, "OrganizationPeopleSection", "React component, /organizations/:id", "Lists linked people and offers Add")
+  Component(dialog, "AddPersonDialog", "React client component", "Validates Name and submits once")
+  Component(action, "addPerson", "Next.js server action", "Creates the person and revalidates the organization page")
+  Component(service, "PersonService", "TypeScript module", "People application logic")
+  Component(repo, "PersonRepository", "TypeScript module", "Data access for people")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "people, organizations")
+}
+Rel(section, dialog, "Opens")
+Rel(dialog, action, "Submits AddPersonInput to")
+Rel(action, service, "Calls addToOrganization")
+Rel(service, repo, "Inserts Person through")
+Rel(repo, db, "Inserts row", "SQL")
+@enduml

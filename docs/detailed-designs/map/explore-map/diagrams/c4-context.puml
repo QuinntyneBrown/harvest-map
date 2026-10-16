@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Explore the map
+
+Person(member, "Signed-in team member", "Explores where organizations are")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Explores the map in", "HTTPS")
+@enduml

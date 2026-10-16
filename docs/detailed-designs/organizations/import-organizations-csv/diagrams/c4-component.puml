@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Import organizations from CSV
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "OrganizationsPage", "React server component, /organizations", "Offers Import")
+  Component(dialog, "ImportCsvDialog", "React client component", "File chooser, checks, progress, result")
+  Component(action, "importOrganizations", "Next.js server action", "Receives the file")
+  Component(service, "CsvImportService", "TypeScript module", "Parses, validates, skips duplicates, inserts")
+  Component(repo, "OrganizationRepository", "TypeScript module", "Finds duplicates, inserts organizations")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations")
+}
+Rel(page, dialog, "Opens from Import")
+Rel(dialog, action, "Submits file to")
+Rel(action, service, "Calls import(file)")
+Rel(service, repo, "Calls")
+Rel(repo, db, "Selects and inserts in one transaction", "SQL")
+@enduml

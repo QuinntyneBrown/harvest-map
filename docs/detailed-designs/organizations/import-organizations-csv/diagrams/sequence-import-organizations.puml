@@ -1,0 +1,64 @@
+@startuml
+title UML sequence behaviour — Import organizations from CSV
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ImportCsvDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "importOrganizations server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "CsvImportService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> dialog : Select Import on /organizations
+dialog --> actor : File chooser with "Up to 5,000 rows. Columns: Name, Website, Country, City, Tags." (L2-031 AC1)
+actor -> dialog : Choose file
+dialog -> dialog : Read header row and row count
+alt Not CSV or more than 5,000 rows
+  dialog --> actor : Reject file with a message (L2-031 AC3)
+else No Name column
+  actor -> dialog : Select Import
+  dialog --> actor : "Fix 1 thing to save", "This file has no Name column..." (L2-031 AC2)
+else Valid file
+  dialog --> actor : Column mapping preview, "Import {r} rows"
+  actor -> dialog : Select Import
+  dialog -> dialog : Set busy, show "{done} of {total}" (L2-031 AC4)
+  dialog -> action : importOrganizations(form data with file)
+  action -> service : import(file, userId)
+  service -> service : Parse rows and validate each row server-side (L2-031 AC4)
+  service -> repo : findByNormalisedNamesOrDomains(names, domains)
+  repo -> db : Select matching organizations
+  db --> repo : Existing rows
+  repo --> service : Existing organizations
+  service -> service : Mark duplicate rows as skipped (L2-031 AC7)
+  service -> repo : insertMany(new rows, status Unverified)
+  repo -> db : Begin, insert, commit
+  alt Insert or validation fails
+    db --> repo : Roll back
+    repo --> service : Error
+    service --> action : ImportResult failed with row and message
+    action --> dialog : ImportResult
+    dialog --> actor : Failed state, no rows committed (L2-031 AC6)
+  else Commit succeeds
+    db --> repo : Commit result
+    repo --> service : Done
+    service --> action : ImportResult with imported count and skipped rows
+    action -> action : Revalidate list
+    action --> dialog : ImportResult
+    dialog --> actor : "{n} organisations imported", "{d} rows skipped as duplicates..." (L2-031 AC5)
+  end
+end
+opt Download skipped rows
+  actor -> dialog : Download skipped rows
+  dialog --> actor : CSV of skipped rows built in the browser (L2-031 AC7)
+end
+@enduml

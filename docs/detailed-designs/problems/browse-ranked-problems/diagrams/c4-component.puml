@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse ranked problems
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "ProblemsPage", "React server component, /problems", "Renders header, filters, formula and ranked list")
+  Component(chips, "ProblemFilterChips", "React client component", "Sets the status filter")
+  Component(row, "ProblemRow", "React component", "Rank, score ring, title, reach, status, organization marks")
+  Component(service, "ProblemService", "TypeScript module", "Lists ranked problems and recomputes the ranking")
+  Component(scorer, "ImpactScorer", "TypeScript module", "Computes reach x severity x tractability")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "problems, problem_links, organizations")
+}
+Rel(page, chips, "Renders")
+Rel(page, row, "Renders one per problem")
+Rel(page, service, "Calls listRanked(filter)")
+Rel(service, scorer, "Scores each problem with")
+Rel(service, db, "Reads problems and links, writes scores and ranks", "SQL")
+@enduml

@@ -1,0 +1,26 @@
+@startuml
+title UML sequence behaviour — Go offline
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ConnectivityMonitor" as monitor
+  participant "OfflineBanner" as banner
+  participant "EditQueue" as queue
+  participant "PageCache" as cache
+end box
+monitor -> monitor : Browser fires offline event, record offlineSince
+monitor -> banner : online = false
+banner --> actor : "You're offline — Edits queue and sync when you're back. Research can't run."
+banner -> banner : Disable Run research buttons
+loop While offline
+  banner -> queue : count()
+  queue --> banner : n
+  banner --> actor : "Offline for {duration}. {n} edits queued." (L2-036 AC1)
+end
+actor -> cache : Open a page visited this session
+cache --> actor : Page from cache (L2-036 AC2)
+@enduml

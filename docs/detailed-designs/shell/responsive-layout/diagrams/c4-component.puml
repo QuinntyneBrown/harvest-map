@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Responsive layout (frontend only)
+
+Container_Boundary(web, "Harvest Map web app — browser") {
+  Component(tokens, "Layout tokens", "CSS custom properties", "Breakpoints, columns, gutters, margins")
+  Component(top, "TopBar and NavSheet", "React components, CSS", "Header links at 48rem or more, sheet below")
+  Component(dialog, "Dialog", "React component, CSS", "Bottom sheet below 40rem, centred at 40rem or more")
+  Component(detail, "DetailLayout", "React component, CSS grid", "Side column at the large breakpoint")
+  Component(row, "EntityRow", "React component, CSS", "Wraps below 40rem")
+  Component(toast, "ToastRegion", "React component, CSS", "Full width below 40rem, bottom right above")
+}
+Rel(top, tokens, "Reads")
+Rel(dialog, tokens, "Reads")
+Rel(detail, tokens, "Reads")
+Rel(row, tokens, "Reads")
+Rel(toast, tokens, "Reads")
+@enduml

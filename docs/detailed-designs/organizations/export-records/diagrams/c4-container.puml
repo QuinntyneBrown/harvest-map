@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Export records
+
+Person(member, "Team member", "Exports organizations")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, server actions and route handlers")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Users, sessions and catalogue records")
+}
+Rel(member, web, "Requests export file", "HTTPS")
+Rel(web, db, "Reads organizations and people", "SQL")
+@enduml

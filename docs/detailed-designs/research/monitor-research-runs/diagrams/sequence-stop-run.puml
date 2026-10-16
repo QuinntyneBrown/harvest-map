@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — Stop a run
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "RunProgressPanel" as panel
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "stopResearchRun server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ResearchService" as service
+  participant "ResearchRunExecutor <TO SUPPLY>" as executor
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> panel : Select Stop
+panel --> actor : Stop confirmation <TO SUPPLY>
+alt Not confirmed
+  panel --> actor : Run continues
+else Confirmed
+  panel -> action : stopResearchRun(runId)
+  action -> service : stop(runId)
+  service -> db : Set stopRequested on the run
+  db --> service : Commit result
+  service --> action : Done
+  action --> panel : Stop accepted
+  executor -> db : Check stop request before the next source search
+  db --> executor : stopRequested = true
+  executor -> db : Set status Stopped, keep findings already written (L2-023 AC4)
+  panel --> actor : Run shown as stopped; no further sources searched (L2-023 AC4)
+end
+@enduml

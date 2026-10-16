@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Accessibility
+
+Person(member, "Invited team member", "Uses keyboard, assistive technology or reduced motion")
+System_Ext(at, "Assistive technology", "Screen reader on the member's device")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Operates by keyboard", "HTTPS")
+Rel(member, at, "Listens through")
+Rel(at, hm, "Reads roles, names and live regions of", "Browser accessibility tree")
+@enduml

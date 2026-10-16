@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Read notifications
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "NotificationsList" as list
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "NotificationsPage" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "NotificationService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /notifications
+page --> actor : Stream NotificationsSkeleton (L2-033 AC5)
+page -> svc : list(userId)
+svc -> db : Select notifications by user, newest first
+alt Load succeeds
+  db --> svc : Notification rows
+  svc --> page : NotificationListView
+  alt Rows exist
+    page -> list : Render rows and unread count
+    list --> actor : "{n} unread", Mark all read, unread rows marked (L2-033 AC1)
+  else No rows
+    page --> actor : "You're all caught up" empty state (L2-033 AC5)
+  end
+else Load fails
+  db --> svc : Error or timeout
+  svc --> page : Failure
+  page --> actor : "Couldn't load notifications" with Try again (L2-033 AC5)
+end
+@enduml

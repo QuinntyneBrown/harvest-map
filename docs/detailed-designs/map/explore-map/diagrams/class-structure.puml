@@ -1,0 +1,77 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Explore the map
+
+enum MapFilter {
+  All
+  AI
+  Youth
+  Moonshot
+  Verified
+  Unverified
+}
+class MapData {
+  +placedCount: number
+  +unplacedCount: number
+  +pins: MapPinData[]
+  +unplaced: OrganizationLink[]
+  +gaps: MapGaps
+}
+class MapPinData {
+  +organizationId: string
+  +mark: string
+  +name: string
+  +city: string
+  +reach: string
+  +tags: string[]
+  +verified: boolean
+  +latitude: number
+  +longitude: number
+  +href: string
+}
+class OrganizationLink {
+  +organizationId: string
+  +name: string
+  +href: string
+}
+class MapGaps {
+  +emptyRegions: string[]
+  +summary: string
+}
+class MapFilters {
+  -active: MapFilter
+  +select(filter: MapFilter): void
+  +clear(): void
+  +matches(pin: MapPinData): boolean
+}
+class PinPopover {
+  +pin: MapPinData
+  +open(anchor: MapPin): void
+  +close(): void
+}
+class MapService {
+  +load(): MapData
+}
+class GapAnalysis {
+  +findGaps(pins: MapPinData[]): MapGaps
+}
+
+MapData "1" *-- "*" MapPinData
+MapData "1" *-- "*" OrganizationLink
+MapData "1" *-- "1" MapGaps
+MapFilters --> MapFilter
+MapFilters ..> MapPinData : filters
+PinPopover --> MapPinData
+MapService ..> MapData : returns
+MapService ..> GapAnalysis : uses
+GapAnalysis ..> MapGaps : returns
+@enduml

@@ -1,0 +1,46 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Inline alerts
+
+enum AlertKind {
+  Info
+  Success
+  Warning
+  Danger
+  +role(): string
+}
+class AlertAction {
+  +label: string
+  +href: string
+  +onSelect(): void
+}
+class InlineAlertProps {
+  +kind: AlertKind
+  +title: string
+  +message: string
+  +action: AlertAction
+  +onDismiss(): void
+}
+class InlineAlert {
+  +props: InlineAlertProps
+  +render(): JSX.Element
+}
+class AlertIcon {
+  +kind: AlertKind
+}
+
+InlineAlert --> InlineAlertProps
+InlineAlertProps --> AlertKind
+InlineAlertProps --> "0..1" AlertAction
+InlineAlert *-- AlertIcon
+AlertIcon --> AlertKind
+@enduml

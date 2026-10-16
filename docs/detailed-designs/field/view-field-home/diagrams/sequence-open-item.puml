@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — Open an item from the Field home page
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "FieldHero" as hero
+  participant "Section\n(Questions, Most impactful,\nLatest research)" as section
+  participant "Next.js router" as router
+  participant "RunResearchDialog" as dialog
+end box
+alt Ask the web
+  actor -> hero : Select "Ask the web"
+  hero -> dialog : Open Run research (L2-005 AC1)
+else See the map
+  actor -> hero : Select "See the map"
+  hero -> router : Navigate to /map (L2-005 AC1)
+else All problems
+  actor -> section : Select "All problems"
+  section -> router : Navigate to /problems (L2-005 AC3)
+else All runs
+  actor -> section : Select "All runs"
+  section -> router : Navigate to /research (L2-005 AC3)
+else Question selected
+  actor -> section : Select a question
+  section -> router : Navigate to /questions (L2-005 AC3)
+else Problem selected
+  actor -> section : Select a problem
+  section -> router : Navigate to /problems/:id (L2-005 AC3)
+else Run selected
+  actor -> section : Select a run
+  section -> router : Open the run on /research, per-run route <TO SUPPLY> (L2-005 AC3)
+end
+router --> actor : Show the selected page
+@enduml

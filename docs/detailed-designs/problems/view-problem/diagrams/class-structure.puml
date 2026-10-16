@@ -1,0 +1,69 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — View a problem
+
+class ProblemService {
+  +getDetail(id: string): ProblemDetail | null
+}
+class ProblemDetail {
+  +problem: Problem
+  +rank: number
+  +total: number
+  +organizations: Organization[]
+  +milestones: Milestone[]
+  +sources: Source[]
+  +activity: ActivityEntry[]
+}
+class Problem {
+  +id: string
+  +title: string
+  +summary: string
+  +reach: string
+  +severity: Severity
+  +tractability: Tractability
+  +status: ProblemStatus
+  +score: number
+  +rank: number
+}
+class Organization {
+  +id: string
+  +name: string
+  +mark: string
+}
+class Milestone {
+  +id: string
+  +problemId: string
+  +date: string
+  +text: string
+}
+class Source {
+  +id: string
+  +title: string
+  +domain: string
+  +url: string
+  +date: Date
+  +verified: boolean
+  +singleSource: boolean
+}
+class ActivityEntry {
+  +id: string
+  +at: Date
+  +text: string
+}
+
+ProblemService ..> ProblemDetail : returns
+ProblemDetail "1" o-- "1" Problem
+ProblemDetail "1" o-- "*" Organization
+ProblemDetail "1" o-- "*" Milestone
+ProblemDetail "1" o-- "*" Source
+ProblemDetail "1" o-- "*" ActivityEntry
+@enduml

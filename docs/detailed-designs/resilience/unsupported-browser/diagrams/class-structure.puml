@@ -1,0 +1,39 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Unsupported browser
+
+class SupportReport {
+  +webGpu: boolean
+  +anchorPositioning: boolean
+  +viewTransitions: boolean
+  +supported: boolean
+}
+class BrowserSupport <<module>> {
+  +detectSupport(): SupportReport
+}
+class BrowserSupportGate {
+  +children: ReactNode
+  -checkOnMount(): void
+}
+class UnsupportedPage {
+  +getChromeHref: string
+}
+class CopyLinkButton {
+  -copied: boolean
+  +copy(): Promise<void>
+}
+
+BrowserSupportGate ..> BrowserSupport : calls
+BrowserSupport ..> SupportReport : returns
+BrowserSupportGate ..> UnsupportedPage : routes to
+UnsupportedPage *-- CopyLinkButton
+@enduml

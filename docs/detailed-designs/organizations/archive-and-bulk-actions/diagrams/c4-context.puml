@@ -1,0 +1,12 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Archive and bulk actions
+
+Person(member, "Team member", "Signed-in person who curates the catalogue")
+Person(team, "Other team members", "Receive archive notifications")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Archives and tags organizations in", "HTTPS")
+Rel(hm, team, "Notifies of archive events")
+@enduml

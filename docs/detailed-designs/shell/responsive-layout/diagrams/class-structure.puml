@@ -1,0 +1,54 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Responsive layout
+
+class LayoutTokens <<CSS custom properties>> {
+  +breakpointSm: 40rem
+  +breakpointMd: 48rem
+  +breakpointLg: 64rem
+  +breakpointXl: 80rem
+  +breakpoint2xl: 96rem
+  +columns: 4 | 8 | 12
+  +gutter: length
+  +margin: length
+  +containerMax: 76rem
+}
+enum DialogPresentation {
+  BottomSheet
+  Centred
+}
+class Dialog {
+  +presentation(width): DialogPresentation
+  +maxWidth: 32rem
+}
+class DetailLayout {
+  +main: ReactNode
+  +aside: ReactNode
+  +hasSideColumn(width): boolean
+}
+class TopBar {
+  +showsLinks(width): boolean
+}
+class EntityRow {
+  +wraps(width): boolean
+}
+class ToastRegion {
+  +docked(width): string
+}
+
+Dialog ..> LayoutTokens : reads
+DetailLayout ..> LayoutTokens : reads
+TopBar ..> LayoutTokens : reads
+EntityRow ..> LayoutTokens : reads
+ToastRegion ..> LayoutTokens : reads
+Dialog --> DialogPresentation
+@enduml

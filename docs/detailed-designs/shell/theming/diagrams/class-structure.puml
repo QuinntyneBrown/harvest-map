@@ -1,0 +1,45 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Theming
+
+enum ThemePreference {
+  System
+  Light
+  Dark
+}
+enum EffectiveTheme {
+  Light
+  Dark
+}
+class ThemeController {
+  +apply(preference: ThemePreference): void
+  +toggle(): void
+  +effective(): EffectiveTheme
+}
+class UserPreferences {
+  +userId: string
+  +theme: ThemePreference
+}
+class PreferencesService {
+  +get(userId: string): UserPreferences
+  +updateTheme(userId: string, theme: ThemePreference): void
+}
+class RootLayout {
+  +dataTheme(preference: ThemePreference): string
+}
+
+ThemeController --> ThemePreference
+ThemeController ..> EffectiveTheme : resolves
+UserPreferences --> ThemePreference
+PreferencesService ..> UserPreferences : reads / writes
+RootLayout ..> PreferencesService : reads
+@enduml

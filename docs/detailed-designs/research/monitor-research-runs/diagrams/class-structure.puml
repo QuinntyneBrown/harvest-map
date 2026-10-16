@@ -1,0 +1,91 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Monitor research runs
+
+enum RunStatus {
+  Queued
+  Running
+  Done
+  Failed
+  Stopped
+}
+class ResearchOverview {
+  +runCount: number
+  +runningCount: number
+  +findingsToReview: number
+  +runs: ResearchRun[]
+}
+class ResearchRun {
+  +id: number
+  +title: string
+  +status: RunStatus
+  +startedAt: Date
+  +startedBy: string
+  +itemsDone: number
+  +itemsTotal: number
+  +findingCount: number
+  +stopRequested: boolean
+  +failureReason: string
+}
+class RunEvent {
+  +id: string
+  +runId: number
+  +at: Date
+  +message: string
+}
+class Finding {
+  +id: string
+  +runId: number
+  +statement: string
+  +state: FindingState
+}
+class RunUpdate {
+  +runId: number
+  +status: RunStatus
+  +itemsDone: number
+  +itemsTotal: number
+  +minutesLeft: number
+  +events: RunEvent[]
+  +findings: Finding[]
+}
+class ResearchService {
+  +listRuns(): ResearchOverview
+  +stop(runId: number): void
+}
+class ResearchRunExecutor {
+  +execute(runId: number): void
+}
+class NotificationService {
+  +notifyRunFailed(run: ResearchRun): Notification
+}
+class Notification {
+  +id: string
+  +userId: string
+  +title: string
+  +text: string
+  +href: string
+  +read: boolean
+}
+
+ResearchService ..> ResearchOverview : returns
+ResearchOverview "1" o-- "*" ResearchRun
+ResearchRun --> RunStatus
+ResearchRun "1" *-- "*" RunEvent
+ResearchRun "1" *-- "*" Finding
+RunUpdate "1" o-- "*" RunEvent
+RunUpdate "1" o-- "*" Finding
+ResearchRunExecutor ..> ResearchRun : updates
+ResearchRunExecutor ..> RunEvent : writes
+ResearchRunExecutor ..> Finding : writes
+ResearchRunExecutor ..> NotificationService : uses
+NotificationService ..> Notification : creates
+@enduml

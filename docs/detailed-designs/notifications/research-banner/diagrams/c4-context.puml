@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Research banner
+
+Person(member, "Invited team member", "Works on any signed-in page while research runs")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Sees research banners in", "HTTPS")
+@enduml

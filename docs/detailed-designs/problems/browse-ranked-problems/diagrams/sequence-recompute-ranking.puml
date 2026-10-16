@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour — Recompute the ranking
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ProblemsPage" as page
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "Saving server action\n(saveProblem, linkProblem, deleteProblem)" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ProblemService" as service
+  participant "ImpactScorer" as scorer
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+action -> service : recomputeRanking() after the save
+service -> db : Select all problems
+db --> service : Problem rows
+loop Each problem
+  service -> scorer : score(problem)
+  scorer --> service : reach x severity x tractability
+end
+service -> service : Order by score descending, assign ranks
+service -> db : Update scores and ranks in one transaction
+db --> service : Commit result
+service --> action : Done
+actor -> page : Open /problems
+page --> actor : List reflects new scores and ranks (L2-017 AC4)
+@enduml

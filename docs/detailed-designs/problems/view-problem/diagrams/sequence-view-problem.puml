@@ -1,0 +1,46 @@
+@startuml
+title UML sequence behaviour — View a problem
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ProblemDetailPage" as page
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "ProblemDetailPage server render" as render
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ProblemService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /problems/:id
+page --> actor : Skeletons while loading (L2-018 AC3)
+page -> render : Request /problems/:id
+render -> service : getDetail(id)
+service -> db : Select problem, links, organizations, milestones, sources, activity
+alt Load fails
+  db --> service : Error
+  service --> render : Error
+  render --> page : Error state
+  page --> actor : Error block with Retry (L2-018 AC3)
+else No problem with this id
+  db --> service : No row
+  service --> render : null
+  render -> render : notFound()
+  render --> page : Not-found page
+  page --> actor : Not-found page (L2-018 AC3)
+else Problem found
+  db --> service : Rows
+  service --> render : ProblemDetail
+  render --> page : Rendered detail
+  page --> actor : Title, score, summary, actions, Organisations, Milestones, Sources, facts, Activity (L2-018 AC1)
+  opt A section has no items
+    page --> actor : Empty prompt in that section (L2-018 AC2)
+  end
+end
+@enduml

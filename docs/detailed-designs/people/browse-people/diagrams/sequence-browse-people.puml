@@ -1,0 +1,59 @@
+@startuml
+title UML sequence behaviour — Browse people
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "PeopleList" as list
+  participant "PersonRow" as row
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "PeoplePage server component" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PersonService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "PersonRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /people
+page --> actor : loading.tsx skeleton (L2-012 AC4)
+page -> service : listPeople()
+service -> repo : listWithOrganization()
+repo -> db : Select people joined to organizations
+alt Query succeeds
+  db --> repo : Rows
+  repo --> service : PersonListItem[]
+  service --> page : PersonListItem[]
+  alt No people
+    page --> actor : Empty state "No people yet" with Ask the web, Add by hand (L2-012 AC4)
+  else People exist
+    page --> actor : Header "{n} people · {l} on LinkedIn" (L2-012 AC1)
+    page -> list : Render with PersonListItem[]
+    list -> row : Render each row
+    row --> actor : Initials, name, "Role · Organization", LinkedIn link when stored (L2-012 AC1)
+  end
+else Query fails
+  page --> actor : error.tsx "Couldn't load people" with Try again (L2-012 AC4)
+end
+opt Search
+  actor -> list : Type in "Search people"
+  alt Names match
+    list --> actor : Rows narrowed by name (L2-012 AC2)
+  else No match
+    list --> actor : No-results state "Nothing matches" with Clear filters (L2-012 AC2)
+  end
+end
+opt Open LinkedIn
+  actor -> row : Select LinkedIn
+  row --> actor : Open profile in new tab, rel="noopener noreferrer" (L2-012 AC5)
+end
+opt New
+  actor -> page : Select New
+  page --> actor : New person form (L2-012 AC3)
+end
+@enduml

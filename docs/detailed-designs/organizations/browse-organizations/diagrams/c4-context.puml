@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Browse organizations
+
+Person(member, "Team member", "Signed-in person who curates the catalogue")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Browses, filters and selects organizations in", "HTTPS")
+@enduml

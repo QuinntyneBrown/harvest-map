@@ -1,0 +1,34 @@
+@startuml
+title UML sequence behaviour — Follow the system theme
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+participant "Operating system" as os
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Browser CSS engine" as css
+  participant "Theme tokens" as tokens
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "RootLayout" as root
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PreferencesService" as prefs
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> root : Open any page
+root -> prefs : get(userId)
+prefs -> db : Select user_preferences
+db --> prefs : theme = System
+prefs --> root : System
+root --> css : html without data-theme
+css -> tokens : Apply light or dark by prefers-color-scheme
+actor -> os : Switch OS appearance
+os -> css : prefers-color-scheme changes
+css -> tokens : Re-evaluate media query
+tokens --> actor : Theme switches without reload (L2-042 AC1)
+@enduml

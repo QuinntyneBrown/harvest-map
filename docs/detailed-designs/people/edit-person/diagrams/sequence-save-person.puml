@@ -1,0 +1,63 @@
+@startuml
+title UML sequence behaviour — Save a person
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "PersonForm" as form
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "PersonEditPage server component" as page
+  participant "savePerson server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PersonService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "PersonRepository" as prepo
+  participant "OrganizationRepository" as orepo
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /people/:id/edit or new-person route
+page -> orepo : listOptions()
+orepo -> db : Select organization ids and names
+db --> orepo : Rows
+orepo --> page : OrganizationOption[]
+opt Existing person
+  page -> service : getPerson(id)
+  service -> prepo : findById(id)
+  prepo -> db : Select person
+  db --> prepo : Row
+  prepo --> service : Person
+  service --> page : Person
+end
+page -> form : Render prefilled with "{name} · {organization}", or blank (L2-014 AC1)
+form --> actor : Show form
+actor -> form : Edit fields, select Save
+alt Name, Role or Organisation empty
+  form --> actor : Summary "Fix {n} things to save", inline messages, focus summary (L2-014 AC2)
+else Required fields filled
+  form -> form : Set busy, disable fields (L2-014 AC3)
+  form -> action : savePerson(SavePersonInput)
+  action -> service : save(input)
+  alt No id
+    service -> prepo : insert(Person)
+  else Has id
+    service -> prepo : update(Person)
+  end
+  prepo -> db : Insert or update people row
+  alt Write succeeds
+    db --> prepo : Stored row
+    prepo --> service : Person
+    service --> action : Person
+    action --> form : SavePersonResult ok
+    form --> actor : "Saved · just now" (L2-014 AC3)
+  else Save fails
+    action --> form : Failure
+    form --> actor : Error alert, entries kept (L2-014 AC4)
+  end
+end
+@enduml

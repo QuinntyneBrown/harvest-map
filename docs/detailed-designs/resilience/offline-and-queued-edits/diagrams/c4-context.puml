@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Offline and queued edits
+
+Person(member, "Invited team member", "Edits records with an unreliable connection")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Edits records in, online or offline", "HTTPS when online")
+@enduml

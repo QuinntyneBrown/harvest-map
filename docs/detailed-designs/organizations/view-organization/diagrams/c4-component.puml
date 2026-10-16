@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View organization
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "OrganizationPage", "React server component, /organizations/:id", "Renders header, sections and details")
+  Component(banner, "ArchivedBanner", "React component", "Archived by {person} · {date}")
+  Component(actions, "OrganizationActions", "React client component", "Edit, Delete, Research or Restore")
+  Component(research, "Run research dialog", "React client component, research subsystem", "Starts a research run")
+  Component(restore, "restoreOrganization", "Next.js server action", "Restores an archived organization")
+  Component(service, "OrganizationService", "TypeScript module", "get, restore, assertEditable")
+  Component(repo, "OrganizationRepository", "TypeScript module", "Reads and writes organizations and links")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations and linked tables")
+}
+Rel(page, banner, "Renders when archived")
+Rel(page, actions, "Renders")
+Rel(actions, research, "Opens pre-targeted")
+Rel(actions, restore, "Calls")
+Rel(page, service, "Calls get(id)")
+Rel(restore, service, "Calls restore(id)")
+Rel(service, repo, "Calls")
+Rel(repo, db, "Selects and updates", "SQL")
+@enduml

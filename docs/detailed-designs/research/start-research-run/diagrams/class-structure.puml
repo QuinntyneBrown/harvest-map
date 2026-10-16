@@ -1,0 +1,92 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Start a research run
+
+enum CoreQuestionId {
+  q1
+  q2
+  q3
+  q4
+  q5
+  q6
+}
+enum LookFor {
+  Organisations
+  LinkedInProfiles
+}
+enum Depth {
+  Quick
+  Standard
+  Deep
+}
+enum RunStatus {
+  Queued
+  Running
+  Done
+  Failed
+  Stopped
+}
+class RunResearchDialog {
+  -busy: boolean
+  +initialQuestionId: CoreQuestionId | null
+  +defaultDepth: Depth
+  +submit(input: StartRunInput): void
+}
+class StartRunInput {
+  +questionId: CoreQuestionId | null
+  +customQuestion: string
+  +lookFor: LookFor[]
+  +depth: Depth
+}
+class StartRunResult {
+  +ok: boolean
+  +runId: number
+  +errors: FieldError[]
+  +message: string
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class UserSettings {
+  +userId: string
+  +defaultDepth: Depth
+}
+class ResearchService {
+  +start(input: StartRunInput, userId: string): ResearchRun
+}
+class ResearchRun {
+  +id: number
+  +title: string
+  +questionId: CoreQuestionId | null
+  +customQuestion: string
+  +lookFor: LookFor[]
+  +depth: Depth
+  +status: RunStatus
+  +startedAt: Date
+  +startedBy: string
+  +itemsDone: number
+  +itemsTotal: number
+  +failureReason: string
+}
+
+RunResearchDialog ..> UserSettings : reads default depth
+RunResearchDialog ..> StartRunInput : builds
+RunResearchDialog ..> StartRunResult : renders
+StartRunResult "1" *-- "*" FieldError
+ResearchService ..> StartRunInput : reads
+ResearchService ..> ResearchRun : creates
+StartRunInput --> CoreQuestionId
+StartRunInput --> LookFor
+StartRunInput --> Depth
+ResearchRun --> RunStatus
+@enduml

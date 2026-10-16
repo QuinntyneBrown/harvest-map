@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Theming
+
+Person(member, "Invited team member", "Chooses Match system, Light or Dark")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React, CSS", "Theme tokens, root layout and server action")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "User preferences")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, db, "Reads and writes the theme preference", "SQL")
+@enduml

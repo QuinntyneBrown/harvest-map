@@ -1,0 +1,71 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Research banner
+
+enum BannerKind {
+  Info
+  Success
+  Warning
+  Danger
+}
+class BannerView {
+  +eventId: string
+  +kind: BannerKind
+  +title: string
+  +message: string
+  +linkLabel: string
+  +linkHref: string
+  +progressPercent: number
+  +dismissible: boolean
+}
+class BannerEvent {
+  +id: string
+  +kind: BannerKind
+  +title: string
+  +message: string
+  +linkLabel: string
+  +linkHref: string
+  +runId: string
+  +createdAt: Date
+}
+class BannerDismissal {
+  +eventId: string
+  +userId: string
+  +dismissedAt: Date
+}
+class ResearchRun {
+  +id: string
+  +number: number
+  +title: string
+  +status: string
+  +doneItems: number
+  +totalItems: number
+}
+class ResearchBannerService {
+  +current(userId: string): BannerView
+  +dismiss(userId: string, eventId: string): void
+  +recordEvent(event: BannerEvent): void
+}
+class ResearchBanner {
+  +view: BannerView
+  +dismiss(): void
+}
+
+ResearchBanner ..> BannerView : renders
+BannerView --> BannerKind
+BannerEvent --> BannerKind
+BannerDismissal "*" --> "1" BannerEvent
+ResearchBannerService ..> BannerEvent : reads / writes
+ResearchBannerService ..> BannerDismissal : reads / writes
+ResearchBannerService ..> ResearchRun : reads progress
+ResearchBannerService ..> BannerView : builds
+@enduml

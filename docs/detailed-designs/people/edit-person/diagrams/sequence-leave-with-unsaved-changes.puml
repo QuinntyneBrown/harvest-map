@@ -1,0 +1,35 @@
+@startuml
+title UML sequence behaviour — Leave the person form with unsaved changes
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Browser" as browser
+  participant "PersonForm" as form
+  participant "UnsavedChangesDialog" as dialog
+end box
+actor -> form : Change a field
+form -> form : Record unsaved changes, register beforeunload handler
+alt Cancel or browser back
+  actor -> form : Select Cancel or browser back
+  form -> dialog : Open with name and changed fields
+  dialog --> actor : "Discard changes to {name}?" lists changed fields (L2-014 AC5)
+  alt Discard
+    actor -> dialog : Select Discard
+    dialog -> form : Discard
+    form --> actor : Leave the form
+  else Keep editing
+    actor -> dialog : Select Keep editing
+    dialog -> form : Close dialog
+    form --> actor : Form with entries kept
+  end
+else Close tab
+  actor -> browser : Close tab
+  browser -> form : beforeunload
+  form --> browser : Request confirmation
+  browser --> actor : Native leave-page prompt (L2-014 AC5)
+end
+@enduml

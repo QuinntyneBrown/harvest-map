@@ -1,0 +1,30 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Archive and bulk actions
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(bar, "SelectionBar", "React client component", "{n} selected with Tag, Export and Archive")
+  Component(menu, "BulkTagMenu", "React client component", "Adds or removes one tag")
+  Component(toast, "Toast", "React client component, notifications subsystem", "Message with Undo for 8 s")
+  Component(archive, "archiveOrganizations", "Next.js server action", "Archives the selection")
+  Component(restore, "restoreOrganizations", "Next.js server action", "Undoes the archive")
+  Component(tag, "tagOrganizations", "Next.js server action", "Applies a bulk tag")
+  Component(service, "OrganizationService", "TypeScript module", "archive, restore, tag")
+  Component(notify, "NotificationService", "TypeScript module, notifications subsystem", "Stores team notifications")
+  Component(repo, "OrganizationRepository", "TypeScript module", "Updates organizations")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, notifications")
+}
+Rel(bar, archive, "Calls")
+Rel(bar, menu, "Opens")
+Rel(bar, toast, "Shows")
+Rel(menu, tag, "Calls")
+Rel(toast, restore, "Calls on Undo")
+Rel(archive, service, "Calls archive(ids)")
+Rel(restore, service, "Calls restore(id)")
+Rel(tag, service, "Calls tag(input)")
+Rel(service, repo, "Calls")
+Rel(service, notify, "Calls notifyTeam")
+Rel(repo, db, "Updates rows", "SQL")
+Rel(notify, db, "Inserts notifications", "SQL")
+@enduml

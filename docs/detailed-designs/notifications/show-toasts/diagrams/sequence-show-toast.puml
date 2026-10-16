@@ -1,0 +1,39 @@
+@startuml
+title UML sequence behaviour — Show a toast
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Feature component" as feature
+  participant "ToastProvider" as provider
+  participant "ToastRegion" as region
+  participant "ToastItem" as item
+  participant "ToastTimer" as timer
+end box
+actor -> feature : Complete an action
+feature -> provider : show({kind, title, detail, action})
+provider -> region : Add toast
+alt Kind is danger
+  region -> item : Render in assertive region (role alert)
+  item --> actor : Announced assertively, no timer (L2-034 AC1)
+else Info, success or warning
+  region -> item : Render in polite region (role status)
+  item -> timer : Start 8 s countdown with visible bar
+  item --> actor : Announced politely (L2-034 AC1)
+  opt Pointer hovers or focus enters the toast
+    item -> timer : pause()
+    actor -> item : Tab to action, e.g. "Undo" (L2-034 AC2)
+    item -> timer : resume() on leave or blur
+  end
+  timer -> provider : dismiss(id) at zero (L2-034 AC2)
+end
+opt Member selects "Dismiss"
+  actor -> item : Select Dismiss
+  item -> provider : dismiss(id)
+  provider -> region : Remove toast
+  region --> actor : Toast removed (L2-034 AC4)
+end
+@enduml

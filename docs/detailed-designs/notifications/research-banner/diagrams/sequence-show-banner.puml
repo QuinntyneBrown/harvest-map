@@ -1,0 +1,38 @@
+@startuml
+title UML sequence behaviour — Show the research banner
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ResearchBanner" as banner
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "GET /api/research-banner" as route
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ResearchBannerService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> banner : Open or reload any signed-in page
+banner -> route : Fetch current banner
+route -> svc : current(userId)
+svc -> db : Select running run and newest event without a dismissal by user
+db --> svc : Run and BannerEvent rows
+svc --> route : BannerView or none
+route --> banner : JSON
+alt BannerView returned
+  alt Kind is danger
+    banner --> actor : role alert below header, e.g. "Run #45 failed" with Retry (L2-035 AC1)
+  else Info, success or warning
+    banner --> actor : role status below header, e.g. "Trusted sources changed" with See sources (L2-035 AC1)
+  end
+  note over banner, db : An undismissed event is returned again on every navigation and reload (L2-035 AC2)
+else None
+  banner --> actor : No banner
+end
+@enduml

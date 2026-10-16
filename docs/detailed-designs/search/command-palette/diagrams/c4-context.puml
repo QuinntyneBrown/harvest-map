@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Command palette
+
+Person(member, "Team member", "Signed-in invited team member")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Searches and runs actions from the palette in", "HTTPS")
+@enduml

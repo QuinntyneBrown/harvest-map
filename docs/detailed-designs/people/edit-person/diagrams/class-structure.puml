@@ -1,0 +1,83 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Edit person
+
+class PersonEditPage {
+  +id: string | null
+}
+class PersonForm {
+  -busy: boolean
+  -initial: SavePersonInput
+  +options: OrganizationOption[]
+  +submit(input: SavePersonInput): void
+  +changedFields(): string[]
+}
+class UnsavedChangesDialog {
+  +name: string
+  +changedFields: string[]
+  +discard(): void
+  +keepEditing(): void
+}
+class SavePersonInput {
+  +id: string | null
+  +name: string
+  +role: string
+  +organizationId: string
+  +linkedinUrl: string | null
+  +bio: string | null
+}
+class SavePersonResult {
+  +ok: boolean
+  +errors: FieldError[]
+  +person: Person
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class PersonService {
+  +getPerson(id: string): Person | null
+  +save(input: SavePersonInput): Person
+}
+class PersonRepository {
+  +findById(id: string): Person | null
+  +insert(person: Person): Person
+  +update(person: Person): Person
+}
+class OrganizationRepository {
+  +listOptions(): OrganizationOption[]
+}
+class OrganizationOption {
+  +id: string
+  +name: string
+}
+class Person {
+  +id: string
+  +name: string
+  +role: string
+  +organizationId: string
+  +linkedinUrl: string | null
+  +bio: string | null
+}
+
+PersonEditPage ..> PersonService : calls
+PersonEditPage ..> OrganizationRepository : calls
+PersonEditPage *-- PersonForm
+PersonForm ..> SavePersonInput : builds
+PersonForm ..> SavePersonResult : renders
+PersonForm ..> UnsavedChangesDialog : opens
+PersonForm "1" o-- "*" OrganizationOption
+SavePersonResult "1" *-- "*" FieldError
+PersonService ..> PersonRepository : uses
+PersonRepository ..> Person : stores
+OrganizationRepository ..> OrganizationOption : returns
+@enduml

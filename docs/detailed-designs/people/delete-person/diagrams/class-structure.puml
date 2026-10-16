@@ -1,0 +1,51 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Delete person
+
+class DeletePersonDialog {
+  -busy: boolean
+  -failed: boolean
+  +personId: string
+  +name: string
+  +organizationName: string
+  +sourceCount: number
+  +opener: HTMLElement
+  +confirm(): void
+  +cancel(): void
+}
+class DeletePersonResult {
+  +ok: boolean
+}
+class PersonService {
+  +delete(id: string): void
+}
+class PersonRepository {
+  +delete(id: string): void
+}
+class Person {
+  +id: string
+  +name: string
+  +organizationId: string
+}
+class Source {
+  +id: string
+  +personId: string
+  +url: string
+}
+
+DeletePersonDialog ..> DeletePersonResult : renders
+DeletePersonDialog ..> PersonService : invokes via deletePerson
+PersonService ..> PersonRepository : uses
+PersonRepository ..> Person : deletes
+PersonRepository ..> Source : deletes
+Person "1" *-- "*" Source
+@enduml

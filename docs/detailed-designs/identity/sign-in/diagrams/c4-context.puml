@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Sign in
+
+Person(member, "Invited team member", "Person with an invitation to the workspace")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Signs in to", "HTTPS")
+@enduml

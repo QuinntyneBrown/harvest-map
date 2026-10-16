@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Theming
+
+Person(member, "Invited team member", "Prefers light, dark or the system appearance")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Chooses a theme in", "HTTPS")
+@enduml

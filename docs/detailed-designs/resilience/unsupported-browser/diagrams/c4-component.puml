@@ -1,0 +1,17 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Unsupported browser (frontend only)
+
+Container_Boundary(web, "Harvest Map web app — browser") {
+  Component(root, "RootLayout", "Next.js root layout", "Wraps every route")
+  Component(gate, "BrowserSupportGate", "React client component", "Routes unsupported browsers to /unsupported")
+  Component(detect, "detectSupport", "TypeScript function", "navigator.gpu, CSS.supports anchor-name, startViewTransition")
+  Component(page, "UnsupportedPage", "React page, /unsupported", "Harvest Map needs Chrome")
+  Component(copy, "CopyLinkButton", "React client component", "Copies the current URL and confirms")
+}
+Rel(root, gate, "Renders")
+Rel(gate, detect, "Calls")
+Rel(gate, page, "Replaces route with")
+Rel(page, copy, "Renders")
+@enduml

@@ -1,0 +1,28 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Search records
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(form, "SearchForm", "React client component", "Search input, submits the query")
+  Component(page, "SearchPage", "React server component, /search", "Empty, results and no-results states")
+  Component(rows, "Row components", "React components", "OrganizationRow, PersonRow, ProblemRow, FindingRow")
+  Component(service, "SearchService", "TypeScript module", "Searches every record kind")
+  Component(orgrepo, "OrganizationRepository", "TypeScript module", "Data access for organizations")
+  Component(personrepo, "PersonRepository", "TypeScript module", "Data access for people")
+  Component(problemrepo, "ProblemRepository", "TypeScript module", "Data access for problems")
+  Component(findingrepo, "FindingRepository", "TypeScript module", "Data access for findings")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, people, problems, findings")
+}
+Rel(form, page, "Navigates to /search?q=")
+Rel(page, service, "Calls search")
+Rel(page, rows, "Renders each result with")
+Rel(service, orgrepo, "Calls search")
+Rel(service, personrepo, "Calls search")
+Rel(service, problemrepo, "Calls search")
+Rel(service, findingrepo, "Calls search")
+Rel(orgrepo, db, "Selects", "SQL")
+Rel(personrepo, db, "Selects", "SQL")
+Rel(problemrepo, db, "Selects", "SQL")
+Rel(findingrepo, db, "Selects", "SQL")
+@enduml

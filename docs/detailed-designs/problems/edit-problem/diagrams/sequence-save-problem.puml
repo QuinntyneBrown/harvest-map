@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Save a problem
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ProblemEditPage" as page
+  participant "ProblemForm" as form
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "saveProblem server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ProblemService" as service
+  participant "ImpactScorer" as scorer
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /problems/:id/edit
+page --> actor : Form with note "Score recalculates on save" (L2-019 AC1)
+actor -> form : Edit fields, select Save
+alt Title or Reach empty
+  form --> actor : "Fix 2 things to save" lists "Enter a title", "Enter who or how many this affects", focus summary (L2-019 AC2)
+else Fields valid
+  form -> form : Set busy, fields read-only, ignore repeat submits (L2-019 AC3)
+  form -> action : saveProblem(ProblemInput)
+  action -> action : Validate ProblemInput
+  action -> service : save(input)
+  service -> db : Insert or update problem
+  db --> service : Problem row
+  action -> service : recomputeRanking()
+  service -> db : Select all problems
+  db --> service : Problem rows
+  service -> scorer : score(problem) for each
+  scorer --> service : Scores
+  service -> db : Update scores and ranks in one transaction
+  db --> service : Commit result
+  service --> action : Problem
+  alt Save fails
+    action --> form : SaveProblemResult with error
+    form --> actor : Error alert, entries kept (L2-019 AC4)
+  else Save succeeds
+    action --> form : SaveProblemResult ok
+    form --> actor : "Saved · just now" (L2-019 AC3)
+  end
+end
+@enduml

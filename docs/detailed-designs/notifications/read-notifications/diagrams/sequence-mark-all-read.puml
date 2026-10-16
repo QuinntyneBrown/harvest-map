@@ -1,0 +1,30 @@
+@startuml
+title UML sequence behaviour — Mark all read
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "NotificationsList" as list
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "markAllNotificationsRead server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "NotificationService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> list : Select "Mark all read"
+list -> action : markAllNotificationsRead()
+action -> svc : markAllRead(userId)
+svc -> db : Set read_at on unread rows of user
+db --> svc : Rows updated
+svc --> action : Done
+action -> action : Revalidate /notifications and shell layout
+action --> list : Refreshed list and unread count
+list --> actor : "All read", bell shows no count (L2-033 AC3)
+@enduml

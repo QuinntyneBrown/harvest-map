@@ -1,0 +1,25 @@
+@startuml
+title UML sequence behaviour — Select organizations
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "OrganizationList" as list
+  participant "OrganizationCard" as card
+  participant "SelectionBar" as bar
+end box
+actor -> card : Hover or focus card (checkbox always shown on touch)
+card --> actor : Show checkbox (L2-006 AC9)
+actor -> card : Check card
+card -> list : Add id to selection
+list -> bar : Render with selection size
+bar --> actor : "{n} selected" with Tag, Export {n} and Archive (L2-006 AC9)
+opt Uncheck last card
+  actor -> card : Uncheck card
+  card -> list : Remove id from selection
+  list -> bar : Hide bar
+end
+@enduml

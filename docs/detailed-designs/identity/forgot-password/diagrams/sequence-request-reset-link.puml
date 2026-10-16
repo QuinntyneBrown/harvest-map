@@ -1,0 +1,60 @@
+@startuml
+title UML sequence behaviour — Request a reset link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ForgotPasswordPage" as page
+  participant "ForgotPasswordForm" as form
+  participant "ResetLinkSent" as sent
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "requestPasswordReset server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PasswordResetService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "EmailSender" as sender
+  database "Harvest Map database" as db
+end box
+participant "E-mail provider" as email
+actor -> page : Open /forgot-password
+page --> actor : Show "Reset your password" form
+actor -> form : Enter e-mail, select Send link
+alt E-mail empty or malformed
+  form --> actor : Inline "Enter an e-mail address like name@example.com", no request (L2-002 AC1)
+else E-mail well-formed
+  form -> form : Set busy on Send link
+  form -> action : requestPasswordReset(PasswordResetRequest)
+  action -> svc : requestReset(email)
+  svc -> db : Select user by e-mail
+  db --> svc : User row or none
+  opt User exists
+    svc -> db : Insert reset token, expires in 30 minutes
+    db --> svc : PasswordResetToken
+    svc -> sender : send(reset link)
+    sender -> email : Deliver message
+    email --> sender : Accepted
+  end
+  svc --> action : Done
+  alt Request succeeds
+    action --> form : PasswordResetRequestResult ok, same for any address
+    form -> sent : Show success for e-mail
+    sent --> actor : "Check your inbox", "We sent a reset link to {e-mail}. It works for 30 minutes." (L2-002 AC2)
+    sent -> sent : Disable Resend, count down 60 s, enable at zero (L2-002 AC3)
+    opt Resend selected after countdown
+      sent -> action : requestPasswordReset(PasswordResetRequest)
+    end
+    opt Back to sign in selected
+      sent --> actor : Navigate to /sign-in (L2-002 AC3)
+    end
+  else Request fails
+    action --> form : Failure
+    form --> actor : Alert "Couldn't send the link" with retry, keep e-mail (L2-002 AC4)
+  end
+end
+@enduml

@@ -1,0 +1,42 @@
+@startuml
+title UML sequence behaviour — Sign in
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "SignInPage" as page
+  participant "SignInForm" as form
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "signIn server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "AuthService" as auth
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /sign-in
+page --> actor : Show invite-only form (L2-001 AC1)
+actor -> form : Enter e-mail and password, select Continue
+alt Fields empty
+  form --> actor : Error summary "Fix 2 things to save", focus summary (L2-001 AC2, AC3)
+else Fields filled
+  form -> form : Set busy, ignore repeat submits (L2-001 AC4)
+  form -> action : signIn(SignInInput)
+  action -> auth : verifyCredentials(email, password)
+  auth -> db : Select user by e-mail
+  db --> auth : User row
+  auth -> db : Insert session
+  db --> auth : Session
+  auth --> action : Session
+  action --> form : Set session cookie, redirect to /
+  form --> actor : Land on Field home page (L2-001 AC4)
+end
+opt Service unreachable
+  form --> actor : Alert "Can't reach Harvest Map" with Retry, keep values (L2-001 AC5)
+end
+@enduml

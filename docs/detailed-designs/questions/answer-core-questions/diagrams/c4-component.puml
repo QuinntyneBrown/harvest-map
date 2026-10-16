@@ -1,0 +1,26 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Answer the core questions
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "QuestionsPage", "React page, /questions", "Header counts, Ask the web, six cards")
+  Component(card, "QuestionCard", "React client component", "One question, its answer and Re-run")
+  Component(dialog, "RunResearchDialog", "React client component", "Starts a research run")
+  Component(overview, "getQuestionsOverview", "Next.js server action", "Header counts and question headers")
+  Component(answer, "getQuestionAnswer", "Next.js server action", "One question's answer")
+  Component(svc, "CoreQuestionsService", "TypeScript module", "Computes answers from the catalogue")
+  Component(rank, "ProblemService", "TypeScript module", "Problems by impact score")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, people, problems, findings")
+}
+Rel(page, overview, "Calls on open")
+Rel(page, card, "Renders six")
+Rel(card, answer, "Loads its answer via")
+Rel(page, dialog, "Opens on Ask the web")
+Rel(card, dialog, "Opens with question preselected on Re-run")
+Rel(overview, svc, "Calls")
+Rel(answer, svc, "Calls")
+Rel(svc, rank, "Uses for question 3")
+Rel(svc, db, "Reads", "SQL")
+Rel(rank, db, "Reads", "SQL")
+@enduml

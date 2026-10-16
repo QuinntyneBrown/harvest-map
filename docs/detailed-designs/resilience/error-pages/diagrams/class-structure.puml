@@ -1,0 +1,50 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Error pages
+
+class WorkspaceAccess {
+  +allowed: boolean
+  +adminName: string
+  +adminEmail: string
+}
+class WorkspaceAccessService {
+  +check(userId: string): WorkspaceAccess
+}
+class SignedInLayout {
+  +render(children): JSX.Element
+}
+class NotFoundPage {
+  +backHref: string = "/"
+  +searchHref: string = "/search"
+}
+class ForbiddenPage {
+  +access: WorkspaceAccess
+}
+class ErrorBoundaryProps {
+  +digest: string
+  +reset(): void
+}
+class ServerErrorPage {
+  +props: ErrorBoundaryProps
+  +reference: string
+}
+class ErrorReporter {
+  +onRequestError(error: Error): void
+}
+
+SignedInLayout ..> WorkspaceAccessService : calls
+WorkspaceAccessService ..> WorkspaceAccess : returns
+SignedInLayout ..> ForbiddenPage : forbidden()
+SignedInLayout ..> NotFoundPage : notFound()
+ForbiddenPage --> WorkspaceAccess
+ServerErrorPage --> ErrorBoundaryProps
+@enduml

@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Forgot password
+
+Person(member, "Invited team member", "Person with an invitation to the workspace")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+System_Ext(email, "E-mail provider", "<TO SUPPLY>: delivers reset e-mails")
+
+Rel(member, hm, "Requests a reset link from", "HTTPS")
+Rel(hm, email, "Sends reset link via", "<TO SUPPLY>")
+Rel(email, member, "Delivers reset e-mail to")
+@enduml

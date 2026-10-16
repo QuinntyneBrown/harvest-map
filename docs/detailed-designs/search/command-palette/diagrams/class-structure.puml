@@ -1,0 +1,60 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Command palette
+
+class CommandPaletteProvider {
+  -isOpen: boolean
+  -previousElement: HTMLElement
+  +open(): void
+  +close(): void
+}
+class CommandPalette {
+  -query: string
+  -highlighted: number
+  -busy: boolean
+  -results: PaletteResults
+  +actions: PaletteAction[]
+  +onInput(query: string): void
+  +move(step: number): void
+  +openHighlighted(): void
+}
+class PaletteAction {
+  +label: string
+  +shortcut: string
+  +run(): void
+}
+class PaletteResults {
+  +organizations: OrganizationListItem[]
+  +people: PersonListItem[]
+}
+class SearchService {
+  +search(query: string): SearchResults
+}
+class SearchResults {
+  +query: string
+  +total: number
+  +organizations: OrganizationListItem[]
+  +people: PersonListItem[]
+  +problems: ProblemListItem[]
+  +findings: FindingListItem[]
+}
+class OrganizationListItem
+class PersonListItem
+
+CommandPaletteProvider *-- CommandPalette
+CommandPalette "1" *-- "2" PaletteAction
+CommandPalette --> PaletteResults
+PaletteResults "1" *-- "*" OrganizationListItem
+PaletteResults "1" *-- "*" PersonListItem
+SearchService ..> SearchResults : returns
+PaletteResults ..> SearchResults : built from
+@enduml

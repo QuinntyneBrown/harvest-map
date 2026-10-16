@@ -1,0 +1,95 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Edit organization
+
+enum OrganizationType {
+  Community
+  Platform
+  Ministry
+  Alliance
+  Movement
+  Product
+  Startup
+  Research
+  Nonprofit
+}
+enum OrganizationTag {
+  AI
+  Youth
+  Moonshot
+  Scripture
+  Community
+  Digital
+}
+class OrganizationForm {
+  -busy: boolean
+  -changedFields: string[]
+  +submit(input: OrganizationInput): void
+  +cancel(): void
+}
+class UnsavedChangesDialog {
+  +name: string
+  +changedFields: string[]
+  +discard(): void
+  +keepEditing(): void
+}
+class OrganizationInput {
+  +id: string
+  +name: string
+  +type: OrganizationType
+  +founded: number
+  +city: string
+  +country: string
+  +website: string
+  +summary: string
+  +tags: OrganizationTag[]
+}
+class SaveOrganizationResult {
+  +ok: boolean
+  +errors: FieldError[]
+  +redirectTo: string
+}
+class FieldError {
+  +field: string
+  +message: string
+}
+class OrganizationService {
+  +get(id: string): OrganizationDetail
+  +save(input: OrganizationInput, userId: string): Organization
+  +assertEditable(id: string): void
+}
+class OrganizationRepository {
+  +insert(organization: Organization): void
+  +update(organization: Organization): void
+}
+class Organization {
+  +id: string
+  +name: string
+  +type: OrganizationType
+  +tags: OrganizationTag[]
+  +updatedAt: Date
+  +updatedBy: string
+  +archivedAt: Date
+}
+
+OrganizationForm ..> OrganizationInput : builds
+OrganizationForm ..> SaveOrganizationResult : renders
+OrganizationForm ..> UnsavedChangesDialog : opens
+SaveOrganizationResult "1" *-- "*" FieldError
+OrganizationInput --> OrganizationType
+OrganizationInput --> OrganizationTag
+OrganizationService ..> OrganizationInput : accepts
+OrganizationService ..> OrganizationRepository : uses
+OrganizationRepository ..> Organization : writes
+Organization --> OrganizationType
+Organization --> OrganizationTag
+@enduml

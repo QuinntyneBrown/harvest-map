@@ -1,0 +1,13 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Import organizations from CSV
+
+Person(member, "Team member", "Imports a CSV file")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, server actions and route handlers")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Users, sessions and catalogue records")
+}
+Rel(member, web, "Uploads file", "HTTPS")
+Rel(web, db, "Checks duplicates, inserts organizations in one transaction", "SQL")
+@enduml

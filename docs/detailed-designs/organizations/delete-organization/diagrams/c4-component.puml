@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Delete organization
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(actions, "OrganizationActions", "React client component", "Owns the Delete button")
+  Component(dialog, "DeleteOrganizationDialog", "React client component", "Typed confirmation, busy and failed states")
+  Component(action, "deleteOrganization", "Next.js server action", "Checks confirmation and deletes")
+  Component(service, "OrganizationService", "TypeScript module", "delete, assertEditable")
+  Component(repo, "OrganizationRepository", "TypeScript module", "Deletes organization and links in one transaction")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations, person links, sources")
+}
+Rel(actions, dialog, "Opens")
+Rel(dialog, action, "Calls")
+Rel(action, service, "Calls delete(id)")
+Rel(service, repo, "Calls")
+Rel(repo, db, "Deletes rows", "SQL")
+@enduml

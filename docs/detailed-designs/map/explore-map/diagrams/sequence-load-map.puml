@@ -1,0 +1,51 @@
+@startuml
+title UML sequence behaviour — Load the map
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "MapPage" as page
+  participant "WorldMap" as world
+  participant "PinList" as list
+  participant "UnplacedList" as unplaced
+  participant "GapsPanel" as gaps
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "getMapData server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "MapService" as svc
+  participant "GapAnalysis" as gap
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /map
+page --> actor : Skeleton (L2-026 AC7)
+page -> action : getMapData()
+action -> svc : load()
+svc -> db : Select organizations with city, reach, tags, verification
+db --> svc : Rows
+svc -> svc : Split placed and without a single home
+svc -> gap : findGaps(pins)
+gap --> svc : MapGaps
+svc --> action : MapData
+alt Load fails
+  action --> page : Failure
+  page --> actor : "Couldn't load the pins" with Try again and Go back (L2-026 AC7)
+else No organization has a city
+  action --> page : MapData with no pins
+  page --> actor : "Nothing placed yet" with Ask the web (L2-026 AC6)
+else Data present
+  action --> page : MapData
+  page --> actor : "{n} placed · {m} without a single home" (L2-026 AC1)
+  page -> world : Render one pin per placed organization (L2-026 AC1)
+  world --> actor : Pins as buttons in tab order (L2-026 AC8)
+  page -> list : Render same pins as a list (L2-026 AC8)
+  page -> unplaced : Render "Not on the map" links (L2-026 AC4)
+  page -> gaps : Render "Where the gaps are" (L2-026 AC5)
+end
+@enduml

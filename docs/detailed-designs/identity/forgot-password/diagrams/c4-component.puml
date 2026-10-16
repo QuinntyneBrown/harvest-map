@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Forgot password
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "ForgotPasswordPage", "React page, /forgot-password", "Renders the form or the success state")
+  Component(form, "ForgotPasswordForm", "React client component", "Validates the e-mail and submits once")
+  Component(sent, "ResetLinkSent", "React client component", "Shows Check your inbox and the Resend countdown")
+  Component(action, "requestPasswordReset", "Next.js server action", "Requests a reset link")
+  Component(svc, "PasswordResetService", "TypeScript module", "Creates reset tokens and sends reset e-mails")
+  Component(sender, "EmailSender", "TypeScript module", "Hands messages to the e-mail provider")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "users, password_reset_tokens")
+}
+System_Ext(email, "E-mail provider", "<TO SUPPLY>")
+Rel(page, form, "Renders")
+Rel(page, sent, "Renders on success")
+Rel(form, action, "Submits e-mail to")
+Rel(sent, action, "Resends via")
+Rel(action, svc, "Calls")
+Rel(svc, db, "Reads user, inserts reset token", "SQL")
+Rel(svc, sender, "Sends reset link through")
+Rel(sender, email, "Delivers message via", "<TO SUPPLY>")
+@enduml

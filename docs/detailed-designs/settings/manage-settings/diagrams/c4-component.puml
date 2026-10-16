@@ -1,0 +1,27 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Manage settings
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "SettingsPage", "React page, /settings", "Loads settings and shows skeleton or error")
+  Component(form, "SettingsForm", "React client component", "Five sections, validation and Save changes")
+  Component(theme, "ThemeControl", "React client component", "Applies the theme at once")
+  Component(load, "loadSettings", "Next.js server action", "Returns the user's settings")
+  Component(save, "saveSettings", "Next.js server action", "Validates and saves settings")
+  Component(svc, "SettingsService", "TypeScript module", "Reads and writes profile and preferences")
+  Component(rever, "FindingReverificationService", "TypeScript module", "Counts findings to re-verify")
+  Component(banner, "ResearchBannerService", "TypeScript module", "Records research banner events")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "users, user_preferences, findings")
+}
+Rel(page, load, "Calls on open")
+Rel(page, form, "Renders")
+Rel(form, theme, "Renders")
+Rel(form, save, "Submits settings to")
+Rel(load, svc, "Calls")
+Rel(save, svc, "Calls")
+Rel(svc, db, "Reads and writes", "SQL")
+Rel(svc, rever, "Asks for re-verification count")
+Rel(rever, db, "Reads findings", "SQL")
+Rel(svc, banner, "Posts count to")
+@enduml

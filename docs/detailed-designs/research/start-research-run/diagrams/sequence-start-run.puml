@@ -1,0 +1,53 @@
+@startuml
+title UML sequence behaviour — Start a research run
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "RunResearchOpener" as opener
+  participant "RunResearchDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "startResearchRun server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ResearchService" as service
+  participant "ResearchRunExecutor <TO SUPPLY>" as executor
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> opener : Select Run research, Ask the web, Re-run, or press R
+alt Opened from a question's Re-run
+  opener -> dialog : Open with question id
+  dialog --> actor : That question preselected (L2-022 AC5)
+else Other opener
+  opener -> dialog : Open
+end
+dialog --> actor : Question, Look for, Depth (default from Settings), note, focus on checked question (L2-022 AC1)
+actor -> dialog : Choose options, select Run
+alt "Something else" with empty "Your question"
+  dialog --> actor : "Fix 1 thing to save" lists "Write the question you want answered" (L2-022 AC2)
+else Input valid
+  dialog -> dialog : Set busy, disable inputs (L2-022 AC3)
+  dialog -> action : startResearchRun(StartRunInput)
+  action -> action : Validate StartRunInput
+  action -> service : start(input, userId)
+  service -> db : Insert research run with status Queued
+  alt Request fails
+    db --> service : Error
+    service --> action : Error with reason
+    action --> dialog : StartRunResult with message
+    dialog --> actor : "Couldn't start the run" alert, choices kept, Run available to retry (L2-022 AC4)
+  else Run queued
+    db --> service : ResearchRun
+    service -> executor : Hand over queued run
+    service --> action : ResearchRun
+    action --> dialog : StartRunResult ok with runId
+    dialog --> actor : Dialog closes; progress on /research and in the research banner (L2-022 AC3)
+  end
+end
+@enduml

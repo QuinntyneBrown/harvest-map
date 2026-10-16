@@ -1,0 +1,32 @@
+@startuml
+title UML sequence behaviour — Change the theme
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Signed-in team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ThemeControl" as theme
+  participant "Document root" as doc
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "saveSettings server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "SettingsService" as svc
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> theme : Pick Light, Dark or Match system
+theme -> doc : Apply theme at once (L2-038 AC5)
+doc --> actor : Page redraws in the chosen theme
+note over theme, action : Persist on pick or with "Save changes": <TO SUPPLY>
+theme -> action : saveSettings(theme)
+action -> svc : save(userId, theme)
+svc -> db : Upsert user_preferences.theme
+db --> svc : Commit result
+svc --> action : Done
+action --> theme : Theme remembered (L2-038 AC5)
+@enduml

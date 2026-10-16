@@ -1,0 +1,25 @@
+@startuml
+title UML sequence behaviour — Error summary
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Keyboard user" as actor
+participant "Assistive technology" as at
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Form" as form
+  participant "ErrorSummary" as summary
+  participant "FormField" as field
+end box
+actor -> form : Submit with invalid fields
+form -> field : Set aria-invalid="true", aria-describedby=messageId (L2-043 AC3)
+form -> summary : Render "Fix {n} things to save" with FieldError links
+summary -> summary : focus() (L2-043 AC3)
+summary -> at : Focused heading and list
+at --> actor : Announce the summary
+actor -> summary : Activate an item
+summary -> field : Focus field by id (L2-043 AC3)
+field -> at : Expose invalid state and inline message
+at --> actor : Announce field, invalid, message
+@enduml

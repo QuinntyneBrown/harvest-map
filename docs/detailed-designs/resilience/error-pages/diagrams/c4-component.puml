@@ -1,0 +1,25 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Error pages
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(layout, "SignedInLayout", "Next.js layout", "Checks workspace access before rendering")
+  Component(record, "Record page", "React server page", "Calls notFound() when the id is missing")
+  Component(access, "WorkspaceAccessService", "TypeScript module", "Membership check and admin details")
+  Component(nf, "NotFoundPage", "not-found.tsx", "404 inside the shell")
+  Component(fb, "ForbiddenPage", "forbidden.tsx", "403 Not your field")
+  Component(se, "ServerErrorPage", "error.tsx client boundary", "500 Something went wrong")
+  Component(reporter, "ErrorReporter", "onRequestError in instrumentation.ts", "Records unhandled server errors")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "Membership table TO SUPPLY")
+}
+System_Ext(report, "Error reporting service", "Provider TO SUPPLY")
+Rel(layout, access, "Calls check(userId)")
+Rel(access, db, "Reads", "SQL")
+Rel(layout, fb, "Calls forbidden() to render")
+Rel(record, nf, "Calls notFound() to render")
+Rel(layout, nf, "Renders for unknown routes")
+Rel(record, se, "Thrown errors reach")
+Rel(reporter, report, "Sends error to")
+Rel(record, reporter, "Thrown errors recorded by")
+@enduml

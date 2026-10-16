@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Create and edit a problem
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "ProblemEditPage", "React server component, /problems/[id]/edit", "Breadcrumb, heading and score note")
+  Component(form, "ProblemForm", "React client component", "Validates fields and submits once")
+  Component(dialog, "UnsavedChangesDialog", "React client component", "Discard or keep editing")
+  Component(action, "saveProblem", "Next.js server action", "Validates and saves the problem")
+  Component(service, "ProblemService", "TypeScript module", "Saves problems and recomputes the ranking")
+  Component(scorer, "ImpactScorer", "TypeScript module", "Computes reach x severity x tractability")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "problems")
+}
+Rel(page, form, "Renders")
+Rel(form, dialog, "Opens on leave with unsaved changes")
+Rel(form, action, "Submits ProblemInput to")
+Rel(action, service, "Calls save and recomputeRanking")
+Rel(service, scorer, "Scores each problem with")
+Rel(service, db, "Inserts or updates problem, updates scores and ranks", "SQL")
+@enduml

@@ -1,0 +1,31 @@
+@startuml
+title UML sequence behaviour — Announce dynamic updates
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Screen reader user" as actor
+participant "Assistive technology" as at
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "Feature component" as feature
+  participant "LiveRegion" as live
+  participant "StatusBadge" as badge
+end box
+alt Toast, banner or inline alert of danger kind
+  feature -> live : Insert into role alert region
+  live -> at : Assertive change
+else Toast, banner, inline alert of other kinds
+  feature -> live : Insert into role status region
+  live -> at : Polite change
+else Research run log event
+  feature -> live : Append to role log region
+  live -> at : Polite change
+else Busy state
+  feature -> live : Set aria-busy and busy label
+  live -> at : Polite change
+end
+at --> actor : Announce without moving focus (L2-043 AC4)
+feature -> badge : Render Verified, Unverified or severity
+badge --> actor : Text and icon alongside colour (L2-043 AC6)
+@enduml

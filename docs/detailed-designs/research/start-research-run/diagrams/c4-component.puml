@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Start a research run
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(opener, "RunResearchOpener", "React client components", "Run research, Ask the web, Re-run, key R")
+  Component(dialog, "RunResearchDialog", "React client component", "Question, Look for, Depth, Run")
+  Component(settings, "getUserSettings", "Server function", "Returns the person's default depth")
+  Component(action, "startResearchRun", "Next.js server action", "Validates and queues the run")
+  Component(service, "ResearchService", "TypeScript module", "Creates runs and hands them to the executor")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "research_runs, user_settings")
+}
+Container(executor, "Research run executor", "<TO SUPPLY>", "Executes queued runs")
+Rel(opener, dialog, "Opens, with question id for Re-run")
+Rel(dialog, settings, "Receives default depth from")
+Rel(settings, db, "Reads user_settings", "SQL")
+Rel(dialog, action, "Submits StartRunInput to")
+Rel(action, service, "Calls start")
+Rel(service, db, "Inserts run with status Queued", "SQL")
+Rel(service, executor, "Hands run to", "<TO SUPPLY>")
+@enduml

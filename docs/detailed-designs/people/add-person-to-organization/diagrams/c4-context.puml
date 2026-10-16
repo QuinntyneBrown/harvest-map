@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Add person to organization
+
+Person(member, "Team member", "Signed-in invited team member")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Adds people to organizations in", "HTTPS")
+@enduml

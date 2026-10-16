@@ -1,0 +1,33 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Offline and queued edits
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(form, "Queueable form", "React client component", "Organization, person or problem form")
+  Component(submit, "submitOrQueue", "TypeScript function", "Calls the action online, queues offline")
+  Component(monitor, "ConnectivityMonitor", "React hook", "online and offline events, offline since")
+  Component(banner, "OfflineBanner", "React client component", "Offline, reconnecting, synced and conflict states")
+  Component(queue, "EditQueue", "TypeScript module", "Ordered QueuedEdit entries")
+  Component(sync, "SyncRunner", "TypeScript module", "Replays the queue in order on reconnect")
+  Component(actions, "QueueableActions", "TypeScript map", "actionName to save server action")
+  Component(save, "Save server actions", "Next.js server actions", "e.g. saveOrganization, savePerson")
+  Component(cache, "PageCache", "Mechanism TO SUPPLY", "Serves pages visited this session")
+  Component(offline, "OfflinePage", "React page, /offline", "You're offline with Retry")
+  ComponentDb(local, "Browser storage", "Mechanism TO SUPPLY", "Queue and cached pages")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "Catalogue records")
+}
+Rel(form, submit, "Saves through")
+Rel(submit, save, "Calls when online")
+Rel(submit, queue, "Appends when offline")
+Rel(monitor, banner, "Drives")
+Rel(monitor, sync, "Starts on reconnect")
+Rel(sync, queue, "Reads and removes")
+Rel(sync, actions, "Looks up action in")
+Rel(actions, save, "Calls")
+Rel(sync, banner, "Reports SyncResult to")
+Rel(queue, local, "Persists in")
+Rel(cache, local, "Reads and writes")
+Rel(cache, offline, "Falls back to")
+Rel(save, db, "Writes", "SQL")
+@enduml

@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Offline and queued edits
+
+Person(member, "Invited team member", "Edits records online or offline")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React", "Pages, client components and save server actions")
+  ContainerDb(local, "Browser storage", "Mechanism TO SUPPLY", "Edit queue and pages visited this session")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "Catalogue records")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(web, local, "Queues edits and caches pages in", "Browser API")
+Rel(web, db, "Writes synced edits", "SQL")
+@enduml

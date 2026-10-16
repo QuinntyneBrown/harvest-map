@@ -1,0 +1,24 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Accessibility
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(root, "RootLayout", "Next.js root layout", "Renders data-motion from preferences")
+  Component(prefs, "PreferencesService", "TypeScript module", "Reads Reduce motion")
+  Component(focus, "Focus ring styles", "CSS :focus-visible", "2 px ring, Highlight in forced colours")
+  Component(motion, "MotionPreference", "CSS and React hook", "Zero durations when reduced")
+  Component(dialog, "Dialog", "React client component", "Initial focus, trap, Escape, return focus")
+  Component(summary, "ErrorSummary", "React client component", "Takes focus, links to fields")
+  Component(field, "FormField", "React component", "aria-invalid, aria-describedby")
+  Component(live, "Live regions", "role status, alert, log", "Toasts, banners, run log, busy states")
+  Component(badge, "StatusBadge", "React component", "Text and icon with colour")
+  Component(icon, "IconButton", "React component", "Required accessible label")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "user_preferences")
+}
+Rel(root, prefs, "Calls")
+Rel(prefs, db, "Reads", "SQL")
+Rel(root, motion, "Sets data-motion for")
+Rel(summary, field, "Links to and focuses")
+Rel(dialog, icon, "Uses for Close")
+@enduml

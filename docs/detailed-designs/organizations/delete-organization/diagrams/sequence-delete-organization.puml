@@ -1,0 +1,52 @@
+@startuml
+title UML sequence behaviour — Delete organization
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "OrganizationActions" as actions
+  participant "DeleteOrganizationDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "deleteOrganization server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> actions : Select Delete
+actions -> dialog : Open with name and counts (bottom sheet below 640 px, L2-009 AC6)
+dialog --> actor : "Delete {name}?" with counts, focus in text field (L2-009 AC1)
+alt Escape, close button or Cancel
+  actor -> dialog : Dismiss
+  dialog -> actions : Close, return focus to Delete (L2-009 AC5)
+else Confirm
+  actor -> dialog : Type name, select Delete organisation
+  alt Name does not match exactly
+    dialog --> actor : "Names must match exactly, including capitals" (L2-009 AC2)
+  else Exact match
+    dialog -> dialog : Set busy (L2-009 AC3)
+    dialog -> action : deleteOrganization(DeleteOrganizationInput)
+    action -> action : Compare confirmation with stored name
+    action -> service : delete(id)
+    service -> service : assertEditable(id)
+    service -> repo : deleteWithLinks(id)
+    repo -> db : Delete person links, sources and organization in one transaction
+    db --> repo : Commit result
+    repo --> service : Done
+    service --> action : Done
+    action --> dialog : Redirect to /organizations
+    dialog --> actor : Dialog closes, land on /organizations (L2-009 AC3)
+  end
+end
+opt Request fails
+  action --> dialog : DeleteOrganizationResult with title and message
+  dialog --> actor : Failed state with retry and Cancel (L2-009 AC4)
+end
+@enduml

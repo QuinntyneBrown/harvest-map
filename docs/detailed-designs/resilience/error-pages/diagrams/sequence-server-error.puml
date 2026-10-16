@@ -1,0 +1,29 @@
+@startuml
+title UML sequence behaviour — Server error
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Workspace member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ServerErrorPage" as se
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "Requested page" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ErrorReporter" as reporter
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "Error reporting service" as report
+end box
+actor -> page : GET a page
+page -> page : Unhandled error thrown
+page -> reporter : onRequestError(error)
+reporter -> report : Send error (provider TO SUPPLY)
+page --> se : Error with digest only
+se --> actor : "Something went wrong" with reference, Try again and Contact support, no stack trace (L2-040 AC3)
+actor -> se : Select "Try again"
+se -> page : reset() re-renders the segment
+@enduml

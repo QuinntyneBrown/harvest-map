@@ -1,0 +1,18 @@
+@startuml
+title UML sequence behaviour — Copy the link
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "UnsupportedPage" as page
+  participant "CopyLinkButton" as copy
+  participant "Clipboard API" as clipboard
+end box
+actor -> copy : Select "Copy link"
+copy -> clipboard : writeText(current URL)
+clipboard --> copy : Written
+copy --> actor : Confirm link copied, wording TO SUPPLY (L2-039 AC3)
+@enduml

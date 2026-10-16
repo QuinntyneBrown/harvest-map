@@ -1,0 +1,75 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Archive and bulk actions
+
+enum TagChange {
+  Add
+  Remove
+}
+class SelectionBar {
+  +selectedIds: string[]
+  +archive(): void
+  +openTagMenu(): void
+}
+class Toast {
+  +message: string
+  +actionLabel: string
+  +durationMs: number
+  -paused: boolean
+  +pause(): void
+  +resume(): void
+}
+class BulkTagInput {
+  +ids: string[]
+  +tag: OrganizationTag
+  +change: TagChange
+}
+class ArchiveResult {
+  +ids: string[]
+  +names: string[]
+}
+class OrganizationService {
+  +archive(ids: string[], userId: string): ArchiveResult
+  +restore(id: string): void
+  +tag(input: BulkTagInput): void
+  +assertEditable(id: string): void
+}
+class OrganizationRepository {
+  +updateMany(organizations: Organization[]): void
+}
+class NotificationService {
+  +notifyTeam(text: string, actorId: string): void
+}
+class Organization {
+  +id: string
+  +name: string
+  +tags: OrganizationTag[]
+  +archivedAt: Date
+  +archivedBy: string
+}
+class Notification {
+  +id: string
+  +recipientId: string
+  +text: string
+  +createdAt: Date
+  +readAt: Date
+}
+
+SelectionBar ..> Toast : shows
+SelectionBar ..> BulkTagInput : builds
+SelectionBar ..> ArchiveResult : receives
+BulkTagInput --> TagChange
+OrganizationService ..> OrganizationRepository : uses
+OrganizationService ..> NotificationService : uses
+OrganizationRepository ..> Organization : updates
+NotificationService ..> Notification : creates
+@enduml

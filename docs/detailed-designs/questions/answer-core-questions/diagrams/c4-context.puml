@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Answer the core questions
+
+Person(member, "Signed-in team member", "Reads answers to the six core questions")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Reads core question answers in", "HTTPS")
+@enduml

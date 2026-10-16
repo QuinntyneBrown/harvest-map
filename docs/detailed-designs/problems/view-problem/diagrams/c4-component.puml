@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View a problem
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "ProblemDetailPage", "React server component, /problems/[id]", "Header, score, summary and actions")
+  Component(orgs, "ProblemOrganizationsSection", "React component", "Linked organizations or empty prompt")
+  Component(milestones, "MilestonesSection", "React component", "Dated milestones")
+  Component(sources, "SourcesSection", "React component", "Sources with single-source flag")
+  Component(facts, "ProblemFactsAside", "React component", "Rank, reach, severity, tractability, status, activity")
+  Component(service, "ProblemService", "TypeScript module", "Returns ProblemDetail by id")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "problems, problem_links, organizations, milestones, sources, activity_entries")
+}
+Rel(page, orgs, "Renders")
+Rel(page, milestones, "Renders")
+Rel(page, sources, "Renders")
+Rel(page, facts, "Renders")
+Rel(page, service, "Calls getDetail(id)")
+Rel(service, db, "Reads", "SQL")
+@enduml

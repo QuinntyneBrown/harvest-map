@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title Containers — Accessibility
+
+Person(member, "Invited team member", "Keyboard and assistive technology user")
+System_Ext(at, "Assistive technology", "Screen reader")
+System_Boundary(hm, "Harvest Map") {
+  Container(web, "Harvest Map web app", "Next.js App Router, React, CSS", "Accessible markup, focus handling, live regions")
+  ContainerDb(db, "Harvest Map database", "PostgreSQL", "User preferences, including Reduce motion")
+}
+Rel(member, web, "Uses", "HTTPS")
+Rel(at, web, "Reads accessibility tree of")
+Rel(web, db, "Reads Reduce motion preference", "SQL")
+@enduml

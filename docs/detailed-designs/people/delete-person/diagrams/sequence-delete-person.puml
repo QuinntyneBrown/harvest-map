@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Delete person
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "PersonPage Delete action" as opener
+  participant "DeletePersonDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "deletePerson server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "PersonService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "PersonRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> opener : Select Delete
+opener -> dialog : Open with name, organization, source count
+dialog --> actor : "Delete {name}?" with Cancel and Delete person, focus on Cancel (L2-015 AC1)
+alt Escape or Cancel
+  actor -> dialog : Press Escape or select Cancel
+  dialog -> opener : Close, return focus
+  opener --> actor : Nothing deleted, focus on Delete (L2-015 AC4)
+else Confirm
+  actor -> dialog : Select Delete person
+  dialog -> dialog : Set busy, disable Cancel (L2-015 AC2)
+  dialog -> action : deletePerson(id)
+  action -> service : delete(id)
+  service -> repo : delete(id)
+  repo -> db : Delete sources and people row in one transaction
+  alt Delete succeeds
+    db --> repo : Commit
+    repo --> service : Done
+    service --> action : Done
+    action --> actor : Redirect to /people with confirmation (L2-015 AC2)
+  else Request fails
+    action --> dialog : Failure
+    dialog --> actor : "Couldn't delete", Delete person retries (L2-015 AC3)
+  end
+end
+@enduml

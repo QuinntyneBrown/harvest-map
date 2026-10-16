@@ -1,0 +1,56 @@
+@startuml
+title UML sequence behaviour — Browse organizations
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "OrganizationList" as list
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "OrganizationsPage" as page
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "OrganizationService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  participant "OrganizationRepository" as repo
+  database "Harvest Map database" as db
+end box
+actor -> page : Open /organizations
+page --> actor : Skeleton list while loading (L2-006 AC7)
+page -> service : list(OrganizationQuery, default sort Impact)
+service -> repo : findMany(query), count()
+repo -> db : Select non-archived organizations
+db --> repo : Rows
+repo --> service : Organizations and counts
+service --> page : OrganizationListResult
+alt Load failed
+  page --> actor : "Couldn't load organisations" with Try again (L2-006 AC7)
+else Catalogue empty
+  page --> actor : "No organisations yet" with Ask the web and Add by hand (L2-006 AC6)
+else Organizations exist
+  page -> list : Render header counts and cards (L2-006 AC1, AC8)
+  list --> actor : "{n} tracked · {v} verified · {u} unverified"
+end
+opt Toggle chip or pick sort
+  actor -> list : Toggle AI, Youth, Moonshot or Verified, or pick Impact, Name or Updated
+  list -> page : Update URL search parameters
+  page -> service : list(query)
+  service --> page : Matches for all active chips, in chosen order
+  page --> list : Re-rendered cards, active chips pressed (L2-006 AC2, AC3)
+end
+opt Type in search box
+  actor -> list : Type name text
+  list -> list : Wait for 150 ms of idle typing (L2-006 AC4)
+  list -> page : Update URL search parameter
+  page -> service : list(query)
+  service --> page : Name matches
+  page --> list : Re-rendered cards
+end
+opt No matches
+  list --> actor : "Nothing matches" with Clear filters (L2-006 AC5)
+end
+@enduml

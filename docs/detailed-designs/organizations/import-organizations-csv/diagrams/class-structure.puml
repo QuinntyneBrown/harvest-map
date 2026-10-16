@@ -1,0 +1,75 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Import organizations from CSV
+
+enum VerificationStatus {
+  Verified
+  Unverified
+  Conflict
+}
+class ImportCsvDialog {
+  -busy: boolean
+  -file: File
+  -rowCount: number
+  +choose(file: File): void
+  +import(): void
+  +downloadSkipped(): void
+}
+class CsvRow {
+  +rowNumber: number
+  +name: string
+  +website: string
+  +country: string
+  +city: string
+  +tags: string[]
+}
+class ImportProgress {
+  +done: number
+  +total: number
+}
+class ImportResult {
+  +ok: boolean
+  +imported: number
+  +skipped: CsvRow[]
+  +failedRow: number
+  +message: string
+}
+class CsvImportService {
+  +import(file: File, userId: string): ImportResult
+  -parse(file: File): CsvRow[]
+  -validate(row: CsvRow): FieldError[]
+  -isDuplicate(row: CsvRow): boolean
+}
+class OrganizationRepository {
+  +findByNormalisedNamesOrDomains(names: string[], domains: string[]): Organization[]
+  +insertMany(organizations: Organization[]): void
+}
+class Organization {
+  +id: string
+  +name: string
+  +website: string
+  +country: string
+  +city: string
+  +tags: string[]
+  +status: VerificationStatus
+}
+
+ImportCsvDialog ..> ImportProgress : renders
+ImportCsvDialog ..> ImportResult : renders
+ImportResult "1" *-- "*" CsvRow : skipped
+CsvImportService ..> CsvRow : parses
+CsvImportService ..> ImportProgress : reports
+CsvImportService ..> ImportResult : returns
+CsvImportService ..> OrganizationRepository : uses
+OrganizationRepository ..> Organization : reads / inserts
+Organization --> VerificationStatus
+@enduml

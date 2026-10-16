@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Navigation shell
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(layout, "SignedInLayout", "Next.js layout", "Loads user and unread count, renders the frame")
+  Component(skip, "SkipLink", "React component", "Skip to content, first focusable")
+  Component(top, "TopBar", "React component", "Brand and header controls")
+  Component(nav, "PrimaryNav", "React client component", "Section links, aria-current on match")
+  Component(search, "SearchTrigger", "React client component", "Opens the command palette")
+  Component(bell, "NotificationsBell", "React component", "Link to /notifications with unread count")
+  Component(avatar, "UserAvatar", "React component", "Link to /settings")
+  Component(menu, "MenuButton", "React client component", "Open navigation, below 768 px")
+  Component(sheet, "NavSheet", "React client component", "Left drawer with the same links")
+  Component(notify, "NotificationService", "TypeScript module", "countUnread(userId)")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "users, notifications")
+}
+Rel(layout, notify, "Calls")
+Rel(notify, db, "Counts unread", "SQL")
+Rel(layout, skip, "Renders first")
+Rel(layout, top, "Renders")
+Rel(top, nav, "Renders at 768 px or more")
+Rel(top, search, "Renders")
+Rel(top, bell, "Renders")
+Rel(top, avatar, "Renders")
+Rel(top, menu, "Renders below 768 px")
+Rel(menu, sheet, "Opens")
+@enduml

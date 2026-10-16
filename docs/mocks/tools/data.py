@@ -1,0 +1,176 @@
+"""Cast and catalog shared by every Harvest Map mock.
+
+Today is Thu 16 Oct 2026. The signed-in person is Naomi Achterberg, research
+lead. Organisations and people are real public entities; facts marked
+verified were checked against public sources on 16 Oct 2026, the rest are
+shown exactly as the product would show an unverified finding.
+"""
+
+TODAY = "Thu 16 Oct 2026"
+
+ME = {"name": "Naomi Achterberg", "initials": "NA", "email": "naomi@harvestmap.app", "role": "Research lead"}
+TEAM = [
+    {"name": "Tobias Mwangi", "initials": "TM", "role": "Researcher"},
+    {"name": "Priya Raman", "initials": "PR", "role": "Researcher"},
+    {"name": "Elias Ferreira", "initials": "EF", "role": "Analyst"},
+    {"name": "Hannah Okafor", "initials": "HO", "role": "Admin"},
+]
+
+# lon, lat for the map; None when the organisation has no single home.
+ORGS = [
+    dict(id="faithtech", name="FaithTech", mark="FT", city="Waterloo", country="Canada", lon=-80.5, lat=43.5,
+         kind="Community", founded="2016", site="faithtech.com", tags=["AI", "Community", "Youth"], verified="verified",
+         summary="Global community of Christian technologists in 50+ cities and 20+ countries.",
+         doing=["Missional Tech Trends research reports", "AI-assisted trauma-healing tool sprint for MENA (Feb 2026)", "Awaken 2026 global gathering, Monterey (Sep 2026)"],
+         reach="50+ cities", people=["james-kelly"], problems=["ai-flourishing", "youth-formation"]),
+    dict(id="gloo", name="Gloo", mark="GL", city="Boulder", country="United States", lon=-105.3, lat=40.0,
+         kind="Platform", founded="2013", site="gloo.com", tags=["AI", "Moonshot"], verified="verified",
+         summary="Faith-tech platform used by ~140,000 churches and ministry leaders.",
+         doing=["Flourishing AI standards (with the Global Flourishing Study)", "Faith Assistant chatbot trained on a church's own teaching", "AI gallery and hackathons for ministries"],
+         reach="140,000 leaders", people=["scott-beck", "pat-gelsinger"], problems=["ai-flourishing"]),
+    dict(id="onehope", name="OneHope", mark="OH", city="Pompano Beach", country="United States", lon=-80.1, lat=26.2,
+         kind="Ministry", founded="1987", site="onehope.net", tags=["Youth", "Moonshot", "Scripture"], verified="verified",
+         summary="God's Word for every child: 2 billion children and youth reached since 1987.",
+         doing=["Scripture engagement programmes in schools worldwide", "Bible App for Kids with YouVersion (165M+ installs)", "Next 2 billion by 2033"],
+         reach="2B children", people=["rob-hoskins", "bob-hoskins"], problems=["every-child"]),
+    dict(id="illuminations", name="illumiNations", mark="IL", city=None, country="Global alliance", lon=None, lat=None,
+         kind="Alliance", founded="2010", site="illuminations.bible", tags=["Moonshot", "Scripture", "AI"], verified="verified",
+         summary="Ten Bible translation agencies working to the 2033 All Access Goals.",
+         doing=["Full Bible for 95% of the world's population by 2033", "AI-assisted translation drafting", "I Want to Know campaign ($35 per verse)"],
+         reach="3,800 languages", people=["mart-green"], problems=["every-language"]),
+    dict(id="lausanne", name="Lausanne Movement", mark="LM", city=None, country="Global", lon=None, lat=None,
+         kind="Movement", founded="1974", site="lausanne.org", tags=["Moonshot", "Digital"], verified="verified",
+         summary="Global mission network with a 2050 vision for a digital, disciple-making church.",
+         doing=["Fourth Lausanne Congress, Incheon 2024", "Digital global platform for the '99%'", "Great Commission by 2050"],
+         reach="200+ countries", people=["michael-oh"], problems=["great-commission"]),
+    dict(id="youversion", name="YouVersion", mark="YV", city="Edmond", country="United States", lon=-97.5, lat=35.7,
+         kind="Product", founded="2008", site="youversion.com", tags=["Scripture", "Youth"], verified="verified",
+         summary="The Bible App from Life.Church, with OneHope's Bible App for Kids.",
+         doing=["Bible App in 2,000+ languages", "Bible App for Kids", "Careful, opt-in AI features"],
+         reach="Hundreds of millions of installs", people=["bobby-gruenewald"], problems=["every-child", "young-adults-scripture"]),
+    dict(id="creed", name="Creed", mark="CR", city=None, country="United States", lon=None, lat=None,
+         kind="Startup", founded="2024", site="creed.ai", tags=["AI", "Youth"], verified="pending",
+         summary="Christian AI companion app aimed at Gen Z; 2M tried, 50k daily users (company claims).",
+         doing=["Bible-grounded AI chat with a sheep companion", "Daily devotional prompts for teens"],
+         reach="2M tried", people=["adi-agrawal"], problems=["safe-companions"]),
+    dict(id="fuller-youth", name="Fuller Youth Institute", mark="FY", city="Pasadena", country="United States", lon=-118.1, lat=34.1,
+         kind="Research", founded="2005", site="fulleryouthinstitute.org", tags=["Youth", "Research", "AI"], verified="verified",
+         summary="Research and training for youth leaders, including practical AI guidance.",
+         doing=["Guidance on AI as a planning aid for youth workers", "Growing Young and Sticky Faith research"],
+         reach="Youth leaders worldwide", people=["kara-powell"], problems=["youth-formation"]),
+    dict(id="abs", name="American Bible Society", mark="AB", city="Philadelphia", country="United States", lon=-75.2, lat=40.0,
+         kind="Nonprofit", founded="1816", site="americanbible.org", tags=["Scripture", "Youth", "AI"], verified="verified",
+         summary="Funding AI Bible-engagement assistants and YouTube shows to reach young adults.",
+         doing=["Grants to four Christian colleges for Gen Z Scripture engagement", "AI Bible Engagement Assistant pilot"],
+         reach="US young adults", people=["jennifer-holloran"], problems=["young-adults-scripture"]),
+    dict(id="indigitous", name="Indigitous", mark="IN", city="Singapore", country="Singapore", lon=103.8, lat=1.35,
+         kind="Community", founded="2014", site="indigitous.org", tags=["AI", "Digital", "Community"], verified="pending",
+         summary="Cru's digital missions community; runs the global #HACK hackathon.",
+         doing=["#HACK global hackathon", "AI chat tools for seekers"],
+         reach="40+ cities", people=["simon-seow"], problems=["digital-evangelism"]),
+    dict(id="alpha", name="Alpha International", mark="AL", city="London", country="United Kingdom", lon=-0.1, lat=51.5,
+         kind="Ministry", founded="1990", site="alpha.org", tags=["Youth"], verified="verified",
+         summary="The Alpha course and Alpha Youth Series, run in 100+ countries.",
+         doing=["Alpha Youth Series film course", "Translations into 100+ languages"],
+         reach="100+ countries", people=["nicky-gumbel"], problems=["youth-formation"]),
+    dict(id="dare2share", name="Dare 2 Share", mark="D2", city="Arvada", country="United States", lon=-105.1, lat=39.8,
+         kind="Ministry", founded="1991", site="dare2share.org", tags=["Youth", "Moonshot"], verified="pending",
+         summary="Every teen everywhere hearing the gospel from a friend.",
+         doing=["Gospel Advancing youth ministry training", "Lead THE Cause teen events"],
+         reach="US teens", people=["greg-stier"], problems=["every-teen"]),
+    dict(id="barna", name="Barna Group", mark="BG", city="Ventura", country="United States", lon=-119.3, lat=34.3,
+         kind="Research", founded="1984", site="barna.com", tags=["Research", "Youth"], verified="verified",
+         summary="Research on faith and culture, including Gen Z and the open generation.",
+         doing=["Gen Z research series", "State of the Church"],
+         reach="Research", people=["david-kinnaman"], problems=["youth-formation"]),
+    dict(id="young-life", name="Young Life", mark="YL", city="Colorado Springs", country="United States", lon=-104.8, lat=38.8,
+         kind="Ministry", founded="1941", site="younglife.org", tags=["Youth"], verified="pending",
+         summary="Relational youth ministry in 100+ countries.",
+         doing=["Club, camp and Capernaum programmes", "Young Life College"],
+         reach="100+ countries", people=["newt-crenshaw"], problems=["youth-formation"]),
+]
+
+PEOPLE = [
+    dict(id="james-kelly", name="James Kelly", initials="JK", role="Founder & CEO", org="faithtech", linkedin="verified", since="2016",
+         bio="Started FaithTech in a Waterloo coffee shop in 2016; speaks on redemptive technology and 'Pray Before You Prompt'."),
+    dict(id="scott-beck", name="Scott Beck", initials="SB", role="Co-founder & CEO", org="gloo", linkedin="verified", since="2013",
+         bio="Co-founded Gloo; frames the Faith Assistant as starting from an evangelical perspective and tailorable by denomination."),
+    dict(id="pat-gelsinger", name="Pat Gelsinger", initials="PG", role="Executive Chair & Head of Technology", org="gloo", linkedin="verified", since="2025",
+         bio="Former Intel CEO; joined Gloo's executive team in April 2025 after five years as chair; champions the Flourishing AI standards."),
+    dict(id="rob-hoskins", name="Rob Hoskins", initials="RH", role="President", org="onehope", linkedin="verified", since="2004",
+         bio="Leads OneHope's goal of engaging the next 2 billion children and youth with Scripture by 2033."),
+    dict(id="bob-hoskins", name="Bob Hoskins", initials="BH", role="Founder", org="onehope", linkedin="none", since="1987",
+         bio="Founded OneHope in 1987 after a vision of children under attack; began in El Salvador."),
+    dict(id="mart-green", name="Mart Green", initials="MG", role="Co-founder, ETEN Alliance", org="illuminations", linkedin="pending", since="2010",
+         bio="Hobby Lobby family; co-founded Every Tribe Every Nation, the alliance behind illumiNations."),
+    dict(id="michael-oh", name="Michael Oh", initials="MO", role="Global Executive Director & CEO", org="lausanne", linkedin="verified", since="2013",
+         bio="Cast Lausanne's 2050 vision at the 50th anniversary: disciple-making, disciple-maturing and digital."),
+    dict(id="bobby-gruenewald", name="Bobby Gruenewald", initials="BG", role="Founder, YouVersion", org="youversion", linkedin="verified", since="2008",
+         bio="Pastor and innovation leader at Life.Church; founded the Bible App."),
+    dict(id="adi-agrawal", name="Adi Agrawal", initials="AA", role="Co-founder", org="creed", linkedin="pending", since="2024",
+         bio="Interviewed by Christianity Today in Jan 2026 on the crowded Christian AI market."),
+    dict(id="kara-powell", name="Kara Powell", initials="KP", role="Executive Director", org="fuller-youth", linkedin="verified", since="2005",
+         bio="Leads Fuller Youth Institute; author of Growing Young and 3 Big Questions That Change Every Teenager."),
+    dict(id="jennifer-holloran", name="Jennifer Holloran", initials="JH", role="President & CEO", org="abs", linkedin="pending", since="2023",
+         bio="Leads American Bible Society's first-time grants for young-adult Scripture engagement."),
+    dict(id="simon-seow", name="Simon Seow", initials="SS", role="Founder", org="indigitous", linkedin="pending", since="2014",
+         bio="Founded Indigitous within Cru to mobilise digital missions."),
+    dict(id="nicky-gumbel", name="Nicky Gumbel", initials="NG", role="Founder", org="alpha", linkedin="none", since="1990",
+         bio="Pioneered Alpha at Holy Trinity Brompton; Alpha Youth Series reaches teens in 100+ countries."),
+    dict(id="greg-stier", name="Greg Stier", initials="GS", role="Founder", org="dare2share", linkedin="pending", since="1991",
+         bio="Founded Dare 2 Share to equip teens to share the gospel with friends."),
+    dict(id="david-kinnaman", name="David Kinnaman", initials="DK", role="CEO", org="barna", linkedin="verified", since="2009",
+         bio="Leads Barna's research on Gen Z, resilient faith and the church."),
+    dict(id="newt-crenshaw", name="Newt Crenshaw", initials="NC", role="President", org="young-life", linkedin="pending", since="2017",
+         bio="President of Young Life; finding needs a current source."),
+]
+
+PROBLEMS = [
+    dict(id="every-language", title="Scripture in every language by 2033", score=94, rank=1, reach="3,800 languages", severity="High", tractability="Medium",
+         orgs=["illuminations"], status="Tracked", summary="A full Bible for 95% of people, a New Testament for 99.96%, some Scripture for every language."),
+    dict(id="every-child", title="God's Word for every child", score=91, rank=2, reach="2B children", severity="High", tractability="Medium",
+         orgs=["onehope", "youversion"], status="Tracked", summary="Reach the next 2 billion children and youth with Scripture by 2033."),
+    dict(id="great-commission", title="Great Commission by 2050", score=88, rank=3, reach="Global church", severity="High", tractability="Low",
+         orgs=["lausanne"], status="Tracked", summary="Disciple-making at the scale of the whole church, with digital as the third 'D'."),
+    dict(id="ai-flourishing", title="AI that serves human flourishing", score=83, rank=4, reach="Every AI user", severity="High", tractability="Medium",
+         orgs=["gloo", "faithtech"], status="Tracked", summary="Benchmarks and products that measure AI against flourishing, not engagement."),
+    dict(id="youth-formation", title="Gen Z loneliness and faith formation", score=79, rank=5, reach="2B Gen Z", severity="High", tractability="Low",
+         orgs=["fuller-youth", "barna", "young-life", "alpha", "faithtech"], status="Tracked", summary="Isolation, anxiety and disaffiliation among teens and young adults."),
+    dict(id="every-teen", title="Every teen hears the gospel from a friend", score=72, rank=6, reach="US teens", severity="Medium", tractability="Medium",
+         orgs=["dare2share"], status="Tracked", summary="Peer-to-peer gospel sharing as the primary strategy for reaching teenagers."),
+    dict(id="safe-companions", title="Safe AI companions for young believers", score=64, rank=7, reach="Teens online", severity="Medium", tractability="High",
+         orgs=["creed"], status="Watching", summary="Companion apps that form rather than farm attention; the market is getting crowded."),
+    dict(id="young-adults-scripture", title="Young adults engaging Scripture", score=61, rank=8, reach="US young adults", severity="Medium", tractability="High",
+         orgs=["abs", "youversion"], status="Watching", summary="Pilots to test whether AI assistants and short video raise Bible engagement."),
+    dict(id="digital-evangelism", title="Digital evangelism at scale", score=58, rank=9, reach="Global", severity="Medium", tractability="High",
+         orgs=["indigitous"], status="Watching", summary="Hackathons and chat tools that meet seekers where they already are."),
+]
+
+QUESTIONS = [
+    dict(id="q1", n="01", text="Who is helping Christian youth, especially with AI?", status="answered", num="9", unit="organisations", sources=23),
+    dict(id="q2", n="02", text="Who is targeting moonshot problems?", status="answered", num="5", unit="organisations", sources=14),
+    dict(id="q3", n="03", text="Who is targeting the most impactful problem?", status="answered", num="illumiNations", unit="score 94", sources=9),
+    dict(id="q4", n="04", text="What are they doing?", status="partial", num="31", unit="initiatives", sources=38),
+    dict(id="q5", n="05", text="Who are the key people?", status="answered", num="16", unit="people", sources=21),
+    dict(id="q6", n="06", text="Where are they on LinkedIn?", status="partial", num="8 of 16", unit="on LinkedIn", sources=8),
+]
+
+RUNS = [
+    dict(id=48, question="q6", title="Find LinkedIn profiles for 8 people", status="running", progress=62, started="12:04", findings=5, by="Naomi Achterberg"),
+    dict(id=47, question="q1", title="Who is helping Christian youth with AI?", status="done", progress=100, started="Yesterday", findings=12, by="Tobias Mwangi"),
+    dict(id=46, question="q4", title="What is Gloo doing in 2026?", status="done", progress=100, started="Mon 13 Oct", findings=7, by="Priya Raman"),
+    dict(id=45, question="q2", title="Moonshot goals with a public deadline", status="failed", progress=30, started="Fri 10 Oct", findings=0, by="Naomi Achterberg"),
+    dict(id=44, question="q3", title="Rank problems by reach × severity × tractability", status="done", progress=100, started="Thu 9 Oct", findings=9, by="Elias Ferreira"),
+]
+
+FINDINGS = [
+    dict(id=1, claim="Pat Gelsinger moved from chair to executive chair and head of technology at Gloo in April 2025.", source="religionunplugged.com", conf=0.92, entity="pat-gelsinger", kind="person", state="new"),
+    dict(id=2, claim="Gloo's Flourishing AI standards build on the Global Flourishing Study (Harvard, Baylor, Gallup).", source="ministrywatch.com", conf=0.9, entity="gloo", kind="org", state="new"),
+    dict(id=3, claim="FaithTech is active in 50+ cities across 20+ countries.", source="mnnonline.org", conf=0.78, entity="faithtech", kind="org", state="accepted"),
+    dict(id=4, claim="Creed has 50,000 daily active users.", source="creed.ai", conf=0.41, entity="creed", kind="org", state="new", note="Company claim; no independent source."),
+    dict(id=5, claim="Young Life's president is Newt Crenshaw.", source="younglife.org", conf=0.55, entity="newt-crenshaw", kind="person", state="rejected", note="Page dated 2019."),
+]
+
+ORG_BY_ID = {o["id"]: o for o in ORGS}
+PERSON_BY_ID = {p["id"]: p for p in PEOPLE}
+PROBLEM_BY_ID = {p["id"]: p for p in PROBLEMS}

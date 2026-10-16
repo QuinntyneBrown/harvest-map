@@ -1,0 +1,22 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — Browse organizations
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "OrganizationsPage", "React server component, /organizations", "Reads search parameters, renders header and list")
+  Component(list, "OrganizationList", "React client component", "Search, filter chips, sort and cards")
+  Component(card, "OrganizationCard", "React client component", "One organization with a selection checkbox")
+  Component(bar, "SelectionBar", "React client component", "Shows {n} selected with Tag, Export and Archive")
+  Component(service, "OrganizationService", "TypeScript module", "Lists organizations and counts")
+  Component(repo, "OrganizationRepository", "TypeScript module", "Queries the organizations table")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "organizations")
+}
+Rel(page, list, "Renders with results")
+Rel(list, page, "Updates URL search parameters for")
+Rel(list, card, "Renders")
+Rel(list, bar, "Renders while selection is non-empty")
+Rel(page, service, "Calls list(query)")
+Rel(service, repo, "Calls")
+Rel(repo, db, "Selects organizations", "SQL")
+@enduml

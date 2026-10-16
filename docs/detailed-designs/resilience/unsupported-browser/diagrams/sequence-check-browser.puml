@@ -1,0 +1,29 @@
+@startuml
+title UML sequence behaviour — Check the browser
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Invited team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "BrowserSupportGate" as gate
+  participant "detectSupport" as detect
+  participant "UnsupportedPage" as page
+  participant "Requested page" as target
+end box
+actor -> gate : Open Harvest Map
+gate -> detect : detectSupport()
+detect -> detect : Check navigator.gpu, CSS.supports('anchor-name: --a'), document.startViewTransition
+detect --> gate : SupportReport (no user-agent read)
+alt Any capability missing
+  gate -> page : Replace route with /unsupported
+  page --> actor : "Harvest Map needs Chrome" with Get Chrome and Copy link (L2-039 AC1)
+else All capabilities present (Chrome, Edge, other Chromium)
+  gate -> target : Render children
+  target --> actor : App proceeds normally (L2-039 AC2)
+  opt Requested page is /sign-in
+    target --> actor : "Works in Chrome 125 or newer." (L2-039 AC4)
+  end
+end
+@enduml

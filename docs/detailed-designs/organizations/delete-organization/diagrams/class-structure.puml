@@ -1,0 +1,63 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Delete organization
+
+class DeleteOrganizationDialog {
+  -busy: boolean
+  -confirmation: string
+  +name: string
+  +personLinkCount: number
+  +sourceCount: number
+  +confirm(): void
+  +cancel(): void
+}
+class DeleteOrganizationInput {
+  +id: string
+  +confirmation: string
+}
+class DeleteOrganizationResult {
+  +ok: boolean
+  +title: string
+  +message: string
+  +redirectTo: string
+}
+class OrganizationService {
+  +delete(id: string): void
+  +assertEditable(id: string): void
+}
+class OrganizationRepository {
+  +deleteWithLinks(id: string): void
+}
+class Organization {
+  +id: string
+  +name: string
+  +archivedAt: Date
+}
+class PersonLink {
+  +organizationId: string
+  +personId: string
+}
+class Source {
+  +organizationId: string
+  +title: string
+  +domain: string
+}
+
+DeleteOrganizationDialog ..> DeleteOrganizationInput : builds
+DeleteOrganizationDialog ..> DeleteOrganizationResult : renders
+OrganizationService ..> OrganizationRepository : uses
+OrganizationRepository ..> Organization : deletes
+OrganizationRepository ..> PersonLink : deletes
+OrganizationRepository ..> Source : deletes
+Organization "1" *-- "*" PersonLink
+Organization "1" *-- "*" Source
+@enduml

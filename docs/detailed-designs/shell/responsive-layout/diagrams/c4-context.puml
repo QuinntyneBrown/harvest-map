@@ -1,0 +1,10 @@
+@startuml
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title System Context — Responsive layout
+
+Person(member, "Invited team member", "Uses a phone, tablet or laptop")
+System(hm, "Harvest Map", "Maps organizations serving Christian youth")
+
+Rel(member, hm, "Uses at any viewport width", "HTTPS")
+@enduml

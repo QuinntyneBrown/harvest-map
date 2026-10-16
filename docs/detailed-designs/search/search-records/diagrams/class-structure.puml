@@ -1,0 +1,61 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Search records
+
+class SearchForm {
+  -query: string
+  +submit(): void
+}
+class SearchPage {
+  +query: string
+  +render(results: SearchResults): void
+}
+class SearchService {
+  +search(query: string): SearchResults
+}
+class SearchResults {
+  +query: string
+  +total: number
+  +organizations: OrganizationListItem[]
+  +people: PersonListItem[]
+  +problems: ProblemListItem[]
+  +findings: FindingListItem[]
+}
+class OrganizationRepository {
+  +search(query: string): OrganizationListItem[]
+}
+class PersonRepository {
+  +search(query: string): PersonListItem[]
+}
+class ProblemRepository {
+  +search(query: string): ProblemListItem[]
+}
+class FindingRepository {
+  +search(query: string): FindingListItem[]
+}
+class OrganizationListItem
+class PersonListItem
+class ProblemListItem
+class FindingListItem
+
+SearchForm ..> SearchPage : navigates to
+SearchPage ..> SearchService : calls
+SearchService ..> SearchResults : returns
+SearchService ..> OrganizationRepository : uses
+SearchService ..> PersonRepository : uses
+SearchService ..> ProblemRepository : uses
+SearchService ..> FindingRepository : uses
+SearchResults "1" *-- "*" OrganizationListItem
+SearchResults "1" *-- "*" PersonListItem
+SearchResults "1" *-- "*" ProblemListItem
+SearchResults "1" *-- "*" FindingListItem
+@enduml

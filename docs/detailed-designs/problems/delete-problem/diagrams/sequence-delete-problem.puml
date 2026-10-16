@@ -1,0 +1,47 @@
+@startuml
+title UML sequence behaviour — Delete a problem
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 12
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+actor "Team member" as actor
+box "Frontend — Harvest Map web app (React)" #E0F2FE
+  participant "ProblemDetailPage" as page
+  participant "DeleteProblemDialog" as dialog
+end box
+box "Backend — Harvest Map web app (Next.js server)" #D1FADF
+  participant "deleteProblem server action" as action
+end box
+box "Backend — Harvest Map Application and Domain" #ECFDF3
+  participant "ProblemService" as service
+end box
+box "Backend — Harvest Map Infrastructure" #FFF4E5
+  database "Harvest Map database" as db
+end box
+actor -> page : Select Delete
+page -> dialog : Open with title and link count
+dialog --> actor : "{n} organisations stay; their link to this problem is removed.", focus on Cancel (L2-020 AC1)
+alt Cancel or Escape
+  dialog --> page : Close, focus returns to Delete
+else Delete problem
+  dialog -> dialog : Set busy, disable Cancel (L2-020 AC2)
+  dialog -> action : deleteProblem(id)
+  action -> service : delete(id)
+  service -> db : Delete problem_links and problem in one transaction
+  alt Delete fails
+    db --> service : Error
+    service --> action : Error
+    action --> dialog : DeleteProblemResult with error
+    dialog --> actor : "Couldn't delete" alert, "Delete problem" available to retry (L2-020 AC3)
+  else Delete succeeds
+    db --> service : Commit result
+    action -> service : recomputeRanking()
+    service -> db : Update scores and ranks
+    db --> service : Commit result
+    service --> action : Done
+    action --> dialog : Redirect to /problems
+    dialog --> actor : Problems page with new ranks (L2-020 AC2)
+  end
+end
+@enduml

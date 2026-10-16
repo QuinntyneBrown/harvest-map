@@ -1,0 +1,75 @@
+@startuml
+skinparam backgroundColor #FFFFFF
+skinparam shadowing false
+skinparam roundcorner 8
+skinparam defaultFontName Arial
+skinparam ArrowColor #344054
+skinparam class {
+  BorderColor #344054
+  FontColor #101828
+  BackgroundColor #F9FAFB
+}
+title Class structure — Export records
+
+enum ExportFormat {
+  CSV
+  JSON
+}
+enum ExportScopeKind {
+  All
+  CurrentFilter
+  Selected
+}
+class ExportDialog {
+  -busy: boolean
+  +organizationCount: number
+  +peopleCount: number
+  +confirm(request: ExportRequest): void
+}
+class ExportRequest {
+  +format: ExportFormat
+  +scope: ExportScope
+  +includePeople: boolean
+}
+class ExportScope {
+  +kind: ExportScopeKind
+  +query: OrganizationQuery
+  +ids: string[]
+}
+class ExportFile {
+  +fileName: string
+  +contentType: string
+  +body: string
+}
+class ExportService {
+  +export(request: ExportRequest): ExportFile
+}
+class OrganizationRepository {
+  +findForExport(scope: ExportScope): Organization[]
+}
+class PersonRepository {
+  +findByOrganizationIds(ids: string[]): Person[]
+}
+class Organization {
+  +id: string
+  +name: string
+}
+class Person {
+  +id: string
+  +name: string
+  +role: string
+  +organizationId: string
+}
+
+ExportDialog ..> ExportRequest : builds
+ExportRequest --> ExportFormat
+ExportRequest *-- ExportScope
+ExportScope --> ExportScopeKind
+ExportService ..> ExportRequest : accepts
+ExportService ..> ExportFile : returns
+ExportService ..> OrganizationRepository : uses
+ExportService ..> PersonRepository : uses
+OrganizationRepository ..> Organization : reads
+PersonRepository ..> Person : reads
+Person "*" --> "1" Organization
+@enduml

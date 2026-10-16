@@ -1,0 +1,19 @@
+@startuml
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title Components — View person
+
+Container_Boundary(web, "Harvest Map web app") {
+  Component(page, "PersonPage", "React server component, /people/[id]", "Header, About, Organisations, Sources, details, Activity")
+  Component(loading, "loading.tsx", "Next.js loading UI", "Skeleton")
+  Component(error, "error.tsx", "Next.js error boundary", "Couldn't load this person, Try again")
+  Component(notfound, "Not-found page", "Next.js not-found UI", "Shown for a missing id")
+  Component(service, "PersonService", "TypeScript module", "People application logic")
+  Component(repo, "PersonRepository", "TypeScript module", "Data access for people")
+  ComponentDb(db, "Harvest Map database", "PostgreSQL", "people, organizations, sources, activity")
+}
+Rel(page, service, "Calls getPersonDetail")
+Rel(service, repo, "Reads through")
+Rel(repo, db, "Selects person detail", "SQL")
+Rel(page, notfound, "Calls notFound() for a missing id")
+@enduml
