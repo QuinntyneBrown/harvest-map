@@ -313,7 +313,7 @@ def field_page(ctx: Ctx):
     if s == "error":
         inner = hero(ctx, "The field is ripe.", "We couldn't load your workspace.", actions) + error_block(ctx, "the field", back=None)
         return dict(description="Field page when the workspace request fails; hero and navigation stay.", body=main_wrap(ctx, "field", inner), scripts=["field.js"], notes=[])
-    lead = "14 organisations · 16 people · 9 problems. 2 research runs since yesterday."
+    lead = "19 organisations · 16 people · 9 problems. 2 research runs since yesterday."
     inner = hero(ctx, "The field is ripe.", lead, actions)
     inner += '<section class="section"><h2 class="section__title">Questions</h2><div class="q-grid">' + "".join(q_card(ctx, q, i) for i, q in enumerate(QUESTIONS)) + "</div></section>"
     if s == "partial":
@@ -345,7 +345,7 @@ def org_actions(ctx: Ctx) -> str:
 
 def organizations(ctx: Ctx):
     s = ctx.state
-    h = header("Organizations", "14 tracked · 9 verified · 5 unverified", org_actions(ctx))
+    h = header("Organizations", "19 tracked · 12 verified · 7 unverified", org_actions(ctx))
     if s == "loading":
         inner = header_skeleton(title="Organizations") + org_toolbar(ctx, disabled=True) + skeleton_cards(6)
         return dict(description="Organisations list loading; six skeleton cards in the final layout.", body=main_wrap(ctx, "organizations", inner), notes=[])
@@ -735,9 +735,23 @@ def research(ctx: Ctx):
 # ---------------------------------------------------------------------------
 # Map
 # ---------------------------------------------------------------------------
-def pin(ctx: Ctx, o: dict, i: int, expanded: bool = False) -> str:
-    left = (o["lon"] + 180) / 360 * 100
-    top = (90 - o["lat"]) / 180 * 100
+WORLD_BOX = (-180, 180, -90, 90)  # lon0, lon1, lat0, lat1
+GTA_BOX = (-79.85, -78.75, 43.42, 43.98)  # keep in step with BOX in gta_map.py, which draws the land
+GTA_LABELS = [("Mississauga", -79.64, 43.56), ("Toronto", -79.40, 43.665), ("Oshawa", -78.86, 43.90)]
+
+
+def project(lon: float, lat: float, box: tuple = WORLD_BOX) -> tuple[float, float]:
+    lon0, lon1, lat0, lat1 = box
+    return (lon - lon0) / (lon1 - lon0) * 100, (lat1 - lat) / (lat1 - lat0) * 100
+
+
+def in_box(o: dict, box: tuple) -> bool:
+    lon0, lon1, lat0, lat1 = box
+    return o["lon"] is not None and lon0 <= o["lon"] <= lon1 and lat0 <= o["lat"] <= lat1
+
+
+def pin(ctx: Ctx, o: dict, i: int, expanded: bool = False, box: tuple = WORLD_BOX) -> str:
+    left, top = project(o["lon"], o["lat"], box)
     cls = "map__pin" + (" map__pin--unverified" if o["verified"] != "verified" else "") + (" map__pin--selected" if expanded else "")
     pop = ""
     if expanded:
@@ -746,6 +760,13 @@ def pin(ctx: Ctx, o: dict, i: int, expanded: bool = False) -> str:
 
 
 MAP_HEAD = '\n<link rel="stylesheet" href="../../assets/world-dots.css">'
+GTA_HEAD = '\n<link rel="stylesheet" href="../../assets/gta-dots.css">'
+
+
+def region_switch(ctx: Ctx, current: str) -> str:
+    links = "".join(f'<a class="chip" href="{ctx.p("map", st)}"{" aria-current=\"page\"" if st == current else ""}>{label}</a>'
+                    for st, label in [("default", "World"), ("gta", "Greater Toronto")])
+    return f'<nav class="cluster" aria-label="Region" style="gap:var(--space-2);">{links}</nav>'
 
 
 def map_page(ctx: Ctx):
@@ -753,7 +774,17 @@ def map_page(ctx: Ctx):
     placed = [o for o in ORGS if o["lon"] is not None]
     homeless = [o for o in ORGS if o["lon"] is None]
     chips = '<div class="toolbar rise" style="--i:1"><div class="cluster">' + "".join(f'<button class="chip" type="button" aria-pressed="{"true" if c == "All" else "false"}">{c}</button>' for c in ["All", "AI", "Youth", "Moonshot"]) + '</div><div class="map__legend" style="margin:0;"><span><i></i>Verified</span><span><i class="unverified"></i>Unverified</span></div></div>'
-    h = header("Map", f"{len(placed)} placed · {len(homeless)} without a single home")
+    h = header("Map", f"{len(placed)} placed · {len(homeless)} without a single home", region_switch(ctx, "default"))
+    if s == "gta":
+        local = [o for o in placed if in_box(o, GTA_BOX)]
+        pins = "".join(pin(ctx, o, i, expanded=(o["id"] == "youth-unlimited-toronto"), box=GTA_BOX) for i, o in enumerate(local))
+        labels = "".join(f'<span class="map__label" style="left:{x:.1f}%;top:{y:.1f}%;">{name}</span>' for name, (x, y) in ((n, project(lo, la, GTA_BOX)) for n, lo, la in GTA_LABELS))
+        inner = (header("Map", f"Greater Toronto · {len(local)} placed", region_switch(ctx, "gta")) + chips
+                 + f'<div class="map map--gta rise" style="--i:2"><div class="map__land"></div>{labels}{pins}</div>'
+                 + f'<p class="text-caption" style="margin-top:var(--space-6);"><a href="{ctx.p("map")}">{len(placed) - len(local)} more on the world map</a>.</p>'
+                 + '<section class="section reveal"><h2 class="section__title">Where the gaps are</h2><p style="font:var(--text-body-lg);max-width:48ch;">Every pin is west of Pickering. Nothing in Ajax, Whitby or Oshawa yet.</p></section>')
+        return dict(head=GTA_HEAD, description="Greater Toronto region of the map, Mississauga to Oshawa, with local pins, three city labels and the Durham gap.", body=main_wrap(ctx, "map", inner),
+                    notes=[note("Same dot matrix, finer grid: the land mask is Lake Ontario's shoreline from Natural Earth inside a Mississauga-to-Oshawa box, latitude scaled so the frame is true to the ground. Pins and labels share the box projection.", "top: 5rem; right: 1rem;")])
     if s == "loading":
         return dict(head=MAP_HEAD, description="Map loading: the world fades in while pins are fetched.", body=main_wrap(ctx, "map", header_skeleton(False, title="Map") + '<div class="map map--skeleton" aria-busy="true" aria-label="Loading map"><div class="map__land"></div></div>'), notes=[])
     if s == "empty":
@@ -768,7 +799,7 @@ def map_page(ctx: Ctx):
     pins = "".join(pin(ctx, o, i, expanded=(o["id"] == "faithtech")) for i, o in enumerate(placed))
     rest = ", ".join(f'<a href="{ctx.p("organization")}">{o["name"]}</a>' for o in homeless)
     inner = h + chips + f'<div class="map rise" style="--i:2"><div class="map__land"></div>{pins}</div><p class="text-caption" style="margin-top:var(--space-6);">Not on the map: {rest}.</p>'
-    inner += '<section class="section reveal"><h2 class="section__title">Where the gaps are</h2><p style="font:var(--text-body-lg);max-width:48ch;">Nine of eleven pins are in North America. No organisation in the catalogue is based in Africa, South America or mainland Asia yet.</p></section>'
+    inner += '<section class="section reveal"><h2 class="section__title">Where the gaps are</h2><p style="font:var(--text-body-lg);max-width:48ch;">Fourteen of sixteen pins are in North America. No organisation in the catalogue is based in Africa, South America or mainland Asia yet.</p></section>'
     return dict(head=MAP_HEAD, description="World dot map with organisation pins, one expanded in an anchored popover, and a note on geographic gaps.", body=main_wrap(ctx, "map", inner),
                 notes=[note("The land is a dot-matrix SVG used as a CSS mask so it takes the theme colour. The popover uses CSS anchor positioning (position-anchor, position-area) with flip fallbacks. Pins pulse on a staggered delay.", "top: 5rem; right: 1rem;")])
 

@@ -198,10 +198,10 @@ def export(ctx: Ctx):
     s = ctx.state
     busy = s == "busy"
     fmt = "".join(f'<label class="choice"><input type="radio" name="format" value="{v}"{" checked" if v == "csv" else ""}{" disabled" if busy else ""}><span class="choice__text">{l}</span></label>' for v, l in [("csv", "CSV"), ("json", "JSON")])
-    scope = "".join(f'<label class="choice"><input type="radio" name="scope" value="{v}"{" checked" if v == "all" else ""}{" disabled" if busy else ""}><span class="choice__text">{l}</span></label>' for v, l in [("all", "All 14 organisations"), ("filtered", "Current filter · 14"), ("people", "Include people · 16")])
+    scope = "".join(f'<label class="choice"><input type="radio" name="scope" value="{v}"{" checked" if v == "all" else ""}{" disabled" if busy else ""}><span class="choice__text">{l}</span></label>' for v, l in [("all", "All 19 organisations"), ("filtered", "Current filter · 19"), ("people", "Include people · 16")])
     failed = alert("danger", "Couldn't build the export", "Try again.", role="alert", dismiss=False) if s == "failed" else ""
     body = failed + f'<div class="grid" style="--layout-columns:2;"><fieldset><legend>Format</legend>{fmt}</fieldset><fieldset><legend>Scope</legend>{scope}</fieldset></div>'
-    dlg = panel("Export", "", body, cancel(disabled=busy) + primary("Export 14 organisations", busy=busy))
+    dlg = panel("Export", "", body, cancel(disabled=busy) + primary("Export 19 organisations", busy=busy))
     desc = {"default": "Export organisations as CSV or JSON.", "busy": "Building the export file.", "failed": "Export failed."}[s]
     return over(ctx, "organizations", "default", dlg, desc)
 

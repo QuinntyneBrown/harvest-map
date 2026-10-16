@@ -52,7 +52,7 @@ SCREENS = [
          not_applicable={"empty": "A form always has fields."}),
     dict(id="questions", kind="page", title="Questions", route="/questions", states=["default", "loading", "empty", "error", "partial"]),
     dict(id="research", kind="page", title="Research", route="/research", states=["default", "loading", "empty", "error", "running", "review"]),
-    dict(id="map", kind="page", title="Map", route="/map", states=["default", "loading", "empty", "error", "no-results"]),
+    dict(id="map", kind="page", title="Map", route="/map", states=["default", "loading", "empty", "error", "no-results", "gta"]),
     dict(id="search", kind="page", title="Search", route="/search", states=["default", "loading", "empty", "error", "no-results"]),
     dict(id="notifications", kind="page", title="Notifications", route="/notifications", states=["default", "loading", "empty", "error", "read"]),
     dict(id="settings", kind="page", title="Settings", route="/settings", states=PAGE_STATES_FORM,

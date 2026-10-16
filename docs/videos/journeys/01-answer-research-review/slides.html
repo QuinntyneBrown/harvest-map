@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Journey 01 Slides</title>
+<link rel="stylesheet" href="../../assets/slides.css">
+</head>
+<body data-video-number="01" data-video-title="Harvest Map · Answer, research, review" data-parts="Welcome|Answer the questions|Run research|Review a finding|The loop closes">
+
+<section id="title" data-part="0">
+  <div class="kicker">Harvest Map · Journeys 1 to 3</div>
+  <h1>Answer, research,<br>review</h1>
+  <p class="lead">Six questions about the organizations serving Christian youth, and the loop that answers them.</p>
+</section>
+
+<section id="journeys" data-part="0" data-cue="This video walks through the three journeys">
+  <h2>Three journeys, one loop</h2>
+  <div class="cols-3">
+    <div class="card"><span class="n">01</span><h3>Answer the questions</h3><p>Read the six answers and the sources behind them.</p></div>
+    <div class="card"><span class="n">02</span><h3>Run research</h3><p>Ask the web where an answer is thin.</p></div>
+    <div class="card"><span class="n">03</span><h3>Review a finding</h3><p>Accept, edit or reject before a record changes.</p></div>
+  </div>
+</section>
+
+<section id="questions" data-part="1" data-cue="Answer the questions">
+  <div class="kicker">The Questions page</div>
+  <div class="frame"><img class="shot h600" src="images/questions.png" alt="The Questions page with six questions, each with status and source count"></div>
+</section>
+
+<section id="q3" data-part="1" data-cue="Answers are links to real records.">
+  <h2>Most impactful problem</h2>
+  <p class="small muted" style="margin:-12px 0 28px">Impact score = reach × severity × tractability</p>
+  <div class="frame"><img class="shot" style="width:1300px" src="images/questions-q3.png" alt="Question three ranking problems by impact score with their leading organization"></div>
+</section>
+
+<section id="isolated" data-part="1" data-cue="Each answer loads on its own.">
+  <h2>One failure stays in its card</h2>
+  <div class="cols">
+    <div class="card">
+      <span class="n">06 · PARTIAL</span>
+      <h3>Where are they on LinkedIn?</h3>
+      <p class="status status--bad" style="margin-top:18px">Couldn't load this answer</p>
+      <p style="margin-top:10px">The findings service didn't answer in time.</p>
+      <p class="accent" style="margin-top:18px;font-weight:600">Retry</p>
+    </div>
+    <ul class="list">
+      <li>Each card loads its own answer</li>
+      <li>A failure shows only in that card</li>
+      <li>Retry reloads just that answer</li>
+      <li>The other five keep working</li>
+    </ul>
+  </div>
+</section>
+
+<section id="ask" data-part="2" data-cue="Run research">
+  <div class="kicker">Ask the web · Re-run or press R</div>
+  <div class="frame"><img class="shot h600" src="images/ask-the-web.png" alt="The Ask the web dialog with Who are the key people preselected"></div>
+</section>
+
+<section id="choices" data-part="2" data-cue="Pick what to look for">
+  <h2>What to look for, and how deep</h2>
+  <div class="cols">
+    <div class="card">
+      <h3>Look for</h3>
+      <ul class="list"><li>Organisations</li><li>People</li><li>LinkedIn profiles</li></ul>
+    </div>
+    <div class="card">
+      <h3>Depth</h3>
+      <ul class="list">
+        <li>Quick <small>about 1 minute</small></li>
+        <li>Standard <small>about 5 minutes</small></li>
+        <li>Deep <small>about 20 minutes · more sources</small></li>
+      </ul>
+    </div>
+  </div>
+  <p class="small muted" style="margin-top:32px">Findings need two sources, or one trusted source, before they count as verified.</p>
+</section>
+
+<section id="ask-invalid" data-part="2" data-cue="If you choose Something else">
+  <div class="kicker">Something else needs a question</div>
+  <div class="frame"><img class="shot h600" src="images/ask-the-web-invalid.png" alt="The dialog showing Fix 1 thing to save: Write the question you want answered"></div>
+</section>
+
+<section id="pipeline" data-part="2" data-cue="Select Run and the run is queued.">
+  <h2>Behind Run</h2>
+  <div class="flow">
+    <div class="card"><span class="n">QUEUED</span><h3>Run is saved</h3><p>Numbered, with who started it.</p></div>
+    <div class="arrow">→</div>
+    <div class="card"><span class="n">CLAUDE · WEB SEARCH</span><h3>The web is searched</h3><p>Depth sets how many searches.</p></div>
+    <div class="arrow">→</div>
+    <div class="card"><span class="n">FINDINGS</span><h3>Held for review</h3><p>Statement, sources, confidence.</p></div>
+  </div>
+</section>
+
+<section id="runs" data-part="2" data-cue="Progress shows on the Research page.">
+  <div class="kicker">Research · Earlier runs</div>
+  <div class="frame"><img class="shot h600" src="images/research-runs.png" alt="Earlier runs with number, title, start, person, finding count and status"></div>
+</section>
+
+<section id="review" data-part="3" data-cue="Review a finding">
+  <div class="kicker">Research · Findings to review</div>
+  <div class="frame"><img class="shot h600" src="images/research.png" alt="Findings to review with Accept, Edit and Reject on each card"></div>
+</section>
+
+<section id="accepted" data-part="3" data-cue="Select Accept and the card updates at once.">
+  <h2>Accept applies at once</h2>
+  <img class="shot w1500" src="images/finding-accepted.png" alt="A finding accepted by Naomi Achterberg with Undo available for 30 s">
+  <div class="cols" style="margin-top:48px">
+    <ul class="list">
+      <li>Record created or updated</li>
+      <li>Activity entry: who, and which run</li>
+    </ul>
+    <ul class="list">
+      <li>Undo for 30 seconds</li>
+      <li>Reject keeps the source, changes nothing</li>
+    </ul>
+  </div>
+</section>
+
+<section id="edit" data-part="3" data-cue="To adjust a finding first, select Edit.">
+  <div class="kicker">Review finding</div>
+  <div class="frame"><img class="shot h600" src="images/review-finding.png" alt="The Review finding dialog with Role, Since, Organisation and the sources"></div>
+</section>
+
+<section id="edit-invalid" data-part="3" data-cue="A required field left empty">
+  <div class="kicker">Required fields</div>
+  <div class="frame"><img class="shot h600" src="images/review-finding-invalid.png" alt="The dialog showing Fix 1 thing to save: Enter a role"></div>
+</section>
+
+<section id="loop" data-part="4" data-cue="The loop closes">
+  <h2>The answer moved</h2>
+  <div class="frame"><img class="shot w1500" src="images/questions-q5-after.png" alt="Question five now led by Kara Powell, Executive Director of the Fuller Youth Institute"></div>
+</section>
+
+<section id="recap" data-part="4" data-cue="That is the whole loop.">
+  <h2>The loop</h2>
+  <ol class="steps">
+    <li><span class="num">1</span>Read the answers</li>
+    <li><span class="num">2</span>Ask the web where they are thin</li>
+    <li><span class="num">3</span>Decide what the web found</li>
+  </ol>
+  <p class="small muted" style="margin-top:44px">Next: browse and edit the organizations behind these answers.</p>
+</section>
+
+<script src="../../assets/slides.js"></script>
+</body>
+</html>

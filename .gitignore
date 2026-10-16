@@ -2,3 +2,16 @@
 docs/mocks/.cache/
 __pycache__/
 docs/design-system/.cache/
+
+# App
+node_modules/
+.next/
+next-env.d.ts
+.env
+.env.local
+test-results/
+playwright-report/
+*.tsbuildinfo
+
+# Video tooling caches (Kokoro model, rendered frames)
+.cache/

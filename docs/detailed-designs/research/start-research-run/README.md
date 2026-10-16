@@ -22,7 +22,7 @@ The slice runs from a React dialog in the Next.js web app to the PostgreSQL data
 
 - **`RunResearchDialog`** — client component titled "Ask the web". It shows the radio group "Question" with the six core questions and "Something else", the text field "Your question" when "Something else" is checked, the checkbox group "Look for", the radio group "Depth", and the note "Findings need two sources, or one trusted source, before they count as verified." The footer offers Cancel and Run. Focus starts on the checked question.
 - **`RunResearchOpener`** — the buttons and shortcut that open the dialog: "Run research", "Ask the web", a question's Re-run, and the key R. Re-run passes its question id, and the dialog preselects that question.
-- **`startResearchRun`** — Next.js server action. It receives a `StartRunInput`, validates it, calls `ResearchService.start` and returns a `StartRunResult`.
+- **`startResearchRun`** — Next.js route handler at `POST /api/research/runs`. It receives a `StartRunInput`, validates it, calls `ResearchService.start` and returns a `StartRunResult`.
 - **`ResearchService`** — server module. `start(input, userId)` inserts a `ResearchRun` with status Queued and hands it to the `ResearchRunExecutor`.
 - **`ResearchRunExecutor`** — background process that executes queued runs. Its mechanism (worker, queue or scheduler) is `<TO SUPPLY>`. The monitor-research-runs feature describes its execution steps.
 - **`getUserSettings`** — server function that returns the signed-in person's `UserSettings`. The dialog checks the default depth from it on open.
@@ -60,13 +60,13 @@ A team member starts research runs in Harvest Map over HTTPS. Harvest Map later 
 
 ### Containers
 
-The Next.js web app runs the dialog and the server action, which writes the queued run to the PostgreSQL database. The research run executor picks the run up from there.
+The Next.js web app runs the dialog and the route handler, which writes the queued run to the PostgreSQL database. The research run executor picks the run up from there.
 
 ![C4 container view for starting a research run](diagrams/c4-container.png)
 
 ### Components
 
-An opener shows `RunResearchDialog`, which receives the default depth from `getUserSettings` and submits to the `startResearchRun` server action. The action calls `ResearchService`, which inserts the run and hands it to `ResearchRunExecutor`.
+An opener shows `RunResearchDialog`, which receives the default depth from `getUserSettings` and submits to the `startResearchRun` route handler. The handler calls `ResearchService`, which inserts the run and hands it to `ResearchRunExecutor`.
 
 ![C4 component view for starting a research run](diagrams/c4-component.png)
 

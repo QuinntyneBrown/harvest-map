@@ -27,7 +27,7 @@ The slice runs from React components on the Research page in the Next.js web app
 - **`FindingsReviewSection`** — section "Findings to review" with the caption "Accept creates or updates the record · Reject keeps the source". It lists one `FindingCard` per finding, and the monitor-research-runs feature adds new findings to it during a run.
 - **`FindingCard`** — client component for one finding. It shows the statement, the subject, the source domain, "Confidence {p}%" and, for a low-confidence finding, the reason. A pending card offers Accept, Edit and Reject. A decided card shows "Accepted by {person} · Undo available for 30 s" or "Rejected by {person} · Undo available for 30 s" with "Undo". The card applies Accept and Reject optimistically with the React `useOptimistic` hook and hides Undo when the undo window ends.
 - **`ReviewFindingDialog`** — client component titled "Review finding" with the description "Updates {subject} · {organization}". It shows the statement, "Confidence {p}% · {n} sources" with the status badge, the editable fields for the change, the "Sources" list, and the actions Reject, Cancel and Accept. Header and footer stay fixed, and the body scrolls when the content exceeds the viewport height.
-- **`acceptFinding`**, **`rejectFinding`** and **`undoFindingDecision`** — Next.js server actions. Each calls `FindingService` and returns a `FindingDecisionResult`.
+- **`acceptFinding`**, **`rejectFinding`** and **`undoFindingDecision`** — Next.js route handler at `POST /api/findings/[id]/{accept,reject,undo}`. Each calls `FindingService` and returns a `FindingDecisionResult`.
 - **`FindingService`** — server module. `accept(id, change, userId)` applies the `FindingChange` to the subject record, creating or updating it. It stores the previous values for undo, sets the state Accepted and writes an `ActivityEntry` with the person and the run number. `reject(id, userId)` sets the state Rejected and keeps the `Source` rows. `undo(id, userId)` reverses the effect and returns the finding to Pending, and it refuses once the undo window has passed.
 - **`Finding`**, **`FindingChange`**, **`Source`** and **`ActivityEntry`** — rows in the `findings`, `sources` and `activity_entries` tables; `FindingChange` is the set of field values a finding writes.
 
@@ -64,13 +64,13 @@ A team member reviews findings in Harvest Map over HTTPS. No external system tak
 
 ### Containers
 
-The Next.js web app renders the review list and the dialog and runs the server actions. The actions update findings, subject records and activity in the PostgreSQL database.
+The Next.js web app renders the review list and the dialog and runs the route handlers. The handlers update findings, subject records and activity in the PostgreSQL database.
 
 ![C4 container view for reviewing findings](diagrams/c4-container.png)
 
 ### Components
 
-`FindingsReviewSection` renders `FindingCard` items, and a card opens `ReviewFindingDialog`. Both call the `acceptFinding`, `rejectFinding` and `undoFindingDecision` server actions, which call `FindingService`.
+`FindingsReviewSection` renders `FindingCard` items, and a card opens `ReviewFindingDialog`. Both call the `acceptFinding`, `rejectFinding` and `undoFindingDecision` route handlers, which call `FindingService`.
 
 ![C4 component view for reviewing findings](diagrams/c4-component.png)
 

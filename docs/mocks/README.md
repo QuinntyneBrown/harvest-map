@@ -23,13 +23,16 @@ Cast and catalog (reuse these in every mock; today is Thu 16 Oct 2026)
 Signed in:  Naomi Achterberg (NA), research lead, naomi@harvestmap.app
 Team:       Tobias Mwangi (TM) researcher · Priya Raman (PR) researcher ·
             Elias Ferreira (EF) analyst · Hannah Okafor (HO) admin
-Workspace:  Harvest Map · 14 organisations · 16 people · 9 problems · 48 runs
+Workspace:  Harvest Map · 19 organisations · 16 people · 9 problems · 48 runs
 
 Organisations (real, public): FaithTech (Waterloo), Gloo (Boulder), OneHope
 (Pompano Beach), illumiNations (alliance), Lausanne Movement, YouVersion
 (Edmond), Creed, Fuller Youth Institute (Pasadena), American Bible Society
 (Philadelphia), Indigitous (Singapore), Alpha International (London),
-Dare 2 Share (Arvada), Barna Group (Ventura), Young Life (Colorado Springs).
+Dare 2 Share (Arvada), Barna Group (Ventura), Young Life (Colorado Springs),
+World Vision Canada (Mississauga), Inter-Varsity Christian Fellowship of
+Canada (Toronto), Youth Unlimited (Toronto), Tyndale University (Toronto),
+Scripture Union Canada (Pickering).
 Just-created example: Kingdom Code (London). Archived example: Kingdom Code.
 
 People (real, public roles): James Kelly · Scott Beck · Pat Gelsinger ·
@@ -62,7 +65,8 @@ Reference codes: HM-4F2A (load failure), HM-9C21 (500).
 - **Research**: "Ask the web" runs with a live log; findings come back for
   review and only become records when a person accepts them.
 - **Map**: a dot-matrix world map with organisation pins and a note on where
-  the catalogue has gaps.
+  the catalogue has gaps, plus a Greater Toronto region (Mississauga to
+  Oshawa) with the same dots at a finer grid.
 - **Search**, **Notifications**, **Settings**, sign-in flow and the five
   error pages (404, 403, 500, offline, unsupported browser).
 
@@ -105,7 +109,8 @@ docs/mocks/
   assets/mock.css/.js    mock bar and theme switch (not product UI)
   assets/field.js        WebGPU field
   assets/world-dots.svg  dot-matrix world map (served) and world-dots.css (data URI for file://)
-  tools/                 generator: data.py (cast), build.py (manifest + shell), pages.py, dialogs.py, notifications.py
+  assets/gta-dots.svg    Greater Toronto land (Lake Ontario shoreline) and gta-dots.css
+  tools/                 generator: data.py (cast), build.py (manifest + shell), pages.py, dialogs.py, notifications.py, world_map.py, gta_map.py
   pages/, dialogs/, notifications/
 ```
 
@@ -145,6 +150,11 @@ Chrome to see both settled.
 - The home page is called "Field"; rename if the team prefers "Home".
 - The map uses an equirectangular dot grid; organisations without a single
   home (alliances, movements) are listed below it instead of being pinned.
+- The Greater Toronto region is the box lon -79.85 to -78.75, lat 43.42 to
+  43.98 (Mississauga to Oshawa, lakefront to north of Vaughan), land from
+  Natural Earth 10m lakes. GTA founding years marked Unverified (IVCF 1928/29,
+  Youth Unlimited 1944/45, Scripture Union's Canadian start) were disputed
+  between sources on 16 Oct 2026.
 
 ## Next step
 
@@ -158,32 +168,32 @@ Legend: ✅ mock exists · ➖ not applicable (reason in manifest) · ❌ missin
 
 ### Pages
 
-| Screen | default | loading | empty | error | invalid | submitting | success | partial | no-results | long | selected | edge | read-only | running | review | read | Requirements |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Sign in (`sign-in`) | [✅](pages/sign-in/default.html) | ➖ | ➖ | [✅](pages/sign-in/error.html) | [✅](pages/sign-in/invalid.html) | [✅](pages/sign-in/submitting.html) | [✅](pages/sign-in/success.html) |  |  |  |  |  |  |  |  |  |  |
-| Forgot password (`forgot-password`) | [✅](pages/forgot-password/default.html) | ➖ | ➖ | [✅](pages/forgot-password/error.html) | [✅](pages/forgot-password/invalid.html) | [✅](pages/forgot-password/submitting.html) | [✅](pages/forgot-password/success.html) |  |  |  |  |  |  |  |  |  |  |
-| Reset password (`reset-password`) | [✅](pages/reset-password/default.html) | [✅](pages/reset-password/loading.html) | ➖ | [✅](pages/reset-password/error.html) | [✅](pages/reset-password/invalid.html) | [✅](pages/reset-password/submitting.html) | [✅](pages/reset-password/success.html) |  |  |  |  |  |  |  |  |  |  |
-| Field (`field`) | [✅](pages/field/default.html) | [✅](pages/field/loading.html) | [✅](pages/field/empty.html) | [✅](pages/field/error.html) |  |  |  | [✅](pages/field/partial.html) |  |  |  |  |  |  |  |  |  |
-| Organizations (`organizations`) | [✅](pages/organizations/default.html) | [✅](pages/organizations/loading.html) | [✅](pages/organizations/empty.html) | [✅](pages/organizations/error.html) |  |  |  |  | [✅](pages/organizations/no-results.html) | [✅](pages/organizations/long.html) | [✅](pages/organizations/selected.html) | [✅](pages/organizations/edge.html) |  |  |  |  |  |
-| Organization (`organization`) | [✅](pages/organization/default.html) | [✅](pages/organization/loading.html) | [✅](pages/organization/empty.html) | [✅](pages/organization/error.html) |  |  |  |  |  |  |  | [✅](pages/organization/edge.html) | [✅](pages/organization/read-only.html) |  |  |  |  |
-| Edit organization (`organization-edit`) | [✅](pages/organization-edit/default.html) | [✅](pages/organization-edit/loading.html) | ➖ | [✅](pages/organization-edit/error.html) | [✅](pages/organization-edit/invalid.html) | [✅](pages/organization-edit/submitting.html) | [✅](pages/organization-edit/success.html) |  |  |  |  |  |  |  |  |  |  |
-| People (`people`) | [✅](pages/people/default.html) | [✅](pages/people/loading.html) | [✅](pages/people/empty.html) | [✅](pages/people/error.html) |  |  |  |  | [✅](pages/people/no-results.html) | [✅](pages/people/long.html) |  |  |  |  |  |  |  |
-| Person (`person`) | [✅](pages/person/default.html) | [✅](pages/person/loading.html) | [✅](pages/person/empty.html) | [✅](pages/person/error.html) |  |  |  |  |  |  |  | [✅](pages/person/edge.html) |  |  |  |  |  |
-| Edit person (`person-edit`) | [✅](pages/person-edit/default.html) | [✅](pages/person-edit/loading.html) | ➖ | [✅](pages/person-edit/error.html) | [✅](pages/person-edit/invalid.html) | [✅](pages/person-edit/submitting.html) | [✅](pages/person-edit/success.html) |  |  |  |  |  |  |  |  |  |  |
-| Problems (`problems`) | [✅](pages/problems/default.html) | [✅](pages/problems/loading.html) | [✅](pages/problems/empty.html) | [✅](pages/problems/error.html) |  |  |  |  | [✅](pages/problems/no-results.html) |  |  |  |  |  |  |  |  |
-| Problem (`problem`) | [✅](pages/problem/default.html) | [✅](pages/problem/loading.html) | [✅](pages/problem/empty.html) | [✅](pages/problem/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Edit problem (`problem-edit`) | [✅](pages/problem-edit/default.html) | [✅](pages/problem-edit/loading.html) | ➖ | [✅](pages/problem-edit/error.html) | [✅](pages/problem-edit/invalid.html) | [✅](pages/problem-edit/submitting.html) | [✅](pages/problem-edit/success.html) |  |  |  |  |  |  |  |  |  |  |
-| Questions (`questions`) | [✅](pages/questions/default.html) | [✅](pages/questions/loading.html) | [✅](pages/questions/empty.html) | [✅](pages/questions/error.html) |  |  |  | [✅](pages/questions/partial.html) |  |  |  |  |  |  |  |  |  |
-| Research (`research`) | [✅](pages/research/default.html) | [✅](pages/research/loading.html) | [✅](pages/research/empty.html) | [✅](pages/research/error.html) |  |  |  |  |  |  |  |  |  | [✅](pages/research/running.html) | [✅](pages/research/review.html) |  |  |
-| Map (`map`) | [✅](pages/map/default.html) | [✅](pages/map/loading.html) | [✅](pages/map/empty.html) | [✅](pages/map/error.html) |  |  |  |  | [✅](pages/map/no-results.html) |  |  |  |  |  |  |  |  |
-| Search (`search`) | [✅](pages/search/default.html) | [✅](pages/search/loading.html) | [✅](pages/search/empty.html) | [✅](pages/search/error.html) |  |  |  |  | [✅](pages/search/no-results.html) |  |  |  |  |  |  |  |  |
-| Notifications (`notifications`) | [✅](pages/notifications/default.html) | [✅](pages/notifications/loading.html) | [✅](pages/notifications/empty.html) | [✅](pages/notifications/error.html) |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/notifications/read.html) |  |
-| Settings (`settings`) | [✅](pages/settings/default.html) | [✅](pages/settings/loading.html) | ➖ | [✅](pages/settings/error.html) | [✅](pages/settings/invalid.html) | [✅](pages/settings/submitting.html) | [✅](pages/settings/success.html) |  |  |  |  |  |  |  |  |  |  |
-| Not found (`not-found`) | [✅](pages/not-found/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Forbidden (`forbidden`) | [✅](pages/forbidden/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Something went wrong (`server-error`) | [✅](pages/server-error/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Offline (`offline`) | [✅](pages/offline/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
-| Unsupported browser (`unsupported-browser`) | [✅](pages/unsupported-browser/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Screen | default | loading | empty | error | invalid | submitting | success | partial | no-results | long | selected | edge | read-only | running | review | gta | read | Requirements |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Sign in (`sign-in`) | [✅](pages/sign-in/default.html) | ➖ | ➖ | [✅](pages/sign-in/error.html) | [✅](pages/sign-in/invalid.html) | [✅](pages/sign-in/submitting.html) | [✅](pages/sign-in/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Forgot password (`forgot-password`) | [✅](pages/forgot-password/default.html) | ➖ | ➖ | [✅](pages/forgot-password/error.html) | [✅](pages/forgot-password/invalid.html) | [✅](pages/forgot-password/submitting.html) | [✅](pages/forgot-password/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Reset password (`reset-password`) | [✅](pages/reset-password/default.html) | [✅](pages/reset-password/loading.html) | ➖ | [✅](pages/reset-password/error.html) | [✅](pages/reset-password/invalid.html) | [✅](pages/reset-password/submitting.html) | [✅](pages/reset-password/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Field (`field`) | [✅](pages/field/default.html) | [✅](pages/field/loading.html) | [✅](pages/field/empty.html) | [✅](pages/field/error.html) |  |  |  | [✅](pages/field/partial.html) |  |  |  |  |  |  |  |  |  |  |
+| Organizations (`organizations`) | [✅](pages/organizations/default.html) | [✅](pages/organizations/loading.html) | [✅](pages/organizations/empty.html) | [✅](pages/organizations/error.html) |  |  |  |  | [✅](pages/organizations/no-results.html) | [✅](pages/organizations/long.html) | [✅](pages/organizations/selected.html) | [✅](pages/organizations/edge.html) |  |  |  |  |  |  |
+| Organization (`organization`) | [✅](pages/organization/default.html) | [✅](pages/organization/loading.html) | [✅](pages/organization/empty.html) | [✅](pages/organization/error.html) |  |  |  |  |  |  |  | [✅](pages/organization/edge.html) | [✅](pages/organization/read-only.html) |  |  |  |  |  |
+| Edit organization (`organization-edit`) | [✅](pages/organization-edit/default.html) | [✅](pages/organization-edit/loading.html) | ➖ | [✅](pages/organization-edit/error.html) | [✅](pages/organization-edit/invalid.html) | [✅](pages/organization-edit/submitting.html) | [✅](pages/organization-edit/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| People (`people`) | [✅](pages/people/default.html) | [✅](pages/people/loading.html) | [✅](pages/people/empty.html) | [✅](pages/people/error.html) |  |  |  |  | [✅](pages/people/no-results.html) | [✅](pages/people/long.html) |  |  |  |  |  |  |  |  |
+| Person (`person`) | [✅](pages/person/default.html) | [✅](pages/person/loading.html) | [✅](pages/person/empty.html) | [✅](pages/person/error.html) |  |  |  |  |  |  |  | [✅](pages/person/edge.html) |  |  |  |  |  |  |
+| Edit person (`person-edit`) | [✅](pages/person-edit/default.html) | [✅](pages/person-edit/loading.html) | ➖ | [✅](pages/person-edit/error.html) | [✅](pages/person-edit/invalid.html) | [✅](pages/person-edit/submitting.html) | [✅](pages/person-edit/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Problems (`problems`) | [✅](pages/problems/default.html) | [✅](pages/problems/loading.html) | [✅](pages/problems/empty.html) | [✅](pages/problems/error.html) |  |  |  |  | [✅](pages/problems/no-results.html) |  |  |  |  |  |  |  |  |  |
+| Problem (`problem`) | [✅](pages/problem/default.html) | [✅](pages/problem/loading.html) | [✅](pages/problem/empty.html) | [✅](pages/problem/error.html) |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Edit problem (`problem-edit`) | [✅](pages/problem-edit/default.html) | [✅](pages/problem-edit/loading.html) | ➖ | [✅](pages/problem-edit/error.html) | [✅](pages/problem-edit/invalid.html) | [✅](pages/problem-edit/submitting.html) | [✅](pages/problem-edit/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Questions (`questions`) | [✅](pages/questions/default.html) | [✅](pages/questions/loading.html) | [✅](pages/questions/empty.html) | [✅](pages/questions/error.html) |  |  |  | [✅](pages/questions/partial.html) |  |  |  |  |  |  |  |  |  |  |
+| Research (`research`) | [✅](pages/research/default.html) | [✅](pages/research/loading.html) | [✅](pages/research/empty.html) | [✅](pages/research/error.html) |  |  |  |  |  |  |  |  |  | [✅](pages/research/running.html) | [✅](pages/research/review.html) |  |  |  |
+| Map (`map`) | [✅](pages/map/default.html) | [✅](pages/map/loading.html) | [✅](pages/map/empty.html) | [✅](pages/map/error.html) |  |  |  |  | [✅](pages/map/no-results.html) |  |  |  |  |  |  | [✅](pages/map/gta.html) |  |  |
+| Search (`search`) | [✅](pages/search/default.html) | [✅](pages/search/loading.html) | [✅](pages/search/empty.html) | [✅](pages/search/error.html) |  |  |  |  | [✅](pages/search/no-results.html) |  |  |  |  |  |  |  |  |  |
+| Notifications (`notifications`) | [✅](pages/notifications/default.html) | [✅](pages/notifications/loading.html) | [✅](pages/notifications/empty.html) | [✅](pages/notifications/error.html) |  |  |  |  |  |  |  |  |  |  |  |  | [✅](pages/notifications/read.html) |  |
+| Settings (`settings`) | [✅](pages/settings/default.html) | [✅](pages/settings/loading.html) | ➖ | [✅](pages/settings/error.html) | [✅](pages/settings/invalid.html) | [✅](pages/settings/submitting.html) | [✅](pages/settings/success.html) |  |  |  |  |  |  |  |  |  |  |  |
+| Not found (`not-found`) | [✅](pages/not-found/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Forbidden (`forbidden`) | [✅](pages/forbidden/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Something went wrong (`server-error`) | [✅](pages/server-error/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Offline (`offline`) | [✅](pages/offline/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| Unsupported browser (`unsupported-browser`) | [✅](pages/unsupported-browser/default.html) | ➖ | ➖ | ➖ |  |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ### Dialogs
 

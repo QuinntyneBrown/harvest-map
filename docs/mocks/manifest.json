@@ -254,7 +254,8 @@
         "loading",
         "empty",
         "error",
-        "no-results"
+        "no-results",
+        "gta"
       ]
     },
     {

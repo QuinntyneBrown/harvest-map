@@ -52,11 +52,16 @@ npm install
 
 ### Run locally
 
+Copy `.env.example` to `.env` and set `ANTHROPIC_API_KEY` (research runs search the web through Claude). Then start PostgreSQL, create the tables, seed the signed-in user and the problem catalogue, and start the app:
+
 ```bash
+docker compose up -d
+npm run db:migrate
+npm run db:seed            # add -- --demo for a few sample organizations and people
 npm run dev
 ```
 
-Then open <http://localhost:3000> in your browser.
+Then open <http://localhost:3000/questions> in your browser.
 
 ## Usage
 

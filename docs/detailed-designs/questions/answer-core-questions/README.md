@@ -21,8 +21,8 @@ The slice runs from a React page in the Next.js web app to the PostgreSQL databa
 - **`QuestionsPage`** — React page at `/questions`. It calls `getQuestionsOverview` on open and shows the header "{n} questions · {a} answered · {p} partial" with "Ask the web". While loading it shows a skeleton. On failure it shows "Couldn't load the answers — The request timed out. Try again, or share reference HM-4F2A with support." with "Try again" and "Go back". With no data it shows "Nothing answered yet", and each question reads "Open · 0 sources" with "Run research to answer this".
 - **`QuestionCard`** — client component, one per question. It shows "{number} · {status} · {n} sources", "Re-run", the question text and the top answers as links. It calls `getQuestionAnswer` for its own question. On failure it shows "Couldn't load this answer — The findings service didn't answer in time." with "Retry". The number of top answers shown per question is `<TO SUPPLY>`.
 - **`RunResearchDialog`** — dialog owned by the research feature. "Ask the web" opens it; "Re-run" opens it with that question preselected.
-- **`getQuestionsOverview`** — Next.js server action. It returns a `QuestionsOverview` with the header counts and the six question headers.
-- **`getQuestionAnswer`** — Next.js server action. It returns one `QuestionAnswer` by question number.
+- **`getQuestionsOverview`** — Next.js route handler at `GET /api/questions`. It returns a `QuestionsOverview` with the header counts and the six question headers.
+- **`getQuestionAnswer`** — Next.js route handler at `GET /api/questions/[number]`. It returns one `QuestionAnswer` by question number.
 - **`CoreQuestionsService`** — server module. It computes each answer from the catalogue:
   - Question 3 lists problems by impact score, each with its leading organization. The rule that picks the leading organization is `<TO SUPPLY>`.
   - Question 5 lists key people with role and organization.
@@ -53,7 +53,7 @@ A signed-in team member reads the answers to the core questions in Harvest Map o
 
 ### Containers
 
-The Next.js web app serves the page and runs the server actions. The actions read organizations, people, problems and findings from the PostgreSQL database.
+The Next.js web app serves the page and runs the route handlers. The handlers read organizations, people, problems and findings from the PostgreSQL database.
 
 ![C4 container view for answering the core questions](diagrams/c4-container.png)
 

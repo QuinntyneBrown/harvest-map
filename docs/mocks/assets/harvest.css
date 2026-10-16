@@ -55,6 +55,7 @@ kbd, .kbd { display: inline-flex; align-items: center; gap: var(--space-0-5); mi
 .btn--primary:hover, .btn--primary[data-state="hover"] { box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-accent) 18%, transparent); }
 .chip { transition: background-color var(--duration-fast) var(--ease-standard), border-color var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-spring-linear); }
 .chip:active { transform: scale(0.96); }
+.chip[aria-current="page"] { background: var(--color-accent-subtle); border-color: var(--color-accent); color: var(--color-fg-accent); text-decoration: none; }
 .textarea { field-sizing: content; min-height: calc(var(--control-height-md) * 2); }
 .accordion details { interpolate-size: allow-keywords; }
 .accordion details::details-content { block-size: 0; overflow: hidden; transition: block-size var(--duration-base) var(--ease-standard), content-visibility var(--duration-base) allow-discrete; }
@@ -189,6 +190,8 @@ kbd, .kbd { display: inline-flex; align-items: center; gap: var(--space-0-5); mi
 .map__legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
 .map__legend i { width: 0.625rem; height: 0.625rem; border-radius: 50%; background: var(--color-accent); }
 .map__legend i.unverified { background: var(--color-bg-surface); border: 2px solid var(--color-warning-icon); }
+/* Region views (.map--gta) get their aspect ratio and land mask from gta-dots.css; labels share the pin projection. */
+.map__label { position: absolute; translate: -50% -50%; font: var(--text-caption); color: var(--color-fg-muted); white-space: nowrap; pointer-events: none; letter-spacing: 0.04em; }
 .map--skeleton .map__land { opacity: 0.15; animation: pulse 1.6s var(--ease-standard) infinite; }
 
 /* ---------- Answer panels (questions page) -------------------------------- */
